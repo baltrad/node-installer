@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Copyright (C) 2009-2010 Swedish Meteorological and Hydrological Institute, SMHI,
+
+This file is part of the baltrad-node.
+
+Baltrad-node library is free software: you can redistribute it and/or modify
+it under the terms of the GNU Lesser General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+Baltrad-node is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public License
+along with the baltrad-node.  If not, see http://www.gnu.org/licenses.
+-->
+<project name="baltrad-node-war" basedir=".">
+  <property name="mgr.url" value="http://localhost:8080/manager"/>
+  <property name="mgr.username" value="admin"/>
+  <property name="mgr.update" value="true"/>
+  <!-- these three always has to be specified
+  <property name="mgr.password" value=""/>
+  <property name="mgr.path" value=""/>
+  <property name="warfile" value=""/>
+  -->
+
+  <fail unless="mgr.password" message="You need so specify -Dmgr.password=xxx" />
+  <fail unless="mgr.path" message="You need so specify -Dmgr.path=xxx" />
+  <fail unless="warfile" message="You need so specify -Dwarfile=xxx" />
+  <available file="${warfile}" property="warfile.available"/>
+  
+  <fail unless="warfile.available" message="-Dwarfile=xxx must specify a war file with format /path/to/x.war" />
+
+  <!-- Configure ant tasks for tomcat deployment -->
+  <taskdef name="deploy"    classname="org.apache.catalina.ant.DeployTask"/>
+  <taskdef name="list"      classname="org.apache.catalina.ant.ListTask"/>
+  <taskdef name="reload"    classname="org.apache.catalina.ant.ReloadTask"/>
+  <taskdef name="resources" classname="org.apache.catalina.ant.ResourcesTask"/>
+  <taskdef name="roles"     classname="org.apache.catalina.ant.RolesTask"/>
+  <taskdef name="start"     classname="org.apache.catalina.ant.StartTask"/>
+  <taskdef name="stop"      classname="org.apache.catalina.ant.StopTask"/>
+  <taskdef name="undeploy"  classname="org.apache.catalina.ant.UndeployTask"/>
+
+  <target name="deploy" depends="context.status" if="context.deployable">
+    <echo message="Deploying ${mgr.path} to ${mgr.url}"/>
+    <deploy url="${mgr.url}"
+            username="${mgr.username}"
+            password="${mgr.password}"
+            path="${mgr.path}"
+            update="${mgr.update}"
+            war="${warfile}"/>  	
+   </target>
+	
+  <!-- From apache-tomcats user manual for using the ant-manager task -->
+  <target name="context.status">
+    <property name="running" value="${mgr.path}:running"/>
+    <property name="stopped" value="${mgr.path}:stopped"/>
+		
+    <list url="${mgr.url}"
+          outputproperty="ctx.status"
+          username="${mgr.username}"
+          password="${mgr.password}">
+    </list>
+			
+    <condition property="context.running">
+      <contains string="${ctx.status}" substring="${running}"/>
+    </condition>
+    <condition property="context.stopped">
+      <contains string="${ctx.status}" substring="${stopped}"/>
+    </condition>
+    <condition property="context.notInstalled">
+      <and>
+        <isfalse value="${context.running}"/>
+        <isfalse value="${context.stopped}"/>
+      </and>
+    </condition>
+    <condition property="context.deployable">
+      <or>
+        <istrue value="${context.notInstalled}"/>
+        <and>
+          <istrue value="${context.running}"/>
+          <istrue value="${mgr.update}"/>
+        </and>
+        <and>
+          <istrue value="${context.stopped}"/>
+          <istrue value="${mgr.update}"/>
+        </and>
+      </or>
+    </condition>
+    <condition property="context.undeployable">
+      <or>
+        <istrue value="${context.running}"/>
+        <istrue value="${context.stopped}"/>
+      </or>
+    </condition>
+  </target>
+
+
+
+</project>
