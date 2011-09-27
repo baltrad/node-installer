@@ -157,9 +157,12 @@ MODULES=[cmmi(package("ZLIB", "1.2.4",
 ##
 # Prints the modules and the current version they have.
 #
-def print_modules():
+def print_modules(env):
   for module in MODULES:
-    print "{0:20s} {1:15s}".format(module.package().name(),module.package().version())
+    installed = "NOT INSTALLED"
+    if env.getInstalled(module.package().name()) != None:
+      installed = "INSTALLED"
+    print "{0:20s} {1:35s} {2:14s}".format(module.package().name(),module.package().version(), installed)
 
 ##
 # Prints information about usage.
@@ -359,7 +362,7 @@ if __name__=="__main__":
       usage(False)
       sys.exit(0)
     elif o == "--print-modules":
-      print_modules()
+      print_modules(env)
       sys.exit(0)
   
   for o, a in optlist:
