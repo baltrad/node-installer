@@ -173,16 +173,16 @@ def usage(brief, msg=None):
   if brief == True:
     if msg != None:
       print msg
-    print "Usage: install.py <options> command, use --help for information"
+    print "Usage: setup <options> command, use --help for information"
   else:
     print """
 NODE INSTALLER
-Usage: install.py <options> command, use --help for information
+Usage: setup <options> command, use --help for information
 
-This is the alternate installer that eventually will replace the original
-baltrad-node setup scripts. The usage is basically the same as when using
-the previous setup commands but this script will install everything
-in one go.
+This is the alternate installer that eventually will replace 
+the original baltrad-node setup scripts. The usage is basically 
+the same as when using the previous setup commands but this 
+script will install everything in one go.
 
 Command:
 Valid commands are:
@@ -200,51 +200,65 @@ Options:
     Shows this text
     
 --prefix=<prefix>
-    Points out where the system should be installed. [Default /opt/baltrad]
+    Points out where the system should be installed. 
+    [Default /opt/baltrad]
     
 --tprefix=<prefix>
-    Points out where the third-party software should be installed. [Default /opt/baltrad/third_party]
+    Points out where the third-party software should be installed.
+    [Default /opt/baltrad/third_party]
     
 --jdkhome=<jdkhome>
-    Points out the jdkhome directory. If omitted, the installer will try to find a valid jdk.
+    Points out the jdkhome directory. If omitted, the installer will
+    try to find a valid jdk.
 
 --with-zlib=yes|no|<zlibroot>|<zlibinc>,<zliblib>
-    Specifies if zlib should be built by the installer or not. [Default yes]
+    Specifies if zlib should be built by the installer or not. 
+    [Default yes]
     - 'yes' means that the installer should install the provided zlib
-    - 'no' means that the installer should atempt to locate a valid zlib installation
-    - zlibroot specifies a zlib installation where includes can be found in <zlibroot>/include and
-      libraries can be found in <zlibroot>/lib
-    - <zlibinc>,<zliblib> can be used to point out the specific include and library paths
+    - 'no' means that the installer should atempt to locate a valid
+      zlib installation
+    - zlibroot specifies a zlib installation where includes can be 
+      found in <zlibroot>/include and libraries can be found in 
+      <zlibroot>/lib
+    - <zlibinc>,<zliblib> can be used to point out the specific 
+      include and library paths
 
 --with-psql=<psqlroot>|<psqlinc>,<psqllib>
-    Specifies where to locate the postgresql include and library files. If omitted
-    the install script assumes that they can be found in the standard locations.
-    - psqlroot specifies a postgres installation where includes can be found in <psqlroot>/include and
-      libraries can be found in <psqlroot>/lib
-    - <psqlinc>,<psqllib> can be used to point out the specific include and library paths
+    Specifies where to locate the postgresql include and library files.
+    If omitted the install script assumes that they can be found in 
+    the standard locations.
+    - psqlroot specifies a postgres installation where includes can be 
+      found in <psqlroot>/include and libraries can be found in <psqlroot>/lib
+    - <psqlinc>,<psqllib> can be used to point out the specific 
+      include and library paths
 
 --dbuser=<user>
-    Specifies the database user to use. [Default baltrad]
+    Specifies the database user to use. 
+    [Default baltrad]
 
 --dbpwd=<pwd>
-    Specifies the database user password to use. [Default baltrad]
+    Specifies the database user password to use. 
+    [Default baltrad]
     
 --dbname=<name>
-    Specified the database name to use. [Default baltrad]
+    Specified the database name to use. 
+    [Default baltrad]
 
 --dbhost=<host>
-    Specified the database host to use. [Default 127.0.0.1]
+    Specified the database host to use. 
+    [Default 127.0.0.1]
     
 --with-hdfjava=<hdf java root>
-    Specifies the hdf java root installation directory. If omitted, the installer will
-    install it's own version of hdf-java.
+    Specifies the hdf java root installation directory. 
+    If omitted, the installer will install it's own version of hdf-java.
     
 --reinstalldb
     Reinstalls the database tables. Use with care.
     
 --runas=<user>
-    Specifies the runas user for tomcat and other processes. It is not allowed to
-    use a runas user that is root due to security-issues. [Defaults to user that is installing]
+    Specifies the runas user for tomcat and other processes. It is not 
+    allowed to use a runas user that is root due to security-issues. 
+    [Defaults to user that is installing]
 
 --datadir=<dir>
     The directory where all the data storage files should be placed for baltrad-db.
@@ -260,24 +274,27 @@ Options:
     Will build and install the baltrad db file system driver
 
 --rebuild=<module1>,<module2>,...
-    Will force a rebuild and installation of the specified modules. To get a list of available
-    modules and their versions. See option --print-modules.
+    Will force a rebuild and installation of the specified modules. To get a 
+    list of available modules and their versions. See option --print-modules.
     E.g. --rebuild=TOMCAT,RAVE
     
 --print-modules
     Prints all available modules and their respective version.
 
 --exclude-tomcat
-    Will exclude installation of tomcat. This is not a recommended procedure but it is here
-    for the possibility to use your own tomcat installation if it is necessary.
+    Will exclude installation of tomcat. This is not a recommended procedure but 
+    it is here for the possibility to use your own tomcat installation if it 
+    is necessary.
 
 --tomcatport=<port>
     Specifies the port on which the tomcat installation should listen on.
-    Don't use together with --tomcaturl. [Default 8080]
+    Don't use together with --tomcaturl. 
+    [Default 8080]
 
 --tomcaturl=<url>
     Specifies the tomcat url where the tomcat installation resides. Don't
-    use together with --tomcatport. [Default http://localhost:8080]
+    use together with --tomcatport. 
+    [Default http://localhost:8080]
     
 --tomcatpwd=<pwd>
     Specifies the password that should be used for the manager in the tomcat
