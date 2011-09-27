@@ -48,6 +48,13 @@ class fetcher(object):
     finally:
       os.chdir(cdir)
 
+  def clean(self, env=None):
+    cdir = os.getcwd()
+    try:
+      self.doclean(env)
+    finally:
+      os.chdir(cdir)
+
   ##
   # Fetches the software in some way.
   # @param env: The build environment
@@ -55,3 +62,11 @@ class fetcher(object):
   #
   def dofetch(self, env=None):
     raise InstallerException, "Fetcher does not implement dofetch"
+
+  ##
+  # Cleans the software in some way.
+  # @param env: The build environment
+  #
+  def doclean(self, env=None):
+    raise InstallerException, "Fetcher does not implement doclean"
+  

@@ -24,8 +24,6 @@ Installer for hdf java and hdf java setup
 @date 2011-01-21
 '''
 from installer import installer
-from InstallerException import InstallerException
-import subprocess
 import shutil, os, stat
 
 ##

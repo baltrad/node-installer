@@ -75,4 +75,11 @@ class urlfetcher(fetcher):
     else:
       print "%s already fetched"%self.fname
     return self.fname
-    
+  
+  ##
+  # Removes the file
+  # @param env: the build environment
+  #
+  def doclean(self, env=None):
+    if os.path.exists(self.fname):
+      os.remove(self.fname)

@@ -27,7 +27,6 @@ from installer import installer
 import os, subprocess, platform, shutil
 from osenv import osenv
 from InstallerException import InstallerException
-from gitfetcher import gitfetcher
 
 ##
 # The Baltrad DB installer

@@ -25,8 +25,7 @@ Wrapper for all node scripts
 '''
 import subprocess
 import tempfile
-import shutil, os, stat
-from InstallerException import InstallerException
+import os, stat
 
 ##
 # The node script wrapper
@@ -69,7 +68,7 @@ class nodescripts(object):
   def _create_bltnode_script(self, env):
     extras = {}
     extras["BALTRAD_NODE_VERSION"] = self._version
-    print "LDLIBRARYPATH: %s"%self._ldlibrarypath
+    #print "LDLIBRARYPATH: %s"%self._ldlibrarypath
     extras["LIBPATH"] = env.expandArgs("%s"%self._ldlibrarypath)
     extras["PPATH"] = env.expandArgs("%s"%self._path)
     if self._raveinstalled:

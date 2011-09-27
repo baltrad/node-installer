@@ -47,7 +47,7 @@ class shinstaller(installer):
   # @param env: the build environment
   #
   def doinstall(self, env):
-    dir = self.package().fetch()
+    dir = self.package().fetch(env)
     name = self.package().name()
     version = self.package().version()
     

@@ -37,6 +37,7 @@ from dbinstaller import dbinstaller, dbupgrader
 from nodescripts import nodescripts
 from deployer import deployer
 from scriptinstaller import scriptinstaller
+from patcher import patcher
 
 from node_package import node_package
 
@@ -117,7 +118,8 @@ MODULES=[cmmi(package("ZLIB", "1.2.4",
                      "rm -fr \"$TPREFIX/ant\"; mv -f apache-ant-1.8.0 \"$TPREFIX/ant\""),
                      
          shinstaller(package("BOOST", "1.42.0",
-                             untar(urlfetcher("http://git.baltrad.eu/blt_dependencies/boost_1_42_0.tar.gz"), "boost_1_42_0", True)),
+                             patcher(untar(urlfetcher("http://git.baltrad.eu/blt_dependencies/boost_1_42_0.tar.gz"), "boost_1_42_0", True),
+                                     ["boost_1_42/gcc-4.5-mpl-1.42.0.patch"])),
                      "./bootstrap.sh --prefix=\"$TPREFIX\" --with-python=\"$TPREFIX/bin/python\" --without-icu --with-libraries=filesystem,program_options,thread && ./bjam install"), 
 
          cmmi(package("PQXX", "3.1",
@@ -153,6 +155,13 @@ MODULES=[cmmi(package("ZLIB", "1.2.4",
         ]
 
 ##
+# Prints the modules and the current version they have.
+#
+def print_modules():
+  for module in MODULES:
+    print "{0:20s} {1:15s}".format(module.package().name(),module.package().version())
+
+##
 # Prints information about usage.
 # @param brief if brief usage information should be shown or not
 # @param msg (optional). If brief == True, then this text can be shown if provided
@@ -161,10 +170,118 @@ def usage(brief, msg=None):
   if brief == True:
     if msg != None:
       print msg
-    print "Usage: install.py <options>, use --help for information"
+    print "Usage: install.py <options> command, use --help for information"
   else:
     print """
 NODE INSTALLER
+Usage: install.py <options> command, use --help for information
+
+This is the alternate installer that eventually will replace the original
+baltrad-node setup scripts. The usage is basically the same as when using
+the previous setup commands but this script will install everything
+in one go.
+
+Command:
+Valid commands are:
+ - install
+     Installs the software
+     
+ - check
+     Checks that the provided dependencies are correct
+
+ - clean
+     Cleans up everything
+
+Options:
+--help
+    Shows this text
+    
+--prefix=<prefix>
+    Points out where the system should be installed. [Default /opt/baltrad]
+    
+--tprefix=<prefix>
+    Points out where the third-party software should be installed. [Default /opt/baltrad/third_party]
+    
+--jdkhome=<jdkhome>
+    Points out the jdkhome directory. If omitted, the installer will try to find a valid jdk.
+
+--with-zlib=yes|no|<zlibroot>|<zlibinc>,<zliblib>
+    Specifies if zlib should be built by the installer or not. [Default yes]
+    - 'yes' means that the installer should install the provided zlib
+    - 'no' means that the installer should atempt to locate a valid zlib installation
+    - zlibroot specifies a zlib installation where includes can be found in <zlibroot>/include and
+      libraries can be found in <zlibroot>/lib
+    - <zlibinc>,<zliblib> can be used to point out the specific include and library paths
+
+--with-psql=<psqlroot>|<psqlinc>,<psqllib>
+    Specifies where to locate the postgresql include and library files. If omitted
+    the install script assumes that they can be found in the standard locations.
+    - psqlroot specifies a postgres installation where includes can be found in <psqlroot>/include and
+      libraries can be found in <psqlroot>/lib
+    - <psqlinc>,<psqllib> can be used to point out the specific include and library paths
+
+--dbuser=<user>
+    Specifies the database user to use. [Default baltrad]
+
+--dbpwd=<pwd>
+    Specifies the database user password to use. [Default baltrad]
+    
+--dbname=<name>
+    Specified the database name to use. [Default baltrad]
+
+--dbhost=<host>
+    Specified the database host to use. [Default 127.0.0.1]
+    
+--with-hdfjava=<hdf java root>
+    Specifies the hdf java root installation directory. If omitted, the installer will
+    install it's own version of hdf-java.
+    
+--reinstalldb
+    Reinstalls the database tables. Use with care.
+    
+--runas=<user>
+    Specifies the runas user for tomcat and other processes. It is not allowed to
+    use a runas user that is root due to security-issues. [Defaults to user that is installing]
+
+--datadir=<dir>
+    The directory where all the data storage files should be placed for baltrad-db.
+    [Default <prefix>/bdb_storage]
+
+--with-rave
+    Install the rave pgf
+    
+--with-rave-gmap
+    Install the rave google map plugin. Will also cause rave pgf to be installed.
+    
+--with-bdbfs
+    Will build and install the baltrad db file system driver
+
+--rebuild=<module1>,<module2>,...
+    Will force a rebuild and installation of the specified modules. To get a list of available
+    modules and their versions. See option --print-modules.
+    E.g. --rebuild=TOMCAT,RAVE
+    
+--print-modules
+    Prints all available modules and their respective version.
+
+--exclude-tomcat
+    Will exclude installation of tomcat. This is not a recommended procedure but it is here
+    for the possibility to use your own tomcat installation if it is necessary.
+
+--tomcatport=<port>
+    Specifies the port on which the tomcat installation should listen on.
+    Don't use together with --tomcaturl. [Default 8080]
+
+--tomcaturl=<url>
+    Specifies the tomcat url where the tomcat installation resides. Don't
+    use together with --tomcatport. [Default http://localhost:8080]
+    
+--tomcatpwd=<pwd>
+    Specifies the password that should be used for the manager in the tomcat
+    installation.
+    
+--force
+    Unused at the moment
   
 """
 
@@ -212,6 +329,7 @@ if __name__=="__main__":
                                    'with-hdfjava=', 'with-bdbfs','rebuild=',
                                    'dbuser=', 'dbpwd=','dbname=','dbhost=',
                                    'reinstalldb','runas=','datadir=',
+                                   'print-modules', 'exclude-tomcat',
                                    'force','tomcatport=','tomcaturl=','tomcatpwd=','help'])
   except getopt.GetoptError, e:
     usage(True, e.__str__())
@@ -233,6 +351,16 @@ if __name__=="__main__":
   
   reinstalldb=False
   rebuild = []
+  
+  # First handle help and printouts so that we don't get stuck on
+  # any bad configuration properties.
+  for o,a in optlist:
+    if o == "--help":
+      usage(False)
+      sys.exit(0)
+    elif o == "--print-modules":
+      print_modules()
+      sys.exit(0)
   
   for o, a in optlist:
     if o == "--prefix":
@@ -267,6 +395,8 @@ if __name__=="__main__":
         sys.exit(127)
       else:
         env.addArg("HDFJAVAHOME", a)
+    elif o == "--exclude-tomcat":
+      env.excludeModule("TOMCAT")
     elif o == "--tomcatport":
       env.addArg("TOMCATPORT", a)
     elif o == "--tomcaturl":
@@ -288,11 +418,20 @@ if __name__=="__main__":
     elif o == "--datadir":
       env.addArg("DATADIR", a)
     elif o == "--help":
-      usage(False)
-      sys.exit(0)
+      pass
+    elif o == "--print-modules":
+      pass
     else:
       usage(True, "Unsupported argument: %s"%o)
       sys.exit(127)
+
+  if len(args) != 1:
+    usage(True, "You can only specify one command %s"%`args`)
+    sys.exit(127)
+  
+  if args[0] not in ["install", "check", "clean"]:
+    usage(True, "Unknown command %s"%`args[0]`)
+    sys.exit(127)
 
   for validator in [jdkvalidator(), zlibvalidator(), psqlvalidator()]:
     validator.validate(env)
@@ -357,7 +496,7 @@ if __name__=="__main__":
   spath = pth
   if not env.isExcluded("RAVE"):
     spath = env.expandArgs("$PREFIX/rave/bin:%s"%pth)
-      
+
   script = nodescripts("%s:$$PATH"%spath, "%s:$$LD_LIBRARY_PATH"%sldpath, "1.0.0")
   script.create_scripts(env)
   env.setNodeScript(script)
@@ -367,4 +506,9 @@ if __name__=="__main__":
       rebuild.append("DBINSTALL")
 
   ni = node_installer(MODULES, rebuild)
-  ni.install(env)
+  if args[0] == "install":
+    ni.install(env)
+  elif args[0] == "check":
+    pass
+  elif args[0] == "clean":
+    ni.clean(env)    

@@ -24,10 +24,9 @@ RAVE gmap Installer
 @date 2011-02-11
 '''
 from installer import installer
-import os, subprocess, platform, shutil
+import os, subprocess
 from osenv import osenv
 from InstallerException import InstallerException
-from gitfetcher import gitfetcher
 
 ##
 # The RAVE Google map installer

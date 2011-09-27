@@ -54,3 +54,15 @@ class machinefetcher(fetcher):
     if self._fetchers.has_key(m):
       return self._fetchers[m].fetch(env)
     raise InstallerException, "Unsupported machine type %s"%m
+
+  ##
+  # Cleans up the machine dependent fetcher
+  # @param env: the build environment
+  #
+  def doclean(self, env=None):
+    import platform
+    m = platform.machine()
+    if self._fetchers.has_key(m):
+      self._fetchers[m].clean(env)
+      return
+    raise InstallerException, "Unsupported machine type %s"%m

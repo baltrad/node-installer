@@ -53,5 +53,12 @@ class node_installer:
           if name in self._installers[j].package().dependencies():
             benv.removeInstalled(pkname)
 
-      
-
+  ##
+  # Cleans up all downloaded resources
+  # @param benv: the build environment
+  def clean(self, benv):
+    mlen = len(self._installers)
+    for i in range(mlen):
+      m = self._installers[i]
+      m.package().clean(benv)
+    benv.removeInstallInformation()

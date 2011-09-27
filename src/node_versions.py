@@ -23,9 +23,9 @@ Actual versions for the different software modules that should be installed
 @author Anders Henja (Swedish Meteorological and Hydrological Institute, SMHI)
 @date 2011-02-09
 '''
-HLHDF_VERSION="v0.7.9-3-gc38273f"
-BALTRAD_DB_VERSION="hudson-baltrad-db-189-SUCCESS"
-BEAST_VERSION="hudson-Beast-172-SUCCESS"
-BALTRAD_DEX_VERSION="hudson-BaltradDex-126-SUCCESS"
-RAVE_VERSION="hudson-Rave-146-SUCCESS"
+HLHDF_VERSION="v0.7.9-4-gcf76844"
+BALTRAD_DB_VERSION="hudson-baltrad-db-261-SUCCESS"
+BEAST_VERSION="hudson-Beast-211-SUCCESS"
+BALTRAD_DEX_VERSION="hudson-BaltradDex-209-SUCCESS"
+RAVE_VERSION="hudson-Rave-182-SUCCESS"
 RAVE_GMAP_VERSION="hudson-GoogleMapsPlugin-5-SUCCESS"

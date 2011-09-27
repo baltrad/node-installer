@@ -56,7 +56,16 @@ class package(object):
   # @return: a directory where the package can be accessed
   #
   def fetch(self, env=None):
-    return self._fetcher.fetch()
+    return self._fetcher.fetch(env)
+  
+  ##
+  # Executes the fetcher cleanup method
+  # @param env: the build environment
+  #
+  def clean(self, env=None):
+    if self._fetcher != None:
+      self._fetcher.clean()
+    
   
   ##
   # Returns this packages version

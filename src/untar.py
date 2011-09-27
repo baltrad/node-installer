@@ -27,6 +27,7 @@ unpacks it.
 import subprocess
 from InstallerException import InstallerException
 from fetcher import fetcher
+import shutil, os
 
 ##
 # The untar fetcher
@@ -66,3 +67,12 @@ class untar(fetcher):
       raise InstallerException, "Failed to extract software %s"%self.name
     
     return self.dirname
+  
+  ##
+  # Removes the tar ball and directory
+  #
+  def doclean(self, env=None):
+    self.fetcher.clean(env)
+    if os.path.exists(self.dirname):
+      if self.dirname not in [".", "..", "/", "../", "./"]:
+        shutil.rmtree(self.dirname, True)

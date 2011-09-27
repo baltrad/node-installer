@@ -25,7 +25,6 @@ Validates the zlib and provided paths
 '''
 from ValidatorException import ValidatorException
 import subprocess, os
-import re, platform
 
 ##
 # ZLIB Validator, tests if the external zlib provides sufficient support

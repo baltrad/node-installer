@@ -54,3 +54,10 @@ class node_package(package):
   #
   def fetch(self, env=None):
     return package.fetch(self, env)
+  
+  ##
+  # Executes the cleaner. Can both work in offline and online mode
+  #
+  def clean(self, env=None):
+    return package.clean(self, env)
+  

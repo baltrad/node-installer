@@ -17,43 +17,60 @@ You should have received a copy of the GNU Lesser General Public License
 along with this software.  If not, see <http://www.gnu.org/licenses/>.
 ------------------------------------------------------------------------*/
 
-A special class for indicating when you should not change dir during
-installation. Usage is typically when you are fetching a resource that
-should be directly copied some where.
+Fetcher class that depends on a fetcher that returns a tar-ball and then
+unpacks it.
 
 @file
 @author Anders Henja (Swedish Meteorological and Hydrological Institute, SMHI)
-@date 2011-01-25
+@date 2011-09-27
 '''
+import subprocess
+from InstallerException import InstallerException
 from fetcher import fetcher
+import os
 
 ##
-# Nodir class
-class nodir(fetcher):
+# The patcher (fetcher). This will patch the result from the fetcher
+#
+class patcher(fetcher):
   _fetcher = None
+  _patches = []
   
   ##
   # Constructor
-  # @param fetcher: the fetcher that this class should execute
+  # @param fetcher: the fetcher
+  # @param patches: a list of strings identifying the patch names
   #
-  def __init__(self, fetcher=None):
-    super(nodir, self).__init__()
+  def __init__(self, fetcher, patches = []):
     self._fetcher = fetcher
+    if patches != None:
+      self._patches = patches
   
   ##
-  # Executes the fetcher and then return ".".
+  # Executes the fetcher and then patches the software in the resulting directory
   # @param env: the build environment
-  # @return: "."
+  # @return the directory that was the result of this fetch
+  #
   def dofetch(self, env=None):
-    if self._fetcher != None:
-      self._fetcher.fetch(env)
-    return "."
+    cdir = os.getcwd()
+    
+    dirname = self._fetcher.fetch(env)
+    os.chdir(dirname)
+    
+    print "PATCHING %s"%`self._patches`
+    for patch in self._patches:
+      code = subprocess.call("patch -p0 < %s/patches/%s"%(env.getInstallerPath(),patch), shell=True)
+      if code != 0:
+        os.chdir(cdir)
+        raise InstallerException, "Failed to apply patch %s"%patch
+    
+    os.chdir(cdir)
+    return dirname
   
   ##
-  # Executes the clean function in the fetcher
+  # Executes the fetchers clean up
   # @param env: the build environment
   #
   def doclean(self, env=None):
-    if self._fetcher != None:
-      self._fetcher.clean(env)
+   self._fetcher.clean(env)
  

@@ -29,6 +29,7 @@ import os
 import re
 from InstallerException import InstallerException
 from fetcher import fetcher
+import shutil
 
 ##
 # The git fetcher class
@@ -97,3 +98,12 @@ class gitfetcher(fetcher):
     os.chdir(cdir)
     
     return self.project
+
+  ##
+  # Cleans up the git repository
+  # @param env: The build environment
+  #
+  def doclean(self, env=None):
+    if os.path.exists(self.project):
+      if self.project not in [".", "..", "/", "../", "./"]:
+        shutil.rmtree(self.project, True)

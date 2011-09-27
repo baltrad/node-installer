@@ -197,3 +197,12 @@ class buildenv:
   def getInstallerPath(self):
     return self._installerpath
   
+  ##
+  # Removes all information about installed modules
+  #
+  def removeInstallInformation(self):
+    if os.path.exists(self.FILENAME_INSTALLED_MODULES):
+      os.remove(self.FILENAME_INSTALLED_MODULES)
+    self._installed = {}
+      
+  

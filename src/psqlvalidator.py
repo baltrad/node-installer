@@ -25,7 +25,6 @@ Validates the psql
 '''
 from ValidatorException import ValidatorException
 import subprocess, os
-import re, platform
 
 ##
 # PSQL Validator, tests if the provided psql library provides sufficient support

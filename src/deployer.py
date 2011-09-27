@@ -221,6 +221,7 @@ db.pwd=$DBPWD
     args = "%s -Dwarfile=%s"%(args, warpath)
     buildfile = "%s/etc/war-deployer.xml"%env.getInstallerPath()
     
+    print env.expandArgs("Calling: $TPREFIX/ant/bin/ant -f %s %s deploy"%(buildfile, args))
     ocode = subprocess.call(env.expandArgs("$TPREFIX/ant/bin/ant -f %s %s deploy"%(buildfile, args)), shell=True)
     if ocode != 0:
       raise InstallerException, "Failed to deploy system"
