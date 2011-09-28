@@ -165,6 +165,40 @@ def print_modules(env):
     print "{0:20s} {1:35s} {2:14s}".format(module.package().name(),module.package().version(), installed)
 
 ##
+# Prints the current configuration
+#
+def print_arguments(env):
+  
+  arguments = [("--prefix=", env.getArg("PREFIX")),
+               ("--tprefix=", env.getArg("TPREFIX")),
+               ("--jdkhome=", env.getArg("JDKHOME")),
+               ("--dbuser=", env.getArg("DBUSER")),
+               ("--dbname=", env.getArg("DBNAME")),
+               ("--dbhost=", env.getArg("DBHOST")),
+               ("--runas=", env.getArg("RUNASUSER")),
+               ("--with-hdfjava=", env.getArg("HDFJAVAHOME"))]
+  
+  if env.hasArg("ZLIBARG"):
+    arguments.append(("--with-zlib=", env.getArg("ZLIBARG")))
+  if env.hasArg("PSQLARG"):
+    arguments.append(("--with-psql=", env.getArg("PSQLARG")))
+  if env.hasArg("DATADIR"):
+    arguments.append(("--datadir=", env.getArg("DATADIR")))
+  if env.hasArg("TOMCATPORT"):
+    arguments.append(("--tomcatport=", env.getArg("TOMCATPORT")))
+  if env.hasArg("TOMCATURL"):
+    arguments.append(("--tomcaturl=", env.getArg("TOMCATURL")))
+  if env.hasArg("BUILD_BDBFS") and env.getArg("BUILD_BDBFS") == "yes":
+    arguments.append(("--with-bdbfs", ""))
+  if env.hasArg("WITH_RAVE") and env.getArg("WITH_RAVE") == True:
+    arguments.append(("--with-rave", ""))
+  if env.hasArg("WITH_RAVE_GMAP") and env.getArg("WITH_RAVE_GMAP") == True:
+    arguments.append(("--with-rave-gmap", ""))
+  
+  for a in arguments:
+    print "{0:25s} {1:35s}".format(a[0], a[1])
+
+##
 # Prints information about usage.
 # @param brief if brief usage information should be shown or not
 # @param msg (optional). If brief == True, then this text can be shown if provided
@@ -184,6 +218,12 @@ the original baltrad-node setup scripts. The usage is basically
 the same as when using the previous setup commands but this 
 script will install everything in one go.
 
+The script will remember several configuration parameters between
+runs but some of them will not be stored, like passwords and
+similar items. This means that you will have to specify them
+on each run. You can also "forget" the configuration parameters
+by specifying --forget-last.
+
 Command:
 Valid commands are:
  - install
@@ -195,10 +235,19 @@ Valid commands are:
  - clean
      Cleans up everything
 
+ - offline
+     Creates an offline package
+     
 Options:
 --help
     Shows this text
-    
+
+--forget-last
+    As a default behaviour the installation script will try to
+    restore the configuration parameters from the last run.
+    However, in some circumstances this might not be a wanted
+    scenario and then you can specify this flag.
+
 --prefix=<prefix>
     Points out where the system should be installed. 
     [Default /opt/baltrad]
@@ -254,6 +303,11 @@ Options:
     
 --reinstalldb
     Reinstalls the database tables. Use with care.
+
+--excludedb
+    Ignores installation of the database tables. Might be since they
+    already has been installed. This will cause the DBINSTALL package
+    to be set as installed.
     
 --runas=<user>
     Specifies the runas user for tomcat and other processes. It is not 
@@ -348,39 +402,49 @@ if __name__=="__main__":
                                    'with-psql=','with-rave','with-rave-gmap',
                                    'with-hdfjava=', 'with-bdbfs','rebuild=',
                                    'dbuser=', 'dbpwd=','dbname=','dbhost=',
-                                   'reinstalldb','runas=','datadir=',
-                                   'print-modules', 'exclude-tomcat',
+                                   'reinstalldb','excludedb', 'runas=','datadir=',
+                                   'print-modules', 'print-config', 'exclude-tomcat', 'forget-last',
                                    'force','tomcatport=','tomcaturl=','tomcatpwd=','help'])
   except getopt.GetoptError, e:
     usage(True, e.__str__())
     sys.exit(127)
-    
-  env = buildenv()
-  env.addArg("PREFIX", "/opt/n2")
-  env.addArg("TPREFIX", "/opt/n2/third_party")
-  env.addArg("TOMCATPWD", "secret")
-  env.addArg("HDFJAVAHOME", "/opt/n2/third_party/hdf-java")
-  env.addArg("DBUSER", "baltrad")
-  env.addArg("DBPWD", "baltrad")
-  env.addArg("DBNAME", "baltrad")
-  env.addArg("DBHOST", "127.0.0.1")
-  env.addArg("BUILD_BDBFS", "no")
-  env.addArg("RUNASUSER", getpass.getuser())
-  env.excludeModule("RAVE")
-  env.excludeModule("RAVE-GMAP")
   
-  reinstalldb=False
-  rebuild = []
+  dorestore = True
+  doprintconfig = False
+  doprintmodules = False
   
-  # First handle help and printouts so that we don't get stuck on
+  # First handle help and printouts misc options so that we don't get stuck on
   # any bad configuration properties.
   for o,a in optlist:
     if o == "--help":
       usage(False)
       sys.exit(0)
     elif o == "--print-modules":
-      print_modules(env)
-      sys.exit(0)
+      doprintmodules = True
+    elif o == "--forget-last":
+      dorestore = False
+    elif o == "--print-config":
+      doprintconfig = True
+      
+  env = buildenv()
+  if dorestore:
+    env.restore()
+  
+  env.addArg("PREFIX", "/opt/n2", True)
+  env.addArg("TPREFIX", "/opt/n2/third_party", True)
+  env.addArgInternal("TOMCATPWD", "secret")
+  env.addArg("HDFJAVAHOME", "/opt/n2/third_party/hdf-java", True)
+  env.addArg("DBUSER", "baltrad", True)
+  env.addArgInternal("DBPWD", "baltrad")
+  env.addArg("DBNAME", "baltrad", True)
+  env.addArg("DBHOST", "127.0.0.1", True)
+  env.addArg("BUILD_BDBFS", "no", True)
+  env.addArg("RUNASUSER", getpass.getuser(), True)
+  env.excludeModule("RAVE")
+  env.excludeModule("RAVE-GMAP")
+  
+  reinstalldb=False
+  rebuild = []
   
   for o, a in optlist:
     if o == "--prefix":
@@ -392,7 +456,7 @@ if __name__=="__main__":
     elif o == "--dbuser":
       env.addArg("DBUSER", a)
     elif o == "--dbpwd":
-      env.addArg("DBPWD", a)
+      env.addArgInternal("DBPWD", a)
     elif o == "--dbname":
       env.addArg("DNAME", a)
     elif o == "--dbhost":
@@ -400,15 +464,9 @@ if __name__=="__main__":
     elif o == "--rebuild":
       rebuild = a.split(",")
     elif o == "--with-zlib":
-      buildzlib, zinc, zlib = parse_buildzlib_argument(a)
-      env.addArg("ZLIBINC", zinc)
-      env.addArg("ZLIBLIB", zlib)
-      if buildzlib == False:
-        env.excludeModule("ZLIB")
+      env.addArg("ZLIBARG", a)
     elif o == "--with-psql":
-      psqlinc, psqllib = parse_buildpsql_argument(a)
-      env.addArg("PSQLINC", psqlinc)
-      env.addArg("PSQLLIB", psqllib)
+      env.addArg("PSQLARG", a)
     elif o == "--with-hdfjava":
       if not os.path.isdir(a):
         print "--with-hdfjava must be provided with the root directory of the hdf-java installation"
@@ -422,17 +480,18 @@ if __name__=="__main__":
     elif o == "--tomcaturl":
       env.addArg("TOMCATURL", a)
     elif o == "--tomcatpwd":
-      env.addArg("TOMCATPWD", a)
+      env.addArgInternal("TOMCATPWD", a)
     elif o == "--with-bdbfs":
       env.addArg("BUILD_BDBFS", "yes")
     elif o == "--with-rave":
-      env.removeExclude("RAVE")
+      env.addArg("WITH_RAVE", True)
     elif o == "--with-rave-gmap":
-      env.removeExclude("RAVE")
-      env.removeExclude("RAVE-GMAP")
+      env.addArg("WITH_RAVE_GMAP", True)
     elif o == "--reinstalldb":
       reinstalldb=True
-      env.addArg("REINSTALLDB", True)
+      env.addArgInternal("REINSTALLDB", True)
+    elif o == "--excludedb":
+      env.addArgInternal("EXCLUDEDB", True)
     elif o == "--runas":
       env.addArg("RUNASUSER", a)
     elif o == "--datadir":
@@ -441,89 +500,134 @@ if __name__=="__main__":
       pass
     elif o == "--print-modules":
       pass
+    elif o == "--print-config":
+      pass
+    elif o == "--forget-last":
+      pass
     else:
       usage(True, "Unsupported argument: %s"%o)
       sys.exit(127)
+
+  #
+  # Print the configuration settings
+  #
+  if doprintconfig or doprintmodules:
+    if doprintconfig:
+      print "CONFIGURATION PARAMETERS"
+      print_arguments(env)
+      print ""
+    if doprintmodules:
+      print "MODULES"
+      print_modules(env)
+      print ""
+    
+    if len(args) == 0:
+      sys.exit(0)
+  
+  env.remember() # Remember the previous arguments
 
   if len(args) != 1:
     usage(True, "You can only specify one command %s"%`args`)
     sys.exit(127)
   
-  if args[0] not in ["install", "check", "clean"]:
+  if args[0] not in ["install", "check", "clean", "offline"]:
     usage(True, "Unknown command %s"%`args[0]`)
     sys.exit(127)
 
-  for validator in [jdkvalidator(), zlibvalidator(), psqlvalidator()]:
-    validator.validate(env)
+  if env.hasArg("WITH_RAVE") and env.getArg("WITH_RAVE") == True:
+    env.removeExclude("RAVE")
 
-  if not env.hasArg("JDKHOME"):
-    print "You must specify --jdkhome=... when installing the node"
-    sys.exit(127)
+  if env.hasArg("WITH_RAVE_GMAP") and env.getArg("WITH_RAVE_GMAP") == True:
+    env.removeExclude("RAVE")
+    env.removeExclude("RAVE-GMAP")
+
+  if env.hasArg("ZLIBARG"):
+    buildzlib, zinc, zlib = parse_buildzlib_argument(env.getArg("ZLIBARG"))
+    env.addArgInternal("ZLIBINC", zinc)
+    env.addArgInternal("ZLIBLIB", zlib)
+    if buildzlib == False:
+      env.excludeModule("ZLIB")
+  
+  if env.hasArg("PSQLARG"):
+    psqlinc, psqllib = parse_buildpsql_argument(env.getArg("PSQLARG"))
+    env.addArgInternal("PSQLINC", psqlinc)
+    env.addArgInternal("PSQLLIB", psqllib)
+  
+  if args[0] in ["install", "check"]:
+    for validator in [jdkvalidator(), zlibvalidator(), psqlvalidator()]:
+      validator.validate(env)
+
+    if not env.hasArg("JDKHOME"):
+      print "You must specify --jdkhome=... when installing the node"
+      sys.exit(127)
 
   # bdb storage needs a data directory 
   if not env.hasArg("DATADIR"):
     env.addArg("DATADIR", env.expandArgs("$PREFIX/bdb_storage"))
 
-  # Ensure that we don't have conflicting information in the tomcatport
-  # and the tomcaturl
-  if env.hasArg("TOMCATPORT") and env.hasArg("TOMCATURL"):
-    raise InstallerException, "Don't specify both tomcatport and tomcaturl"
-  elif env.hasArg("TOMCATPORT"):
-    env.addArg("TOMCATURL", "http://localhost:%s"%env.getArg("TOMCATPORT"))
-  elif env.hasArg("TOMCATURL"):
-    from urlparse import urlparse
-    a = urlparse(env.getArg("TOMCATURL"))
-    if a.port == None:
-      raise InstallerException, "You must specify port in tomcat url"
-    env.addArg("TOMCATPORT", "%d"%a.port)
-  else:
-    env.addArg("TOMCATPORT", "8080")
-    env.addArg("TOMCATURL", "http://localhost:%s"%env.getArg("TOMCATPORT"))
+  if args[0] in ["install", "check"]:
+    # Ensure that we don't have conflicting information in the tomcatport
+    # and the tomcaturl
+    if env.hasArg("TOMCATPORT") and env.hasArg("TOMCATURL"):
+      raise InstallerException, "Don't specify both tomcatport and tomcaturl"
+    elif env.hasArg("TOMCATPORT"):
+      env.addArg("TOMCATURL", "http://localhost:%s"%env.getArg("TOMCATPORT"))
+    elif env.hasArg("TOMCATURL"):
+      from urlparse import urlparse
+      a = urlparse(env.getArg("TOMCATURL"))
+      if a.port == None:
+        raise InstallerException, "You must specify port in tomcat url"
+      env.addArg("TOMCATPORT", "%d"%a.port)
+    else:
+      env.addArg("TOMCATPORT", "8080")
+      env.addArg("TOMCATURL", "http://localhost:%s"%env.getArg("TOMCATPORT"))
 
-  # Setup the general ld library path that will be the one pointing out
-  # all relevant libraries when the system has been installed
-  #
-  ldpath = "$TPREFIX/lib"
-  ldpath = "$HDFJAVAHOME/lib/linux:%s"%ldpath
-  ldpath = "%s:$PREFIX/hlhdf/lib"%ldpath
-  ldpath = "%s:$PREFIX/baltrad-db/lib"%ldpath
-  ldpath = "%s:$PREFIX/lib"%ldpath
-  if env.hasArg("PSQLLIB") and env.getArg("PSQLLIB") != None:
-    ldpath = "%s:$PSQLLIB"%ldpath
-  if env.hasArg("ZLIBLIB") and env.getArg("ZLIBLIB") != None:
-    ldpath = "%s:$ZLIBLIB"%ldpath
+  if args[0] in ["install"]:
+    # Setup the general ld library path that will be the one pointing out
+    # all relevant libraries when the system has been installed
+    #
+    ldpath = "$TPREFIX/lib"
+    ldpath = "$HDFJAVAHOME/lib/linux:%s"%ldpath
+    ldpath = "%s:$PREFIX/hlhdf/lib"%ldpath
+    ldpath = "%s:$PREFIX/baltrad-db/lib"%ldpath
+    ldpath = "%s:$PREFIX/lib"%ldpath
+    if env.hasArg("PSQLLIB") and env.getArg("PSQLLIB") != None:
+      ldpath = "%s:$PSQLLIB"%ldpath
+    if env.hasArg("ZLIBLIB") and env.getArg("ZLIBLIB") != None:
+      ldpath = "%s:$ZLIBLIB"%ldpath
   
-  env.setLdLibraryPath("%s:$$LD_LIBRARY_PATH"%ldpath)
+    env.setLdLibraryPath("%s:$$LD_LIBRARY_PATH"%ldpath)
 
-  # And setup the path as well
-  pth="$TPREFIX/bin"
-  pth="%s:$PREFIX/bin"%pth
-  pth="%s:$PREFIX/hlhdf/bin"%pth
-  pth="%s:$PREFIX/beast/bin"%pth
-  pth="%s:$PREFIX/baltrad-db/bin"%pth
+    # And setup the path as well
+    pth="$TPREFIX/bin"
+    pth="%s:$PREFIX/bin"%pth
+    pth="%s:$PREFIX/hlhdf/bin"%pth
+    pth="%s:$PREFIX/beast/bin"%pth
+    pth="%s:$PREFIX/baltrad-db/bin"%pth
 
-  env.setPath("%s:$$PATH"%pth)
+    env.setPath("%s:$$PATH"%pth)
+
+    # We want to wrap everything up in some scripts
+    # so that we can stop/start the node
+    sldpath = ldpath
+    if not env.isExcluded("RAVE"):
+      sldpath = env.expandArgs("$PREFIX/rave/lib:%s"%ldpath)
+  
+    spath = pth
+    if not env.isExcluded("RAVE"):
+      spath = env.expandArgs("$PREFIX/rave/bin:%s"%pth)
+
+    script = nodescripts("%s:$$PATH"%spath, "%s:$$LD_LIBRARY_PATH"%sldpath, "1.0.0")
+    script.create_scripts(env)
+    env.setNodeScript(script)
 
   # Set the installer path
   env.setInstallerPath(os.path.dirname(os.path.dirname(os.path.realpath(sys.argv[0]))))
 
-  # We want to wrap everything up in some scripts
-  # so that we can stop/start the node
-  sldpath = ldpath
-  if not env.isExcluded("RAVE"):
-    sldpath = env.expandArgs("$PREFIX/rave/lib:%s"%ldpath)
-  
-  spath = pth
-  if not env.isExcluded("RAVE"):
-    spath = env.expandArgs("$PREFIX/rave/bin:%s"%pth)
-
-  script = nodescripts("%s:$$PATH"%spath, "%s:$$LD_LIBRARY_PATH"%sldpath, "1.0.0")
-  script.create_scripts(env)
-  env.setNodeScript(script)
-
-  if reinstalldb == True:
-    if not "DBINSTALL" in rebuild:
-      rebuild.append("DBINSTALL")
+  if args[0] in ["install"]:
+    if reinstalldb == True:
+      if not "DBINSTALL" in rebuild:
+        rebuild.append("DBINSTALL")
 
   ni = node_installer(MODULES, rebuild)
   if args[0] == "install":
@@ -531,4 +635,7 @@ if __name__=="__main__":
   elif args[0] == "check":
     pass
   elif args[0] == "clean":
-    ni.clean(env)    
+    ni.clean(env)
+  elif args[0] == "offline":
+    ni.offline(env)
+

@@ -48,6 +48,9 @@ class dbinstaller(installer):
   # @param env: the build environment
   #
   def doinstall(self, env):
+    if env.hasArg("EXCLUDEDB") and env.getArg("EXCLUDEDB") == True:
+      print "Excluded: Database table installation"
+      return
     dbargs = "-Ddb.user=$DBUSER -Ddb.pwd=$DBPWD -Ddb.host=$DBHOST -Ddb.name=$DBNAME"
     args = "%s -Dbaltrad.db.path=$PREFIX/baltrad-db -Dbaltrad.beast.path=$PREFIX/beast -Dbaltrad.dex.path=$PREFIX/BaltradDex" % dbargs
     

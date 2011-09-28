@@ -63,7 +63,6 @@ class bdbinstaller(installer):
     cmd = cmd + " --boost_dir=$TPREFIX"
     cmd = cmd + " --pqxx_dir=$TPREFIX"
     cmd = cmd + " --build_java=yes"
-    cmd = cmd + " --build_tests=yes"
     cmd = cmd + " --build_bdbtool=yes"
     cmd = cmd + " --build_bdbfs=$BUILD_BDBFS"
     cmd = cmd + " --ant=$TPREFIX/ant/bin/ant"

@@ -72,5 +72,4 @@ class patcher(fetcher):
   # @param env: the build environment
   #
   def doclean(self, env=None):
-   self._fetcher.clean(env)
- 
+    self._fetcher.clean(env)

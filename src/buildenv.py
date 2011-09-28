@@ -33,6 +33,7 @@ import os
 #
 class buildenv:
   _args={}
+  _argsinternal={}
   _installed={}
   _excluded={}
   _ldlibrarypath=""
@@ -43,6 +44,10 @@ class buildenv:
   ##
   # The name of the file containing installed modules
   FILENAME_INSTALLED_MODULES=".installed_modules.dat"
+  
+  ##
+  # The name of the file containing the saved arguments
+  FILENAME_SAVED_ARGUMENTS=".arguments.dat"
   
   ##
   # Constructor
@@ -58,25 +63,60 @@ class buildenv:
   # Adds an argument
   # @param name: the name of the argument
   # @param value: the value
+  # @param onlyaddifnotexist: Only add the argument value if it doesn't exist
   #
-  def addArg(self, name, value):
-    self._args[name] = value
+  def addArg(self, name, value, onlyaddifnotexist=False):
+    if onlyaddifnotexist == False:
+      self._args[name] = value
+    elif onlyaddifnotexist == True and not self.hasArg(name):
+      self._args[name] = value
   
+  ##
+  # Adds an internal argument that not is not possible
+  # to remember.
+  # @param name: the name of the argument
+  # @param value: the value
+  #
+  def addArgInternal(self, name, value):
+    self._argsinternal[name] = value
+
   ##
   # Returns the value associated with the specified argument name
   # @param name: the name of the argument
   # @return: the value
   #
   def getArg(self, name):
-    return self._args[name]
+    if self._argsinternal.has_key(name):
+      return self._argsinternal[name]
+    else:
+      return self._args[name]
 
   ##
   # Returns if the specified argument exists or not in the build environment
   # @param name: the argument name
   # @return if it exists or not
   def hasArg(self, name):
-    return self._args.has_key(name)
+    if self._argsinternal.has_key(name):
+      return True
+    else:
+      return self._args.has_key(name)
 
+  ##
+  # Restore the configuration
+  #
+  def restore(self):
+    if os.path.exists(self.FILENAME_SAVED_ARGUMENTS):
+      fp = open(self.FILENAME_SAVED_ARGUMENTS, 'r')
+      self._args = pickle.load(fp)
+  
+  ##
+  # Remembers the configuration
+  #
+  def remember(self):
+    fp = open(self.FILENAME_SAVED_ARGUMENTS, 'w')
+    pickle.dump(self._args, fp)
+    fp.close()
+    
   ##
   # Marks a package to be excluded
   # @param name: the name of the package
@@ -113,6 +153,7 @@ class buildenv:
     args = self._args.copy()
     if extras != None:
       args.update(extras)
+    args.update(self._argsinternal)
     return Template(str).substitute(args)
 
   ##
@@ -203,6 +244,9 @@ class buildenv:
   def removeInstallInformation(self):
     if os.path.exists(self.FILENAME_INSTALLED_MODULES):
       os.remove(self.FILENAME_INSTALLED_MODULES)
+    if os.path.exists(self.FILENAME_SAVED_ARGUMENTS):
+      os.remove(self.FILENAME_SAVED_ARGUMENTS)
     self._installed = {}
-      
+    self._args = {}
+
   

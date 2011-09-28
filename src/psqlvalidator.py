@@ -121,7 +121,7 @@ int main(int argc, char** argv) {
 
     code = subprocess.call(cmd, shell=True)
     if code != 0:
-      #self._remove_files(["testpsql.c", "testpsql"])
+      self._remove_files(["testpsql.c", "testpsql"])
       raise ValidatorException, "Failed to compile psql test program"
     
     cmd = "./testpsql \"user=%s password=%s dbname=%s hostaddr=%s\""%(dbuser,dbpwd,dbname,dbhost)
@@ -130,7 +130,7 @@ int main(int argc, char** argv) {
 
     code = subprocess.call(cmd, shell=True)
     if code != 0:
-      #self._remove_files(["testpsql.c", "testpsql"])
+      self._remove_files(["testpsql.c", "testpsql"])
       raise ValidatorException, "Failed to run psql test program, have you got a dbversion >= 8.3.9 and specified correct db arguments"
 
     self._remove_files(["testpsql.c", "testpsql"])

@@ -62,3 +62,4 @@ class node_installer:
       m = self._installers[i]
       m.package().clean(benv)
     benv.removeInstallInformation()
+    

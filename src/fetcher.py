@@ -48,6 +48,10 @@ class fetcher(object):
     finally:
       os.chdir(cdir)
 
+  ##
+  # Cleans up the related software
+  # @param env: the build environment
+  #
   def clean(self, env=None):
     cdir = os.getcwd()
     try:

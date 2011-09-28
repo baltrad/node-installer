@@ -59,9 +59,7 @@ class ravegmapinstaller(installer):
     if ocode != 0:
       raise InstallerException, "Failed to install"
     
-    ocode = subprocess.call("rave_pgf stop >> /dev/null 2>&1", shell=True)
-    if ocode != 0:
-      raise InstallerException, "Failed to stop rave pgf"
+    env.getNodeScript().stop(rave=True)
     
     if os.path.exists("tmpreg.py"):
       os.unlink("tmpreg.py")

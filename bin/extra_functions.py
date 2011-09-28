@@ -44,7 +44,7 @@ def hdf5_optional_zlib_arg(benv):
   if benv.hasArg("ZLIBINC"):
     inc = benv.getArg("ZLIBINC")
   if benv.hasArg("ZLIBLIB"):
-    lib = benv.hasArg("ZLIBLIB")
+    lib = benv.getArg("ZLIBLIB")
   
   if inc != None or lib != None:
     result = "--with-zlib="

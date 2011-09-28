@@ -64,8 +64,7 @@ class package(object):
   #
   def clean(self, env=None):
     if self._fetcher != None:
-      self._fetcher.clean()
-    
+      self._fetcher.clean(env)
   
   ##
   # Returns this packages version
