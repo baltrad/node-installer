@@ -38,6 +38,7 @@ class gitfetcher(fetcher):
   url = None
   tag = None
   project = None
+  offlinename = None
   
   ##
   # Constructor
@@ -52,6 +53,7 @@ class gitfetcher(fetcher):
     self.url = url
     self.tag = tag
     self.branch = branch
+    self.offlinename =  "%s-%s"%(self.project, self.tag)
   
   
   ##
@@ -60,6 +62,12 @@ class gitfetcher(fetcher):
   # @return the directory name of the package that has been fetched
   #
   def dofetch(self, env=None):
+    if env.hasArg("INSTALL_OFFLINE") and env.getArg("INSTALL_OFFLINE") == True:
+      code = subprocess.call("tar -xvzf %s.tgz"%self.offlinename, shell=True)
+      if code != 0:
+        raise InstallerException, "Could not unpack %s.tgz, but offline was specified"%self.offlinename
+      return self.offlinename
+    
     if not os.path.exists(self.project):
       code = subprocess.call("git clone %s"%self.url, shell=True)
       if code != 0:
@@ -107,6 +115,8 @@ class gitfetcher(fetcher):
     if os.path.exists(self.project):
       if self.project not in [".", "..", "/", "../", "./"]:
         shutil.rmtree(self.project, True)
+    if os.path.exists("%s.tgz"%self.offlinename):
+      os.remove("%s.tgz"%self.offlinename)
 
   ##
   # Fetches the offline content related to the git repository. Will generate a 
@@ -114,6 +124,18 @@ class gitfetcher(fetcher):
   # @param env: the build environment
   #
   def dofetch_offline_content(self, env=None):
-    raise InstallerException, "dofetch_offline_content not implemented in gitfetcher yet"
-    #self.dofetch(env)
-    # git archive --format=tar --prefix="hlhdf-$HLHDF_VERSION/" HEAD | gzip > "$TMP_BLT_DIR/baltrad-core/hlhdf-$HLHDF_VERSION.tgz"
+    self.dofetch(env)
+
+    cdir = os.getcwd()
+    os.chdir(self.project)
+    
+    ipath = "%s/packages"%env.getInstallerPath()
+    
+    code = subprocess.call("git archive --format=tar --prefix=\"%s/\" HEAD | gzip > \"%s/%s.tgz\""%(self.offlinename,ipath,self.offlinename), shell=True)
+    if code != 0:
+      os.chdir(cdir)
+      raise InstallerException, "Failed to create archive from git repository %s"%self.project
+    os.chdir(cdir)    
+
+    if self.project not in [".", "..", "/", "../", "./"]:
+      shutil.rmtree(self.project, True)

@@ -407,7 +407,7 @@ if __name__=="__main__":
                                    'with-hdfjava=', 'with-bdbfs','rebuild=',
                                    'dbuser=', 'dbpwd=','dbname=','dbhost=',
                                    'reinstalldb','excludedb', 'runas=','datadir=',
-                                   'urlrepo=',
+                                   'urlrepo=','offline',
                                    'print-modules', 'print-config', 'exclude-tomcat', 'forget-last',
                                    'force','tomcatport=','tomcaturl=','tomcatpwd=','help'])
   except getopt.GetoptError, e:
@@ -498,6 +498,8 @@ if __name__=="__main__":
       env.addArgInternal("REINSTALLDB", True)
     elif o == "--excludedb":
       env.addArgInternal("EXCLUDEDB", True)
+    elif o == "--offline":
+      env.addArgInternal("INSTALL_OFFLINE", True)
     elif o == "--runas":
       env.addArg("RUNASUSER", a)
     elif o == "--datadir":
