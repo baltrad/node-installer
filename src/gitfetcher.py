@@ -107,3 +107,13 @@ class gitfetcher(fetcher):
     if os.path.exists(self.project):
       if self.project not in [".", "..", "/", "../", "./"]:
         shutil.rmtree(self.project, True)
+
+  ##
+  # Fetches the offline content related to the git repository. Will generate a 
+  # tar ball for the fetched software
+  # @param env: the build environment
+  #
+  def dofetch_offline_content(self, env=None):
+    raise InstallerException, "dofetch_offline_content not implemented in gitfetcher yet"
+    #self.dofetch(env)
+    # git archive --format=tar --prefix="hlhdf-$HLHDF_VERSION/" HEAD | gzip > "$TMP_BLT_DIR/baltrad-core/hlhdf-$HLHDF_VERSION.tgz"

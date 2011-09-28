@@ -57,3 +57,10 @@ class nodir(fetcher):
     if self._fetcher != None:
       self._fetcher.clean(env)
  
+  ##
+  # Executes the fetcher
+  # @param env: the build environment
+  #  
+  def dofetch_offline_content(self, env=None):
+    if self._fetcher != None:
+      self._fetcher.dofetch_offline_content(env)

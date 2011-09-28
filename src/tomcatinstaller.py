@@ -42,7 +42,7 @@ class tomcatinstaller(installer):
   # @param env: the build environment
   #
   def doinstall(self, env):
-    dir = self.package().fetch()
+    dir = self.package().fetch(env)
 
     if self.isTomcatRunning(env):
       raise InstallerException, "Tomcat process is running, please stop it first"

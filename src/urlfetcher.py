@@ -56,10 +56,6 @@ class urlfetcher(fetcher):
   fname = None
   
   ##
-  ## http://git.baltrad.eu/blt_dependencies/ 
-  ##
-  
-  ##
   # Constructor
   # @param url: the url to the file to be fetched
   #
@@ -75,10 +71,18 @@ class urlfetcher(fetcher):
   #
   def dofetch(self, env=None):
     if not os.path.exists(self.fname):
-      urllib.urlretrieve(self.url, self.fname)
+      urllib.urlretrieve("%s/%s"%(env.getArg("URLREPO"),self.url), self.fname)
     else:
       print "%s already fetched"%self.fname
     return self.fname
+
+  ##
+  # Fetches the file
+  # @param env: the build environment
+  #  
+  def dofetch_offline_content(self, env=None):
+    if not os.path.exists(self.fname):
+      urllib.urlretrieve("%s/%s"%(env.getArg("URLREPO"),self.url), self.fname)
   
   ##
   # Removes the file

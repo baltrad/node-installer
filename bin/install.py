@@ -55,79 +55,79 @@ from node_installer import node_installer
 # so that HDF5 is rebuilt each time ZLIB is rebuilt.
 ##
 MODULES=[cmmi(package("ZLIB", "1.2.4",
-                      untar(urlfetcher("http://git.baltrad.eu/blt_dependencies/zlib-1.2.4.tar.gz"), "zlib-1.2.4", True)),
+                      untar(urlfetcher("zlib-1.2.4.tar.gz"), "zlib-1.2.4", True)),
               "--prefix=\"${TPREFIX}\"", False, True,
               foptionalarg=zlib_optional_arg),
 
          cmmi(package("HDF5", "1.8.5-patch1",
-                      untar(urlfetcher("http://git.baltrad.eu/blt_dependencies/hdf5-1.8.5-patch1.tar.gz"), "hdf5-1.8.5-patch1", True),
+                      untar(urlfetcher("hdf5-1.8.5-patch1.tar.gz"), "hdf5-1.8.5-patch1", True),
                       depends=["ZLIB"]),
               "--prefix=\"$TPREFIX\" --with-pthread=yes --enable-threadsafe", False, True,
               foptionalarg=hdf5_optional_zlib_arg),
               
          cmmi(package("EXPAT", "2.0.1",
-                      untar(urlfetcher("http://git.baltrad.eu/blt_dependencies/expat-2.0.1.tar.gz"), "expat-2.0.1", True)),
+                      untar(urlfetcher("expat-2.0.1.tar.gz"), "expat-2.0.1", True)),
               "--prefix=\"$TPREFIX\"", False, True),
               
          cmmi(package("PROJ.4", "4.7.0",
-                      untar(urlfetcher("http://git.baltrad.eu/blt_dependencies/proj-4.7.0.tar.gz"), "proj-4.7.0", True)),
+                      untar(urlfetcher("proj-4.7.0.tar.gz"), "proj-4.7.0", True)),
               "--prefix=\"$TPREFIX\" --with-jni=\"$JDKHOME/include\"", False, True,
               osenv({"CFLAGS":"-I\"$JDKHOME/include/linux\""})),
               
          cmmi(package("PYTHON", "2.6.4",
-                      untar(urlfetcher("http://git.baltrad.eu/blt_dependencies/Python-2.6.4.tgz"), "Python-2.6.4", True)),
+                      untar(urlfetcher("Python-2.6.4.tgz"), "Python-2.6.4", True)),
               "--prefix=\"$TPREFIX\" --enable-shared", False, True),
 
          shinstaller(package("NUMPY", "1.3.0",
-                             untar(urlfetcher("http://git.baltrad.eu/blt_dependencies/numpy-1.3.0.tar.gz"), "numpy-1.3.0", True),
+                             untar(urlfetcher("numpy-1.3.0.tar.gz"), "numpy-1.3.0", True),
                              depends=["PYTHON"]),
                      "\"$TPREFIX/bin/python\" setup.py install",
                      osenv({"LD_LIBRARY_PATH":"$TPREFIX/lib"})),
                      
          shinstaller(package("PYSETUPTOOLS", "0.6c11",
-                             nodir(urlfetcher("http://git.baltrad.eu/blt_dependencies/setuptools-0.6c11-py2.6.egg")),
+                             nodir(urlfetcher("setuptools-0.6c11-py2.6.egg")),
                              depends=["PYTHON"]),
                      "sh setuptools-0.6c11-py2.6.egg",
                      osenv({"LD_LIBRARY_PATH":"$TPREFIX/lib", "PATH":"$TPREFIX/bin:$$PATH"})),
                      
          pilinstaller(package("PIL", "1.1.7",
-                              untar(urlfetcher("http://git.baltrad.eu/blt_dependencies/Imaging-1.1.7.tar.gz"), "Imaging-1.1.7", True),
+                              untar(urlfetcher("Imaging-1.1.7.tar.gz"), "Imaging-1.1.7", True),
                               depends=["PYTHON","ZLIB"])),
          
          cmmi(package("CURL", "7.19.0",
-                      untar(urlfetcher("http://git.baltrad.eu/blt_dependencies/curl-7.19.0.tar.gz"), "curl-7.19.0", True)),
+                      untar(urlfetcher("curl-7.19.0.tar.gz"), "curl-7.19.0", True)),
               "--prefix=\"$TPREFIX\"", False, True),
               
          shinstaller(package("PYCURL", "7.19.0",
-                             untar(urlfetcher("http://git.baltrad.eu/blt_dependencies/pycurl-7.19.0.tar.gz"), "pycurl-7.19.0", True),
+                             untar(urlfetcher("pycurl-7.19.0.tar.gz"), "pycurl-7.19.0", True),
                              depends=["PYTHON","CURL"]),
                      "\"$TPREFIX/bin/python\" setup.py install",
                      osenv({"LD_LIBRARY_PATH":"$TPREFIX/lib", "PATH":"$TPREFIX/bin:$$PATH"})),
          
          tomcatinstaller(package("TOMCAT", "6.0.26",
-                                 untar(urlfetcher("http://git.baltrad.eu/blt_dependencies/apache-tomcat-6.0.26.tar.gz"), "apache-tomcat-6.0.26", True))),
+                                 untar(urlfetcher("apache-tomcat-6.0.26.tar.gz"), "apache-tomcat-6.0.26", True))),
          
          hdfjavainstaller(package("HDFJAVA", "2.6.1",
                                   machinefetcher({
-                                    'i386':untar(urlfetcher("http://git.baltrad.eu/blt_dependencies/hdf-java-2.6.1-i386-bin.tar"), "hdf-java", False),
-                                    'x86_64':untar(urlfetcher("http://git.baltrad.eu/blt_dependencies/hdf-java-2.6.1-x86_64-bin.tar"), "hdf-java", False)}
+                                    'i386':untar(urlfetcher("hdf-java-2.6.1-i386-bin.tar"), "hdf-java", False),
+                                    'x86_64':untar(urlfetcher("hdf-java-2.6.1-x86_64-bin.tar"), "hdf-java", False)}
                                   ))),
          
          shinstaller(package("ANT", "1.8.0",
-                             untar(urlfetcher("http://git.baltrad.eu/blt_dependencies/apache-ant-1.8.0-bin.tar.gz"), ".", True)),
+                             untar(urlfetcher("apache-ant-1.8.0-bin.tar.gz"), ".", True)),
                      "rm -fr \"$TPREFIX/ant\"; mv -f apache-ant-1.8.0 \"$TPREFIX/ant\""),
                      
          shinstaller(package("BOOST", "1.42.0",
-                             patcher(untar(urlfetcher("http://git.baltrad.eu/blt_dependencies/boost_1_42_0.tar.gz"), "boost_1_42_0", True),
+                             patcher(untar(urlfetcher("boost_1_42_0.tar.gz"), "boost_1_42_0", True),
                                      ["boost_1_42/gcc-4.5-mpl-1.42.0.patch"])),
                      "./bootstrap.sh --prefix=\"$TPREFIX\" --with-python=\"$TPREFIX/bin/python\" --without-icu --with-libraries=filesystem,program_options,thread && ./bjam install"), 
 
          cmmi(package("PQXX", "3.1",
-                      untar(urlfetcher("http://git.baltrad.eu/blt_dependencies/libpqxx-3.1.tar.gz"), "libpqxx-3.1", True)),
+                      untar(urlfetcher("libpqxx-3.1.tar.gz"), "libpqxx-3.1", True)),
               "--prefix=\"$TPREFIX\" --enable-shared", False, True),
 
          cmmi(package("SWIG", "1.3.40",
-                      untar(urlfetcher("http://git.baltrad.eu/blt_dependencies/swig-1.3.40.tar.gz"), "swig-1.3.40", True)),
+                      untar(urlfetcher("swig-1.3.40.tar.gz"), "swig-1.3.40", True)),
               "--prefix=\"$TPREFIX\" --with-java=\"$JDKHOME/bin/java\" --with-javac=\"$JDKHOME/bin/javac\" --with-javaincl=\"$JDKHOME/include\" --with-python=\"$TPREFIX/bin/python\"", False, True),
               
          hdfjavasetupinstaller(package("HDFJAVASETUP", "2.6.1", depends=["TOMCAT", "HDFJAVA"])),
@@ -171,7 +171,7 @@ def print_arguments(env):
   
   arguments = [("--prefix=", env.getArg("PREFIX")),
                ("--tprefix=", env.getArg("TPREFIX")),
-               ("--jdkhome=", env.getArg("JDKHOME")),
+               ("--urlrepo=", env.getArg("URLREPO")),
                ("--dbuser=", env.getArg("DBUSER")),
                ("--dbname=", env.getArg("DBNAME")),
                ("--dbhost=", env.getArg("DBHOST")),
@@ -194,6 +194,8 @@ def print_arguments(env):
     arguments.append(("--with-rave", ""))
   if env.hasArg("WITH_RAVE_GMAP") and env.getArg("WITH_RAVE_GMAP") == True:
     arguments.append(("--with-rave-gmap", ""))
+  if env.hasArg("JDKHOME"):
+    arguments.append(("--jdkhome=", env.getArg("JDKHOME")))
   
   for a in arguments:
     print "{0:25s} {1:35s}".format(a[0], a[1])
@@ -235,8 +237,10 @@ Valid commands are:
  - clean
      Cleans up everything
 
- - offline
-     Creates an offline package
+ - fetch
+     Fetch all packages so that it is possible to run an installation
+     in 'offline' mode. It will atempt to clean up any unessecary 
+     content but it is suggested to execute clean prior fetch.
      
 Options:
 --help
@@ -403,6 +407,7 @@ if __name__=="__main__":
                                    'with-hdfjava=', 'with-bdbfs','rebuild=',
                                    'dbuser=', 'dbpwd=','dbname=','dbhost=',
                                    'reinstalldb','excludedb', 'runas=','datadir=',
+                                   'urlrepo=',
                                    'print-modules', 'print-config', 'exclude-tomcat', 'forget-last',
                                    'force','tomcatport=','tomcaturl=','tomcatpwd=','help'])
   except getopt.GetoptError, e:
@@ -432,6 +437,7 @@ if __name__=="__main__":
   
   env.addArg("PREFIX", "/opt/n2", True)
   env.addArg("TPREFIX", "/opt/n2/third_party", True)
+  env.addArg("URLREPO", "http://git.baltrad.eu/blt_dependencies")
   env.addArgInternal("TOMCATPWD", "secret")
   env.addArg("HDFJAVAHOME", "/opt/n2/third_party/hdf-java", True)
   env.addArg("DBUSER", "baltrad", True)
@@ -496,6 +502,8 @@ if __name__=="__main__":
       env.addArg("RUNASUSER", a)
     elif o == "--datadir":
       env.addArg("DATADIR", a)
+    elif o == "--urlrepo":
+      env.addArg("URLREPO", a)
     elif o == "--help":
       pass
     elif o == "--print-modules":
@@ -530,7 +538,7 @@ if __name__=="__main__":
     usage(True, "You can only specify one command %s"%`args`)
     sys.exit(127)
   
-  if args[0] not in ["install", "check", "clean", "offline"]:
+  if args[0] not in ["install", "check", "clean", "fetch"]:
     usage(True, "Unknown command %s"%`args[0]`)
     sys.exit(127)
 
@@ -636,6 +644,6 @@ if __name__=="__main__":
     pass
   elif args[0] == "clean":
     ni.clean(env)
-  elif args[0] == "offline":
-    ni.offline(env)
+  elif args[0] == "fetch":
+    ni.fetch_offline_content(env)
 

@@ -76,3 +76,13 @@ class untar(fetcher):
     if os.path.exists(self.dirname):
       if self.dirname not in [".", "..", "/", "../", "./"]:
         shutil.rmtree(self.dirname, True)
+        
+  ##
+  # Executes the fetcher
+  # @param env: the build environment
+  #  
+  def dofetch_offline_content(self, env=None):
+    self.fetcher.dofetch_offline_content(env)
+    if os.path.exists(self.dirname):
+      if self.dirname not in [".", "..", "/", "../", "./"]:
+        shutil.rmtree(self.dirname, True)

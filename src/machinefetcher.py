@@ -66,3 +66,11 @@ class machinefetcher(fetcher):
       self._fetchers[m].clean(env)
       return
     raise InstallerException, "Unsupported machine type %s"%m
+  
+  ##
+  # Executes all fetchers regardless of machine type
+  # @param env: the build environment
+  #  
+  def dofetch_offline_content(self, env=None):
+    for k in self._fetchers.keys():
+      self._fetchers[k].dofetch_offline_content(env)

@@ -52,7 +52,7 @@ class hdfjavainstaller(installer):
   # @param env: the build environment
   #
   def doinstall(self, env):
-    dir = self.package().fetch()
+    dir = self.package().fetch(env)
     
     shutil.rmtree(env.expandArgs("$TPREFIX/hdf-java"), True)
     

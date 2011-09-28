@@ -62,4 +62,16 @@ class node_installer:
       m = self._installers[i]
       m.package().clean(benv)
     benv.removeInstallInformation()
+  
+  ##
+  # Fetches all packages so that it is possible to run
+  # an 'offline' installation.
+  #
+  def fetch_offline_content(self, benv):
+    mlen = len(self._installers)
+    for i in range(mlen):
+      m = self._installers[i]
+      print "Fetching content for: %s"%m.package().name()
+      m.package().fetch_offline_content(benv)
+    
     

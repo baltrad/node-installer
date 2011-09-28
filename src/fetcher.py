@@ -49,6 +49,14 @@ class fetcher(object):
       os.chdir(cdir)
 
   ##
+  # Fetches the offline content in some way. Requires that subclass
+  # has implemented fetch_offline_content
+  # @param env: the build environment
+  #
+  def fetch_offline_content(self,env=None):
+    self.dofetch_offline_content(env)
+
+  ##
   # Cleans up the related software
   # @param env: the build environment
   #
@@ -66,6 +74,13 @@ class fetcher(object):
   #
   def dofetch(self, env=None):
     raise InstallerException, "Fetcher does not implement dofetch"
+
+  ##
+  # Fetches the offline content in some way
+  # @param env: the build environment
+  #
+  def dofetch_offline_content(self, env=None):
+    raise InstallerException, "Fetcher does not implement dofetch_offline_content"
 
   ##
   # Cleans the software in some way.

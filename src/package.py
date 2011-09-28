@@ -57,7 +57,15 @@ class package(object):
   #
   def fetch(self, env=None):
     return self._fetcher.fetch(env)
-  
+
+  ##
+  # Fetches the 'offline' content for this package
+  # @param env: the build environment
+  #  
+  def fetch_offline_content(self, env=None):
+    if self._fetcher != None:
+      self._fetcher.fetch_offline_content(env)
+
   ##
   # Executes the fetcher cleanup method
   # @param env: the build environment

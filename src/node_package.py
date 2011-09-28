@@ -61,3 +61,9 @@ class node_package(package):
   def clean(self, env=None):
     return package.clean(self, env)
   
+  ##
+  # Fetches the 'offline' content for this package
+  # @param env: the build environment
+  #  
+  def fetch_offline_content(self, env=None):
+    return package.fetch_offline_content(self, env)
