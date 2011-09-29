@@ -55,37 +55,28 @@ class gitfetcher(fetcher):
     self.branch = branch
     self.offlinename =  "%s-%s"%(self.project, self.tag)
   
-  
   ##
-  # Fetches the code from the git repository
-  # @param env: the build environment
-  # @return the directory name of the package that has been fetched
-  #
-  def dofetch(self, env=None):
-    if env.hasArg("INSTALL_OFFLINE") and env.getArg("INSTALL_OFFLINE") == True:
-      code = subprocess.call("tar -xvzf %s.tgz"%self.offlinename, shell=True)
-      if code != 0:
-        raise InstallerException, "Could not unpack %s.tgz, but offline was specified"%self.offlinename
-      return self.offlinename
-    
+  # Executes the git clone/pull sequence
+  def _fetchgit(self, env):
+    url = env.expandArgs(self.url)
     if not os.path.exists(self.project):
-      code = subprocess.call("git clone %s"%self.url, shell=True)
+      code = subprocess.call("git clone %s"%url, shell=True)
       if code != 0:
-        raise InstallerException, "Failed to fetch %s from repository"%self.url
+        raise InstallerException, "Failed to fetch %s from repository"%url
     
     cdir = os.getcwd()
     os.chdir(self.project)
     
-    code = subprocess.call("git pull %s HEAD:master"%self.url, shell=True)
+    code = subprocess.call("git pull %s HEAD:master"%url, shell=True)
     if code != 0:
-      raise InstallerException, "Failed to update %s from repository"%self.url
+      raise InstallerException, "Failed to update %s from repository"%url
     
     if self.branch != None:
       a=subprocess.Popen("git branch -l", shell=True, stdout=subprocess.PIPE)
       output=a.communicate()[0]
       if a.returncode != 0:
         os.chdir(cdir)
-        raise InstallerException, "Failed to list branches %s from repository"%self.url
+        raise InstallerException, "Failed to list branches %s from repository"%url
       
       if re.search("^\s*%s\s*$"%self.branch, output, flags=re.MULTILINE) == None:
         code = subprocess.call("git checkout -b %s remotes/origin/%s"%(self.branch,self.branch))
@@ -106,6 +97,20 @@ class gitfetcher(fetcher):
     os.chdir(cdir)
     
     return self.project
+  
+  ##
+  # Fetches the code from the git repository
+  # @param env: the build environment
+  # @return the directory name of the package that has been fetched
+  #
+  def dofetch(self, env=None):
+    if env.hasArg("INSTALL_OFFLINE") and env.getArg("INSTALL_OFFLINE") == True:
+      code = subprocess.call("tar -xvzf %s.tgz"%self.offlinename, shell=True)
+      if code != 0:
+        raise InstallerException, "Could not unpack %s.tgz, but offline was specified"%self.offlinename
+      return self.offlinename
+    
+    return self._fetchgit(env)
 
   ##
   # Cleans up the git repository
@@ -117,6 +122,9 @@ class gitfetcher(fetcher):
         shutil.rmtree(self.project, True)
     if os.path.exists("%s.tgz"%self.offlinename):
       os.remove("%s.tgz"%self.offlinename)
+    if os.path.exists(self.offlinename):
+      if self.offlinename not in [".", "..", "/", "../", "./"]:
+        shutil.rmtree(self.offlinename, True)
 
   ##
   # Fetches the offline content related to the git repository. Will generate a 
@@ -124,7 +132,7 @@ class gitfetcher(fetcher):
   # @param env: the build environment
   #
   def dofetch_offline_content(self, env=None):
-    self.dofetch(env)
+    self._fetchgit(env)
 
     cdir = os.getcwd()
     os.chdir(self.project)
@@ -139,3 +147,7 @@ class gitfetcher(fetcher):
 
     if self.project not in [".", "..", "/", "../", "./"]:
       shutil.rmtree(self.project, True)
+    if os.path.exists(self.offlinename):
+      if self.offlinename not in [".", "..", "/", "../", "./"]:
+        shutil.rmtree(self.offlinename, True)
+      

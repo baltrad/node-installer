@@ -322,6 +322,14 @@ Options:
     The directory where all the data storage files should be placed for baltrad-db.
     [Default <prefix>/bdb_storage]
 
+--urlrepo=<url>
+    The url from where the url packages can be fetched.
+    [Default http://git.baltrad.eu/blt_dependencies]
+    
+--gitrepo=<url>
+    The url from where the baltrad node git packages can be fetched.
+    [Default gitosis@git.baltrad.eu]
+
 --with-rave
     Install the rave pgf
     
@@ -407,7 +415,7 @@ if __name__=="__main__":
                                    'with-hdfjava=', 'with-bdbfs','rebuild=',
                                    'dbuser=', 'dbpwd=','dbname=','dbhost=',
                                    'reinstalldb','excludedb', 'runas=','datadir=',
-                                   'urlrepo=','offline',
+                                   'urlrepo=','gitrepo=','offline',
                                    'print-modules', 'print-config', 'exclude-tomcat', 'forget-last',
                                    'force','tomcatport=','tomcaturl=','tomcatpwd=','help'])
   except getopt.GetoptError, e:
@@ -438,6 +446,7 @@ if __name__=="__main__":
   env.addArg("PREFIX", "/opt/n2", True)
   env.addArg("TPREFIX", "/opt/n2/third_party", True)
   env.addArg("URLREPO", "http://git.baltrad.eu/blt_dependencies")
+  env.addArg("GITREPO", "gitosis@git.baltrad.eu")
   env.addArgInternal("TOMCATPWD", "secret")
   env.addArg("HDFJAVAHOME", "/opt/n2/third_party/hdf-java", True)
   env.addArg("DBUSER", "baltrad", True)
@@ -506,6 +515,8 @@ if __name__=="__main__":
       env.addArg("DATADIR", a)
     elif o == "--urlrepo":
       env.addArg("URLREPO", a)
+    elif o == "--gitrepo":
+      env.addArg("GITREPO", a)
     elif o == "--help":
       pass
     elif o == "--print-modules":

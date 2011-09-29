@@ -43,11 +43,10 @@ class nodedefinition:
   def getbranch(self):
     return self._branch
 
-
 NODE_REPOSITORY={}
-NODE_REPOSITORY["HLHDF"]=nodedefinition("gitosis@git.baltrad.eu:hlhdf.git", HLHDF_VERSION)
-NODE_REPOSITORY["BALTRAD-DB"]=nodedefinition("gitosis@git.baltrad.eu:baltrad-db.git", BALTRAD_DB_VERSION)
-NODE_REPOSITORY["BEAST"]=nodedefinition("gitosis@git.baltrad.eu:beast.git", BEAST_VERSION)
-NODE_REPOSITORY["BALTRAD-DEX"]=nodedefinition("gitosis@git.baltrad.eu:BaltradDex.git", BALTRAD_DEX_VERSION)
-NODE_REPOSITORY["RAVE"]=nodedefinition("gitosis@git.baltrad.eu:rave.git", RAVE_VERSION)
-NODE_REPOSITORY["RAVE-GMAP"]=nodedefinition("gitosis@git.baltrad.eu:GoogleMapsPlugin.git", RAVE_GMAP_VERSION)
+NODE_REPOSITORY["HLHDF"]=nodedefinition("$GITREPO:hlhdf.git", HLHDF_VERSION)
+NODE_REPOSITORY["BALTRAD-DB"]=nodedefinition("$GITREPO:baltrad-db.git", BALTRAD_DB_VERSION)
+NODE_REPOSITORY["BEAST"]=nodedefinition("$GITREPO:beast.git", BEAST_VERSION)
+NODE_REPOSITORY["BALTRAD-DEX"]=nodedefinition("$GITREPO:BaltradDex.git", BALTRAD_DEX_VERSION)
+NODE_REPOSITORY["RAVE"]=nodedefinition("$GITREPO:rave.git", RAVE_VERSION)
+NODE_REPOSITORY["RAVE-GMAP"]=nodedefinition("$GITREPO:GoogleMapsPlugin.git", RAVE_GMAP_VERSION)
