@@ -485,7 +485,7 @@ if __name__=="__main__":
     elif o == "--dbpwd":
       env.addArgInternal("DBPWD", a)
     elif o == "--dbname":
-      env.addArg("DNAME", a)
+      env.addArg("DBNAME", a)
     elif o == "--dbhost":
       env.addArg("DBHOST", a)
     elif o == "--rebuild":
