@@ -33,6 +33,7 @@ from beastinstaller import beastinstaller
 from dexinstaller import dexinstaller
 from raveinstaller import raveinstaller
 from ravegmapinstaller import ravegmapinstaller
+from bropoinstaller import bropoinstaller
 from dbinstaller import dbinstaller, dbupgrader
 from nodescripts import nodescripts
 from deployer import deployer
@@ -144,6 +145,8 @@ MODULES=[cmmi(package("ZLIB", "1.2.4",
          raveinstaller(node_package("RAVE", depends=["EXPAT", "PROJ.4", "PYTHON", "NUMPY", "PYSETUPTOOLS", "PYCURL", "HLHDF"])),
          
          ravegmapinstaller(node_package("RAVE-GMAP", depends=["RAVE"])), #Just use rave as dependency, rest of dependencies will trigger rave rebuild
+
+         bropoinstaller(node_package("BROPO", depends=["RAVE"])), #Just use rave as dependency, rest of dependencies will trigger rave rebuild
          
          dbinstaller(package("DBINSTALL", "1.0", nodir())),
          
@@ -194,6 +197,8 @@ def print_arguments(env):
     arguments.append(("--with-rave", ""))
   if env.hasArg("WITH_RAVE_GMAP") and env.getArg("WITH_RAVE_GMAP") == True:
     arguments.append(("--with-rave-gmap", ""))
+  if env.hasArg("WITH_BROPO") and env.getArg("WITH_BROPO") == True:
+    arguments.append(("--with-bropo", ""))
   if env.hasArg("JDKHOME"):
     arguments.append(("--jdkhome=", env.getArg("JDKHOME")))
   
@@ -335,7 +340,10 @@ Options:
     
 --with-rave-gmap
     Install the rave google map plugin. Will also cause rave pgf to be installed.
-    
+
+--with-bropo
+    Install the anomaly detector bropo. Will also cause rave to be installed.
+
 --with-bdbfs
     Will build and install the baltrad db file system driver
 
@@ -411,7 +419,7 @@ if __name__=="__main__":
   try:
     optlist, args = getopt.getopt(sys.argv[1:], 'x', 
                                   ['prefix=','tprefix','jdkhome=','with-zlib=',
-                                   'with-psql=','with-rave','with-rave-gmap',
+                                   'with-psql=','with-rave','with-rave-gmap','with-bropo',
                                    'with-hdfjava=', 'with-bdbfs','rebuild=',
                                    'dbuser=', 'dbpwd=','dbname=','dbhost=',
                                    'reinstalldb','excludedb', 'runas=','datadir=',
@@ -457,6 +465,7 @@ if __name__=="__main__":
   env.addArg("RUNASUSER", getpass.getuser(), True)
   env.excludeModule("RAVE")
   env.excludeModule("RAVE-GMAP")
+  env.excludeModule("BROPO")
   
   reinstalldb=False
   rebuild = []
@@ -502,6 +511,8 @@ if __name__=="__main__":
       env.addArg("WITH_RAVE", True)
     elif o == "--with-rave-gmap":
       env.addArg("WITH_RAVE_GMAP", True)
+    elif o == "--with-bropo":
+      env.addArg("WITH_BROPO", True)
     elif o == "--reinstalldb":
       reinstalldb=True
       env.addArgInternal("REINSTALLDB", True)
@@ -561,6 +572,10 @@ if __name__=="__main__":
   if env.hasArg("WITH_RAVE_GMAP") and env.getArg("WITH_RAVE_GMAP") == True:
     env.removeExclude("RAVE")
     env.removeExclude("RAVE-GMAP")
+
+  if env.hasArg("WITH_BROPO") and env.getArg("WITH_BROPO") == True:
+    env.removeExclude("RAVE")
+    env.removeExclude("BROPO")
 
   if env.hasArg("ZLIBARG"):
     buildzlib, zinc, zlib = parse_buildzlib_argument(env.getArg("ZLIBARG"))

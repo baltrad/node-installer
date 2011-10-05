@@ -24,6 +24,7 @@ Defines a node module that can be used by the node package
 @date 2011-02-09
 '''
 from node_versions import HLHDF_VERSION, BALTRAD_DB_VERSION, BEAST_VERSION, BALTRAD_DEX_VERSION, RAVE_VERSION, RAVE_GMAP_VERSION
+from node_versions import BROPO_VERSION
 
 class nodedefinition:
   _gituri = None
@@ -50,3 +51,4 @@ NODE_REPOSITORY["BEAST"]=nodedefinition("$GITREPO:beast.git", BEAST_VERSION)
 NODE_REPOSITORY["BALTRAD-DEX"]=nodedefinition("$GITREPO:BaltradDex.git", BALTRAD_DEX_VERSION)
 NODE_REPOSITORY["RAVE"]=nodedefinition("$GITREPO:rave.git", RAVE_VERSION)
 NODE_REPOSITORY["RAVE-GMAP"]=nodedefinition("$GITREPO:GoogleMapsPlugin.git", RAVE_GMAP_VERSION)
+NODE_REPOSITORY["BROPO"]=nodedefinition("$GITREPO:bropo.git", BROPO_VERSION)
