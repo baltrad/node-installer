@@ -1,0 +1,146 @@
+###########################################################################
+Copyright (C) 2011 Swedish Meteorological and Hydrological Institute, SMHI,
+
+This file is part of node-installer.
+
+node-installer is free software: you can redistribute it and/or modify
+it under the terms of the GNU Lesser General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+node-installer is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public License
+along with node-installer.  If not, see <http://www.gnu.org/licenses/>.
+###########################################################################
+@author Anders Henja (Swedish Meteorological and Hydrological Institute, SMHI)
+@date 2011-10-05
+###########################################################################
+
+INTRODUCTION
+This installer will setup and deploy the baltrad node software. The software
+has been designed for 64-bit (and eventually 32-bit) linux distributions.
+The main installation script requires a python interpreeter even though another
+one will be installed as part of the system.
+
+Before you start you will have to ensure that you have a number of software packages
+installed that are not allowed/not practical to be distributed as part of this package.
+
+=========== PREREQUISITES ===========
+*) A postgres database server must be installed (8.3.9 or higher, preferrably 
+8.4+), does not need to be installed on the same server this software is 
+installed but it must be accessible.
+
+<optional configuration>
+To increase security a little, and reduce the risk of corrupting the wrong
+database, edit /var/lib/pgsql/data/pg_hba.conf . At the bottom, the entries
+should read:
+# TYPE  DATABASE    USER        CIDR-ADDRESS          METHOD
+
+# "local" is for Unix domain socket connections only
+local   all         all                               trust
+# IPv4 local connections:
+host    all         all         127.0.0.1/32          trust
+# IPv6 local connections:
+host    all         all         ::1/128               trust
+
+After this is done, restart the server:
+# service postgresql restart
+</optional configuration>
+
+You must create a database and a user in the postgres server before atempting 
+to install the software. This is probably done as postgres user but there are 
+of course other alternatives as well.
+
+The two postgres command to use are
+CREATE USER <user> with PASSWORD '<password>';
+CREATE DATABASE <dbname> with OWNER <user>;
+
+E.g.
+# su - postgres
+%> psql
+> CREATE USER baltrad with PASSWORD 'baltrad';
+> CREATE DATABASE baltrad with OWNER baltrad;
+
+These parameters will be used when building the software so it probably is a 
+good idea to remember username, password, database name and on what ip-address 
+you can reach the database.
+
+*) An installed Java SDK, currently it must be OpenJDK or SUN JDK (> 1.6)
+*) gcc/g++ (version 4.1 or higher)
+*) make (version 3.8 or higher)
+*) autoconf (version 2.59 or higher)
+*) unicode support (ICU)
+   for redhat, centos, etc.. yum install libicu.x86_64 libicu-devel.x86_64
+   for debian, ubuntu, etc.. sudo apt-get install libicu-dev
+*) bzip2 development libraries
+   for redhat, centos, etc.. yum install bzip2-devel.x86_64
+   for debian, ubuntu, etc.. sudo apt-get install libbz2-dev
+   
+
+=========== INSTALLATION ===========
+Most of the software is built from scratch (both third-party libraries and
+the baltrad software). During the build all fetched software will be placed
+in the directory <node-installer-root>/packages.
+
+The installation only requires a call to the setup script. There are quite a few
+arguments that can be provided to the script in order to enable/disable features
+and also to generate offline installation content etc. Please type
+  %> ./setup --help
+
+for a full feature list. This INSTALL document will cover the basic usage so you
+are recommended to read the help text.
+
+The specified arguments will be stored so that they can be used in the next run
+to give the user an easy way to perform upgrades or rebuild specific modules if
+necessary. The installed modules are also following a dependency scheme which means
+that if you rebuild one module, all dependant modules will be rebuilt and so on.
+
+Let's get to how an installation can be performed. We want to install the software
+in /opt/n2. The java we are using is located in /opt/jdk1.6.0 and we want to use
+the postgresql apis on a ubuntu 10.10. We also want rave and bropo to be installed.
+This can be achieved by executing the following command:
+  %> ./setup --prefix=/opt/n2 --jdkhome=/opt/jdk1.6.0 \
+      --with-psql=/usr/include/postgresql,/usr/lib --with-rave-gmap --with-bropo install
+      
+Now the software will start fetching the different packages and hopefully build
+everything successfully but as you probably can imagine, there is always something
+that will go wrong or you forgot to specify a feature you want to install. 
+To see what build settings you have specified, type:
+  %> ./setup --print-config
+CONFIGURATION PARAMETERS
+--prefix=                 /opt/n2                            
+--tprefix=                /opt/n2/third_party                
+--urlrepo=                http://git.baltrad.eu/blt_dependencies
+--dbuser=                 baltrad                            
+--dbname=                 baltrad                            
+--dbhost=                 127.0.0.1                          
+--runas=                  anders                             
+--with-hdfjava=           /opt/n2/third_party/hdf-java       
+--with-zlib=              no                                 
+--with-psql=              /usr/include/postgresql,/usr/lib   
+--with-rave-gmap                                             
+--with-bropo                                                 
+--jdkhome=                /opt/jdk1.6.0 
+
+As you can see from this printout, several options that you haven't specified will be shown,
+these are the default values. However, passwords, exclude options and rebuild options are 
+never stored and has to be provided for each run.
+
+So, if you for example had a different db password and the build failed due to that, you will only have
+to specify the --dbpwd option and rerun like:
+  %> ./setup --dbpwd=secret install
+
+To see what you have installed, you can type
+  %> ./setup --print-modules
+MODULES
+ZLIB                 1.2.4                               NOT INSTALLED 
+HDF5                 1.8.5-patch1                        INSTALLED     
+EXPAT                2.0.1                               INSTALLED     
+...
+
+First column is the name of the module, second is the version and third if it has been installed or not.
+  

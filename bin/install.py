@@ -354,7 +354,10 @@ Options:
     
 --print-modules
     Prints all available modules and their respective version.
-
+    
+--print-config
+    Prints the build configuration
+    
 --exclude-tomcat
     Will exclude installation of tomcat. This is not a recommended procedure but 
     it is here for the possibility to use your own tomcat installation if it 
