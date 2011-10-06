@@ -53,7 +53,7 @@ class tomcatinstaller(installer):
     
     shutil.move(dir, env.expandArgs("$TPREFIX/tomcat"))
 
-    self.write_tomcat_users(env.expandArgs("$TPREFIX/tomcat"))
+    self.write_tomcat_users(env)
     
     self.write_root_index_file(env.expandArgs("$TPREFIX/tomcat"))
     
@@ -77,19 +77,19 @@ class tomcatinstaller(installer):
   
   ##
   # Creates the tomcat users file
-  # @param troot: the tomcat root directory
+  # @param env: the build environment
   #
-  def write_tomcat_users(self, troot):
-    filename = "%s/conf/tomcat-users.xml"%troot
+  def write_tomcat_users(self, env):
+    filename = "%s/conf/tomcat-users.xml" % env.expandArgs("$TPREFIX/tomcat")
     fp = open(filename, "w")
-    fp.write("""<?xml version='1.0' encoding='utf-8'?>
+    fp.write(env.expandArgs("""<?xml version='1.0' encoding='utf-8'?>
 <tomcat-users>
   <role rolename="manager"/>
   <role rolename="tomcat"/>
   <role rolename="admin"/>
-  <user username="admin" password="secret" roles="admin,tomcat,manager"/>
+  <user username="admin" password="${TOMCATPWD}" roles="admin,tomcat,manager"/>
 </tomcat-users>
-    """)
+    """))
     fp.close()
   
   ##
