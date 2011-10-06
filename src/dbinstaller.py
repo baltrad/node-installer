@@ -96,7 +96,7 @@ class dbupgrader(dbinstaller):
     args = "%s -Ddb.jar=%s/etc/postgresql/postgresql-8.4-701.jdbc4.jar"%(args, env.getInstallerPath())
     
     buildfile = "%s/etc/install_db.xml"%env.getInstallerPath()
-    ocode = subprocess.call(env.expandArgs("ant -f %s %s upgrade-db"%(buildfile,args)), shell=True)
+    ocode = subprocess.call(env.expandArgs("$TPREFIX/ant/bin/ant -f %s %s upgrade-db"%(buildfile,args)), shell=True)
     if ocode != 0:
       raise InstallerException, "Failed to upgrade db"
 
