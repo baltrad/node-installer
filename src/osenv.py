@@ -36,8 +36,14 @@ class osenv:
   ## An optional function that can manage optional/dynamic environment variables
   # The function signature must be dict func(benv, envdict).
   _foptionalenv = None
+  
+  ## This can be used to set default values in the os environment
+  # if they don't exist. 
+  _defaultosenv = None
+  
   ## The environment variables that will be processed
   _variables = {}
+  
   ## The current snapshot to be restored
   _snapshot = {}
   
@@ -55,10 +61,11 @@ class osenv:
   #    returns a dictionary of optional variables the returned environment variables will override the
   #    ones defined in env
   # 
-  def __init__(self, env, foptionalenv=None):
+  def __init__(self, env, foptionalenv=None, defaultosenv=None):
     self._env = env
     self._foptionalenv = foptionalenv
-  
+    self._defaultosenv = defaultosenv
+    
   ##
   # Builds a list of all variables that should be set
   # @param benv: the build environment
@@ -94,13 +101,40 @@ class osenv:
   
 
   ##
+  # Sets the default os environment variables if they haven't
+  # already got a value.
+  # @return: the keys to be reset
+  #
+  def _setDefaultOsEnvironment(self):
+    oskeys = []
+    if self._defaultosenv != None:
+      for k in self._defaultosenv.keys():
+        if not k in os.environ.keys():
+          oskeys.append(k)
+          os.environ[k] = self._defaultosenv[k]
+    return oskeys
+
+  ##
+  # Deletes the provided keys from the os environment
+  # @param oskeys: a list of keys
+  #
+  def _deleteKeysFromOsEnvironment(self, oskeys):
+    for k in oskeys:
+      if os.environ.has_key(k):
+        del os.environ[k]
+
+  ##
   # Expands the string with the OS environment variables
   # @param v: the string to be expanded
   # @return: the expanded string
   #
   def expandEnvironment(self, v):
     from string import Template
-    return Template(v).substitute(os.environ)
+    oskeys = self._setDefaultOsEnvironment()
+    try:
+      return Template(v).substitute(os.environ)
+    finally:
+      self._deleteKeysFromOsEnvironment(oskeys)
   
   ##
   # Sets the os environment by first using the provided build environment variables and

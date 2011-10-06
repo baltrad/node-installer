@@ -40,7 +40,8 @@ class bdbinstaller(installer):
     if oenv == None:
       oenv = osenv({"ANT_HOME":"$TPREFIX/ant",
                     "JAVA_HOME":"$JDKHOME", 
-                    "LD_LIBRARY_PATH":"$TPREFIX/lib:$PREFIX/hlhdf/lib:$$LD_LIBRARY_PATH"})
+                    "LD_LIBRARY_PATH":"$TPREFIX/lib:$PREFIX/hlhdf/lib:$$LD_LIBRARY_PATH"},
+                    defaultosenv={"LD_LIBRARY_PATH":""})
     super(bdbinstaller, self).__init__(pkg, oenv)
   
   ##

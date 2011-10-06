@@ -41,7 +41,8 @@ class bropoinstaller(installer):
                     "EXPATARG":"$TPREFIX",
                     "HLDIR":"$PREFIX/hlhdf",
                     "PROJ4ROOT":"$TPREFIX",
-                    "RAVEROOT":"$PREFIX/rave"}) # RAVEROOT is the installation path....
+                    "RAVEROOT":"$PREFIX/rave"}, # RAVEROOT is the installation path....
+                    defaultosenv={"LD_LIBRARY_PATH":""})
       
     super(bropoinstaller, self).__init__(pkg, oenv)
 

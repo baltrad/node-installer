@@ -76,7 +76,8 @@ MODULES=[cmmi(package("ZLIB", "1.2.4",
               osenv({"CFLAGS":"-I\"$JDKHOME/include/linux\""})),
               
          cmmi(package("PYTHON", "2.6.4",
-                      untar(urlfetcher("Python-2.6.4.tgz"), "Python-2.6.4", True)),
+                      untar(urlfetcher("Python-2.6.4.tgz"), "Python-2.6.4", True),
+                      depends=["ZLIB"]),
               "--prefix=\"$TPREFIX\" --enable-shared", False, True),
 
          shinstaller(package("NUMPY", "1.3.0",

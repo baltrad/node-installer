@@ -39,7 +39,8 @@ class hlhdfinstaller(installer):
   def __init__(self, pkg, oenv = None):
     if oenv == None:
       oenv = osenv({"PATH":"$TPREFIX/bin:$$PATH",
-                    "LD_LIBRARY_PATH":"$TPREFIX/lib:$$LD_LIBRARY_PATH"})
+                    "LD_LIBRARY_PATH":"$TPREFIX/lib:$$LD_LIBRARY_PATH"},
+                   defaultosenv={"LD_LIBRARY_PATH":""})
     super(hlhdfinstaller, self).__init__(pkg, oenv)
   
   ##
