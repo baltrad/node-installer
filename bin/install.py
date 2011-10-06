@@ -259,11 +259,11 @@ Options:
 
 --prefix=<prefix>
     Points out where the system should be installed. 
-    [Default /opt/baltrad]
+    [Default /opt/n2]
     
 --tprefix=<prefix>
     Points out where the third-party software should be installed.
-    [Default /opt/baltrad/third_party]
+    [Default <prefix>/third_party]
     
 --jdkhome=<jdkhome>
     Points out the jdkhome directory. If omitted, the installer will
@@ -454,22 +454,10 @@ if __name__=="__main__":
   if dorestore:
     env.restore()
   
-  env.addArg("PREFIX", "/opt/n2", True)
-  env.addArg("TPREFIX", "/opt/n2/third_party", True)
-  env.addArg("URLREPO", "http://git.baltrad.eu/blt_dependencies")
-  env.addArg("GITREPO", "gitosis@git.baltrad.eu")
-  env.addArgInternal("TOMCATPWD", "secret")
-  env.addArg("HDFJAVAHOME", "/opt/n2/third_party/hdf-java", True)
-  env.addArg("DBUSER", "baltrad", True)
-  env.addArgInternal("DBPWD", "baltrad")
-  env.addArg("DBNAME", "baltrad", True)
-  env.addArg("DBHOST", "127.0.0.1", True)
-  env.addArg("BUILD_BDBFS", "no", True)
-  env.addArg("RUNASUSER", getpass.getuser(), True)
   env.excludeModule("RAVE")
   env.excludeModule("RAVE-GMAP")
   env.excludeModule("BROPO")
-  
+
   reinstalldb=False
   rebuild = []
   
@@ -542,6 +530,20 @@ if __name__=="__main__":
     else:
       usage(True, "Unsupported argument: %s"%o)
       sys.exit(127)
+
+  # set defaults for whatever arguments we didn't get from the user
+  env.addUniqueArg("PREFIX", "/opt/n2")
+  env.addUniqueArg("TPREFIX", env.expandArgs("${PREFIX}/third_party"))
+  env.addUniqueArg("URLREPO", "http://git.baltrad.eu/blt_dependencies")
+  env.addUniqueArg("GITREPO", "gitosis@git.baltrad.eu")
+  env.addUniqueArgInternal("TOMCATPWD", "secret")
+  env.addUniqueArg("HDFJAVAHOME", env.expandArgs("${TPREFIX}/hdf-java"))
+  env.addUniqueArg("DBUSER", "baltrad")
+  env.addUniqueArgInternal("DBPWD", "baltrad")
+  env.addUniqueArg("DBNAME", "baltrad")
+  env.addUniqueArg("DBHOST", "127.0.0.1")
+  env.addUniqueArg("BUILD_BDBFS", "no")
+  env.addUniqueArg("RUNASUSER", getpass.getuser())
 
   #
   # Print the configuration settings
