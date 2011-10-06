@@ -72,13 +72,34 @@ class buildenv:
       self._args[name] = value
   
   ##
+  # Adds an argument only if the argument hasn't been defined already
+  # @param name: the name of the argument
+  # @param value: the value
+  #
+  def addUniqueArg(self, name, value):
+    self.addArg(name, value, True)
+  
+  ##
   # Adds an internal argument that not is not possible
   # to remember.
   # @param name: the name of the argument
   # @param value: the value
+  # @param onlyaddifnotexist: Only add the argument value if it doesn't exist
   #
-  def addArgInternal(self, name, value):
-    self._argsinternal[name] = value
+  def addArgInternal(self, name, value, onlyaddifnotexist=False):
+    if onlyaddifnotexist == False:
+      self._argsinternal[name] = value
+    elif onlyaddifnotexist == True and not name in self._argsinternal:
+      self._argsinternal[name] = value
+
+  ##
+  # Adds and internal argument only if the argument hasn't been defined
+  # already.
+  # @param name: the name of the argument
+  # @param value: the value
+  #
+  def addUniqueArgInternal(self, name, value):
+    self.addArgInternal(name, value, True)
 
   ##
   # Returns the value associated with the specified argument name
