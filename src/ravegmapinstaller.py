@@ -39,7 +39,8 @@ class ravegmapinstaller(installer):
   def __init__(self, pkg, oenv = None):
     if oenv == None:
       oenv = osenv({"PATH":"$PREFIX/rave/bin:$$PATH",
-                    "LD_LIBRARY_PATH":"$PREFIX/rave/lib:$$LD_LIBRARY_PATH"})
+                    "LD_LIBRARY_PATH":"$PREFIX/rave/lib:$$LD_LIBRARY_PATH"},
+                    defaultosenv={"LD_LIBRARY_PATH":""})
       
     super(ravegmapinstaller, self).__init__(pkg, oenv)
 

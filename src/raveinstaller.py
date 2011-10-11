@@ -34,7 +34,7 @@ from InstallerException import InstallerException
 class raveinstaller(installer):
   ##
   # Constructor
-  # Installs the baltrad db package. 
+  # Installs the RAVE package. 
   #
   def __init__(self, pkg, oenv = None):
     if oenv == None:
@@ -43,8 +43,9 @@ class raveinstaller(installer):
                     "EXPATARG":"$TPREFIX",
                     "HLDIR":"$PREFIX/hlhdf",
                     "PROJ4ROOT":"$TPREFIX",
-                    "RAVEROOT":"$PREFIX/rave"}) # RAVEROOT is the installation path....
-      
+                    "PGF_PORT":"$RAVE_PGF_PORT",
+                    "RAVEROOT":"$PREFIX/rave"}, # RAVEROOT is the installation path....
+                    defaultosenv={"LD_LIBRARY_PATH":""})
     super(raveinstaller, self).__init__(pkg, oenv)
 
   ##

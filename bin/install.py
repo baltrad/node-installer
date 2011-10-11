@@ -338,6 +338,10 @@ Options:
 
 --with-rave
     Install the rave pgf
+
+--rave-pgf-port=<port>
+    Set the port rave should run on.
+    [default: 8085]
     
 --with-rave-gmap
     Install the rave google map plugin. Will also cause rave pgf to be installed.
@@ -429,7 +433,8 @@ if __name__=="__main__":
                                   ['prefix=','tprefix','jdkhome=','with-zlib=',
                                    'with-psql=','with-rave','with-rave-gmap','with-bropo',
                                    'with-hdfjava=', 'with-bdbfs','rebuild=',
-				   "bdb-pool-max-size=",
+				   'bdb-pool-max-size=',
+				   'rave-pgf-port=',
                                    'dbuser=', 'dbpwd=','dbname=','dbhost=',
                                    'reinstalldb','excludedb', 'runas=','datadir=',
                                    'urlrepo=','gitrepo=','offline',
@@ -508,6 +513,8 @@ if __name__=="__main__":
       env.addArg("BDB_POOL_MAX_SIZE", a)
     elif o == "--with-rave":
       env.addArg("WITH_RAVE", True)
+    elif o == "--rave-pgf-port":
+      env.addArg("RAVE_PGF_PORT", a)
     elif o == "--with-rave-gmap":
       env.addArg("WITH_RAVE_GMAP", True)
     elif o == "--with-bropo":
@@ -553,6 +560,7 @@ if __name__=="__main__":
   env.addUniqueArg("BUILD_BDBFS", "no")
   env.addUniqueArg("RUNASUSER", getpass.getuser())
   env.addUniqueArg("BDB_POOL_MAX_SIZE", "10");
+  env.addUniqueArg("RAVE_PGF_PORT", "8085");
 
   #
   # Print the configuration settings
