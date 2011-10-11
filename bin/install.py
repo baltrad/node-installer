@@ -346,6 +346,10 @@ Options:
 --rave-center-id=<id>
     Originating center id to be used by rave as the source of its products.
     [default: 82]
+
+--rave-dex-spoe=<spoe>
+    Dex's single point of entry to be used by rave. 
+    [default: localhost:$TOMCATPORT
     
 --with-rave-gmap
     Install the rave google map plugin. Will also cause rave pgf to be installed.
@@ -438,7 +442,7 @@ if __name__=="__main__":
                                    'with-psql=','with-rave','with-rave-gmap','with-bropo',
                                    'with-hdfjava=', 'with-bdbfs','rebuild=',
                                    'bdb-pool-max-size=',
-                                   'rave-pgf-port=', "rave-center-id=",
+                                   'rave-pgf-port=', "rave-center-id=", "rave-dex-spoe=",
                                    'dbuser=', 'dbpwd=','dbname=','dbhost=',
                                    'reinstalldb','excludedb', 'runas=','datadir=',
                                    'urlrepo=','gitrepo=','offline',
@@ -521,6 +525,8 @@ if __name__=="__main__":
       env.addArg("RAVE_PGF_PORT", a)
     elif o == "--rave-center-id":
       env.addArg("RAVE_CENTER_ID", a)
+    elif o == "--rave-dex-spoe":
+      env.addArg("RAVE_DEX_SPOE", a)
     elif o == "--with-rave-gmap":
       env.addArg("WITH_RAVE_GMAP", True)
     elif o == "--with-bropo":
@@ -568,6 +574,7 @@ if __name__=="__main__":
   env.addUniqueArg("BDB_POOL_MAX_SIZE", "10")
   env.addUniqueArg("RAVE_PGF_PORT", "8085")
   env.addUniqueArg("RAVE_CENTER_ID", "82")
+  env.addUniqueArg("RAVE_DEX_SPOE", env.expandArgs("localhost:${TOMCATPORT}"))
 
   #
   # Print the configuration settings

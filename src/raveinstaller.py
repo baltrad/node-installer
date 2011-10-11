@@ -45,6 +45,7 @@ class raveinstaller(installer):
                     "PROJ4ROOT":"$TPREFIX",
                     "PGF_PORT":"$RAVE_PGF_PORT",
                     "CENTER_ID":"$RAVE_CENTER_ID",
+                    "DEX_SPOE":"$RAVE_DEX_SPOE",
                     "RAVEROOT":"$PREFIX/rave"}, # RAVEROOT is the installation path....
                     defaultosenv={"LD_LIBRARY_PATH":""})
     super(raveinstaller, self).__init__(pkg, oenv)
