@@ -348,6 +348,10 @@ Options:
 --with-bdbfs
     Will build and install the baltrad db file system driver
 
+--bdb-pool-max-size=<N>
+    Set the pool size for bdb connections to <N>
+    [default: 10]
+
 --rebuild=<module1>,<module2>,...
     Will force a rebuild and installation of the specified modules. To get a 
     list of available modules and their versions. See option --print-modules.
@@ -425,6 +429,7 @@ if __name__=="__main__":
                                   ['prefix=','tprefix','jdkhome=','with-zlib=',
                                    'with-psql=','with-rave','with-rave-gmap','with-bropo',
                                    'with-hdfjava=', 'with-bdbfs','rebuild=',
+				   "bdb-pool-max-size=",
                                    'dbuser=', 'dbpwd=','dbname=','dbhost=',
                                    'reinstalldb','excludedb', 'runas=','datadir=',
                                    'urlrepo=','gitrepo=','offline',
@@ -499,6 +504,8 @@ if __name__=="__main__":
       env.addArgInternal("TOMCATPWD", a)
     elif o == "--with-bdbfs":
       env.addArg("BUILD_BDBFS", "yes")
+    elif o == "--bdb-pool-max-size":
+      env.addArg("BDB_POOL_MAX_SIZE", a)
     elif o == "--with-rave":
       env.addArg("WITH_RAVE", True)
     elif o == "--with-rave-gmap":
@@ -545,6 +552,7 @@ if __name__=="__main__":
   env.addUniqueArg("DBHOST", "127.0.0.1")
   env.addUniqueArg("BUILD_BDBFS", "no")
   env.addUniqueArg("RUNASUSER", getpass.getuser())
+  env.addUniqueArg("BDB_POOL_MAX_SIZE", "10");
 
   #
   # Print the configuration settings
