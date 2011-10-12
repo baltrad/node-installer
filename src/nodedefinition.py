@@ -23,8 +23,7 @@ Defines a node module that can be used by the node package
 @author Anders Henja (Swedish Meteorological and Hydrological Institute, SMHI)
 @date 2011-02-09
 '''
-from node_versions import HLHDF_VERSION, BALTRAD_DB_VERSION, BEAST_VERSION, BALTRAD_DEX_VERSION, RAVE_VERSION, RAVE_GMAP_VERSION
-from node_versions import BROPO_VERSION
+from node_versions import versions
 
 class nodedefinition:
   _gituri = None
@@ -44,11 +43,21 @@ class nodedefinition:
   def getbranch(self):
     return self._branch
 
+_REPOS = {
+  "HLHDF": "$GITREPO:hlhdf.git",
+  "BALTRAD-DB": "$GITREPO:baltrad-db.git",
+  "BEAST": "$GITREPO:beast.git",
+  "BALTRAD-DEX": "$GITREPO:BaltradDex.git",
+  "RAVE": "$GITREPO:rave.git",
+  "RAVE-GMAP": "$GITREPO:GoogleMapsPlugin.git",
+  "BROPO": "$GITREPO:bropo.git",
+}
+
+PACKAGES = [
+  "HLHDF", "BALTRAD-DB", "BEAST", "BALTRAD-DEX", "RAVE", "RAVE-GMAP", "BROPO"
+]
+
 NODE_REPOSITORY={}
-NODE_REPOSITORY["HLHDF"]=nodedefinition("$GITREPO:hlhdf.git", HLHDF_VERSION)
-NODE_REPOSITORY["BALTRAD-DB"]=nodedefinition("$GITREPO:baltrad-db.git", BALTRAD_DB_VERSION)
-NODE_REPOSITORY["BEAST"]=nodedefinition("$GITREPO:beast.git", BEAST_VERSION)
-NODE_REPOSITORY["BALTRAD-DEX"]=nodedefinition("$GITREPO:BaltradDex.git", BALTRAD_DEX_VERSION)
-NODE_REPOSITORY["RAVE"]=nodedefinition("$GITREPO:rave.git", RAVE_VERSION)
-NODE_REPOSITORY["RAVE-GMAP"]=nodedefinition("$GITREPO:GoogleMapsPlugin.git", RAVE_GMAP_VERSION)
-NODE_REPOSITORY["BROPO"]=nodedefinition("$GITREPO:bropo.git", BROPO_VERSION)
+
+for pkg in PACKAGES:
+    NODE_REPOSITORY[pkg] = nodedefinition(_REPOS[pkg], versions[pkg])
