@@ -4,7 +4,7 @@ def git_describe(tag=None, abbrev=None):
   args = ["git", "describe"]
   if tag:
     args.append(tag)
-  if abbrev:
+  if abbrev is not None:
     args.append("--abbrev=%d" % abbrev)
   proc = subprocess.Popen(" ".join(args), shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
   stdout, stderr = proc.communicate()

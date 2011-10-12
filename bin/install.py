@@ -106,8 +106,8 @@ MODULES=[cmmi(package("ZLIB", "1.2.4",
                      "\"$TPREFIX/bin/python\" setup.py install",
                      osenv({"LD_LIBRARY_PATH":"$TPREFIX/lib", "PATH":"$TPREFIX/bin:$$PATH"})),
          
-         tomcatinstaller(package("TOMCAT", "6.0.26",
-                                 untar(urlfetcher("apache-tomcat-6.0.26.tar.gz"), "apache-tomcat-6.0.26", True))),
+         tomcatinstaller(package("TOMCAT", "6.0.33",
+                                 untar(urlfetcher("apache-tomcat-6.0.33.tar.gz"), "apache-tomcat-6.0.33", True))),
          
          hdfjavainstaller(package("HDFJAVA", "2.6.1",
                                   machinefetcher({
