@@ -413,6 +413,26 @@ def parse_buildzlib_argument(arg):
   else:
     raise InstallerException, "--zlib should either be (no, yes, <libroot> or <inc>,<lib> where <inc> and/or <lib> may be empty"
 
+def handle_tomcat_arguments(benv):
+  if benv.hasArg("TOMCATPORT") and benv.hasArg("TOMCATURL"):
+    # Verify that port does not conflict
+    from urlparse import urlparse
+    a = urlparse(benv.getArg("TOMCATURL"))
+    if a.port == None or "%s"%a.port != benv.getArg("TOMCATPORT"):
+      raise InstallerException, "tomcatport and tomcaturl port differs"
+  elif benv.hasArg("TOMCATPORT"):
+    benv.addArg("TOMCATURL", "http://localhost:%s"%benv.getArg("TOMCATPORT"))
+  elif benv.hasArg("TOMCATURL"):
+    from urlparse import urlparse
+    a = urlparse(benv.getArg("TOMCATURL"))
+    if a.port == None:
+      raise InstallerException, "You must specify port in tomcat url"
+    benv.addArg("TOMCATPORT", "%d"%a.port)
+  else:
+    benv.addArg("TOMCATPORT", "8080")
+    benv.addArg("TOMCATURL", "http://localhost:%s"%benv.getArg("TOMCATPORT"))  
+  
+
 def parse_buildpsql_argument(arg):
   tokens = arg.split(",")
   if len(tokens) == 2:
@@ -571,6 +591,13 @@ if __name__=="__main__":
   env.addUniqueArg("DBHOST", "127.0.0.1")
   env.addUniqueArg("BUILD_BDBFS", "no")
   env.addUniqueArg("RUNASUSER", getpass.getuser())
+  
+  #
+  # We must ensure that the tomcatport and tomcaturl port is not conflicting
+  # and that the tomcat arguments always are there.
+  #
+  handle_tomcat_arguments(env)
+  
   env.addUniqueArg("BDB_POOL_MAX_SIZE", "10")
   env.addUniqueArg("RAVE_PGF_PORT", "8085")
   env.addUniqueArg("RAVE_CENTER_ID", "82")
@@ -636,23 +663,6 @@ if __name__=="__main__":
   # bdb storage needs a data directory 
   if not env.hasArg("DATADIR"):
     env.addArg("DATADIR", env.expandArgs("$PREFIX/bdb_storage"))
-
-  if args[0] in ["install", "check"]:
-    # Ensure that we don't have conflicting information in the tomcatport
-    # and the tomcaturl
-    if env.hasArg("TOMCATPORT") and env.hasArg("TOMCATURL"):
-      raise InstallerException, "Don't specify both tomcatport and tomcaturl"
-    elif env.hasArg("TOMCATPORT"):
-      env.addArg("TOMCATURL", "http://localhost:%s"%env.getArg("TOMCATPORT"))
-    elif env.hasArg("TOMCATURL"):
-      from urlparse import urlparse
-      a = urlparse(env.getArg("TOMCATURL"))
-      if a.port == None:
-        raise InstallerException, "You must specify port in tomcat url"
-      env.addArg("TOMCATPORT", "%d"%a.port)
-    else:
-      env.addArg("TOMCATPORT", "8080")
-      env.addArg("TOMCATURL", "http://localhost:%s"%env.getArg("TOMCATPORT"))
 
   if args[0] in ["install"]:
     # Setup the general ld library path that will be the one pointing out
