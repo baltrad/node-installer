@@ -699,7 +699,12 @@ if __name__=="__main__":
     if not env.isExcluded("RAVE"):
       spath = env.expandArgs("$PREFIX/rave/bin:%s"%pth)
 
-    script = nodescripts("%s:$$PATH"%spath, "%s:$$LD_LIBRARY_PATH"%sldpath, "1.0.0")
+    script = nodescripts(
+      "%s:$$PATH"%spath,
+      "%s:$$LD_LIBRARY_PATH"%sldpath,
+      "1.0.0",
+      raveinstalled=not env.isExcluded("RAVE")
+    )
     script.create_scripts(env)
     env.setNodeScript(script)
 
