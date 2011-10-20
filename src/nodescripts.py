@@ -204,7 +204,7 @@ if [ "$${START_REQUEST}" = "yes" ]; then
   if [ "$${RAVEPGF_REQUEST}" = "yes" ]; then
     start_ravepgf
   elif [ "$${ALL_REQUEST}" = "yes" ]; then
-    if [ "$${RAVEPGF_REQUEST}" = "yes" ]; then
+    if [ "$${RAVEPGF_SUPPORT}" = "yes" ]; then
       start_ravepgf
     fi
     start
@@ -216,7 +216,7 @@ elif [ "$${STOP_REQUEST}" = "yes" ]; then
     stop_ravepgf
   elif [ "$${ALL_REQUEST}" = "yes" ]; then
     stop
-    if [ "$${RAVEPGF_REQUEST}" = "yes" ]; then
+    if [ "$${RAVEPGF_SUPPORT}" = "yes" ]; then
       stop_ravepgf
     fi
   else
