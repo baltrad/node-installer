@@ -56,7 +56,10 @@ along with the baltrad-node.  If not, see http://www.gnu.org/licenses.
          driver="${db.driver}"
          url="${db.url}"
          userid="${db.user}" 
-         password="${db.pwd}">
+         password="${db.pwd}"
+         escapeprocessing="false"
+         expandproperties="false"
+         delimitertype="row">
       <transaction src="${baltrad.db.path}/share/baltrad-db/sql/postgresql/create.sql"/>
       <transaction src="${baltrad.beast.path}/sql/create_db.sql"/>
       <transaction src="${baltrad.dex.path}/sql/create_dex_schema.sql"/>

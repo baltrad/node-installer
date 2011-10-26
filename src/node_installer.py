@@ -60,7 +60,7 @@ class node_installer:
     mlen = len(self._installers)
     for i in range(mlen):
       m = self._installers[i]
-      m.package().clean(benv)
+      m.clean(benv)
     benv.removeInstallInformation()
   
   ##
@@ -71,7 +71,6 @@ class node_installer:
     mlen = len(self._installers)
     for i in range(mlen):
       m = self._installers[i]
-      print "Fetching content for: %s"%m.package().name()
-      m.package().fetch_offline_content(benv)
+      m.fetch_offline_content(benv)
     
     

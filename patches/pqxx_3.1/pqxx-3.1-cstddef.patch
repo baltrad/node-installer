@@ -1,0 +1,12 @@
+--- include/pqxx/compiler-internal.hxx	2010-02-16 00:21:36.000000000 +0100
++++ include/pqxx/compiler-internal.hxx	2011-10-21 12:52:34.000000000 +0200
+@@ -51,6 +51,8 @@
+ #endif	// __GNUC__ && PQXX_HAVE_GCC_VISIBILITY
+ 
+ 
++#include <cstddef>
++
+ #include "pqxx/compiler-public.hxx"
+ 
+ #ifdef PQXX_HAVE_LIMITS
+

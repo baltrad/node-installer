@@ -51,9 +51,9 @@ class installer(object):
   # @return: if package has been installed or not
   #
   def install(self, env, forcerebuild=False):
-    name = self._package.name()
-    version = self._package.version()
-    remembered = self._package.isremembered()
+    name = self.package().name()
+    version = self.package().version()
+    remembered = self.package().isremembered()
     
     installed = False
     if not env.isExcluded(name):
@@ -63,13 +63,13 @@ class installer(object):
       if remembered == False or forcerebuild or env.getInstalled(name) != version:
         cdir = os.getcwd()
         try:
-          if self._oenv != None:
-            self._oenv.setenv(env)
+          if self.osenvironment() != None:
+            self.osenvironment().setenv(env)
           self.doinstall(env)
         finally:
           os.chdir(cdir)        
-          if self._oenv != None:
-            self._oenv.restore()
+          if self.osenvironment() != None:
+            self.osenvironment().restore()
         if remembered:
           env.addInstalled(name, version)
         installed = True
@@ -99,3 +99,16 @@ class installer(object):
   def osenvironment(self):
     return self._oenv
   
+  ##
+  # Executes the packages fetch_offline_content
+  # @param env: the build environment
+  #  
+  def fetch_offline_content(self, env=None):
+    self.package().fetch_offline_content(env)
+
+  ##
+  # Executes the package cleanup
+  # @param env: the build environment
+  #
+  def clean(self, env=None):
+    self.package().clean(env)

@@ -24,7 +24,7 @@ HLHDF Installer
 @date 2011-02-09
 '''
 from installer import installer
-import os, subprocess, platform, shutil
+import os, subprocess, platform, shutil, string
 from osenv import osenv
 from InstallerException import InstallerException
 
@@ -102,6 +102,9 @@ class hlhdfinstaller(installer):
     if ocode != 0:
       raise InstallerException, "Failed to install hlhdf"
 
-    shutil.copy(env.expandArgs("$PREFIX/hlhdf/hlhdf.pth"), env.expandArgs("$TPREFIX/lib/python2.6/site-packages/"))
+    # Use the installed pythons site-packages location
+    cmd = "python -c \"import sys;import os;print os.sep.join([sys.prefix, 'lib', 'python'+sys.version[:3],'site-packages'])\""
+    plc = subprocess.Popen(cmd, stdout=subprocess.PIPE, shell=True).communicate()[0]
+    shutil.copy(env.expandArgs("$PREFIX/hlhdf/hlhdf.pth"), "%s/"%string.strip(plc))
  
     

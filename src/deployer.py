@@ -74,13 +74,13 @@ class deployer(installer):
   def doinstall(self, env):
     script = env.getNodeScript()
     
-    script.restart(node=True)
-    
     if not os.path.exists(env.expandArgs("$TPREFIX/ant/lib/catalina-ant.jar")):
       shutil.copyfile(env.expandArgs("$TPREFIX/tomcat/lib/catalina-ant.jar"), env.expandArgs("$TPREFIX/ant/lib/catalina-ant.jar"))
     
     self._link_baltrad_db(env)
     self._setup_permissions(env)
+
+    script.restart(node=True)
     
     tmppath = tempfile.mkdtemp(prefix='baltradnode')
     foldername = os.path.basename(tmppath)

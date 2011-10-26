@@ -24,7 +24,7 @@ RAVE Installer
 @date 2011-10-05
 '''
 from installer import installer
-import os, subprocess
+import os, subprocess, string
 from osenv import osenv
 from InstallerException import InstallerException
 
@@ -80,7 +80,10 @@ class bropoinstaller(installer):
     if ocode != 0:
       raise InstallerException, "Failed to install bropo"
     
-    foutname = env.expandArgs("$TPREFIX/lib/python2.6/site-packages/bropo.pth")
+    cmd = "python -c \"import sys;import os;print os.sep.join([sys.prefix, 'lib', 'python'+sys.version[:3],'site-packages'])\""
+    plc = subprocess.Popen(cmd, stdout=subprocess.PIPE, shell=True).communicate()[0]
+    foutname = "%s/bropo.pth"%string.strip(plc)
+
     try:
       fp = open(foutname, "w")
       fp.write(env.expandArgs("$PREFIX/bropo/share/bropo/pyropo"))

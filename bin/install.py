@@ -44,6 +44,7 @@ from node_package import node_package
 
 from extra_functions import *
 from node_installer import node_installer
+from experimental import experimental
 
 ##
 # All modules that should be installed for the baltrad node
@@ -74,31 +75,60 @@ MODULES=[cmmi(package("ZLIB", "1.2.4",
                       untar(urlfetcher("proj-4.7.0.tar.gz"), "proj-4.7.0", True)),
               "--prefix=\"$TPREFIX\" --with-jni=\"$JDKHOME/include\"", False, True,
               osenv({"CFLAGS":"-I\"$JDKHOME/include/linux\""})),
-              
-         cmmi(package("PYTHON", "2.6.4",
-                      untar(urlfetcher("Python-2.6.4.tgz"), "Python-2.6.4", True),
-                      depends=["ZLIB"]),
-              "--prefix=\"$TPREFIX\" --enable-shared", False, True),
 
-         shinstaller(package("NUMPY", "1.3.0",
-                             untar(urlfetcher("numpy-1.3.0.tar.gz"), "numpy-1.3.0", True),
-                             depends=["PYTHON"]),
-                     "\"$TPREFIX/bin/python\" setup.py install",
-                     osenv({"LD_LIBRARY_PATH":"$TPREFIX/lib"})),
-                     
-         shinstaller(package("PYSETUPTOOLS", "0.6c11",
-                             nodir(urlfetcher("setuptools-0.6c11-py2.6.egg")),
-                             depends=["PYTHON"]),
-                     "sh setuptools-0.6c11-py2.6.egg",
-                     osenv({"LD_LIBRARY_PATH":"$TPREFIX/lib", "PATH":"$TPREFIX/bin:$$PATH"})),
+         experimental(
+           cmmi(package("PYTHON", "2.6.4",
+                        untar(urlfetcher("Python-2.6.4.tgz"), "Python-2.6.4", True),
+                        depends=["ZLIB"]),
+                "--prefix=\"$TPREFIX\" --enable-shared", False, True),
+                      
+           cmmi(package("PYTHON", "2.7.2",
+                        untar(urlfetcher("Python-2.7.2.tgz"), "Python-2.7.2", True),
+                        depends=["ZLIB"]),
+                "--prefix=\"$TPREFIX\" --enable-shared", False, True)
+         ),
+         
+         experimental(
+           shinstaller(package("NUMPY", "1.3.0",
+                               untar(urlfetcher("numpy-1.3.0.tar.gz"), "numpy-1.3.0", True),
+                               depends=["PYTHON"]),
+                       "\"$TPREFIX/bin/python\" setup.py install",
+                       osenv({"PATH":"$TPREFIX/bin:$$PATH", "LD_LIBRARY_PATH":"$TPREFIX/lib"})),
+                      
+           shinstaller(package("NUMPY", "1.4.1",
+                               untar(urlfetcher("numpy-1.4.1.tar.gz"), "numpy-1.4.1", True),
+                               depends=["PYTHON"]),
+                       "\"$TPREFIX/bin/python\" setup.py install",
+                       osenv({"PATH":"$TPREFIX/bin:$$PATH", "LD_LIBRARY_PATH":"$TPREFIX/lib"}))
+         ),
+        
+         experimental(
+           shinstaller(package("PYSETUPTOOLS", "0.6c11-2.6",
+                               nodir(urlfetcher("setuptools-0.6c11-py2.6.egg")),
+                               depends=["PYTHON"]),
+                       "sh setuptools-0.6c11-py2.6.egg",
+                       osenv({"LD_LIBRARY_PATH":"$TPREFIX/lib", "PATH":"$TPREFIX/bin:$$PATH"})),
+                      
+           shinstaller(package("PYSETUPTOOLS", "0.6c11-2.7",
+                               nodir(urlfetcher("setuptools-0.6c11-py2.7.egg")),
+                               depends=["PYTHON"]),
+                       "sh setuptools-0.6c11-py2.7.egg",
+                       osenv({"LD_LIBRARY_PATH":"$TPREFIX/lib", "PATH":"$TPREFIX/bin:$$PATH"}))
+         ),
                      
          pilinstaller(package("PIL", "1.1.7",
                               untar(urlfetcher("Imaging-1.1.7.tar.gz"), "Imaging-1.1.7", True),
                               depends=["PYTHON","ZLIB"])),
          
-         cmmi(package("CURL", "7.19.0",
-                      untar(urlfetcher("curl-7.19.0.tar.gz"), "curl-7.19.0", True)),
-              "--prefix=\"$TPREFIX\"", False, True),
+         experimental(
+           cmmi(package("CURL", "7.19.0",
+                        untar(urlfetcher("curl-7.19.0.tar.gz"), "curl-7.19.0", True)),
+                "--prefix=\"$TPREFIX\"", False, True),
+                      
+           cmmi(package("CURL", "7.22.0",
+                        untar(urlfetcher("curl-7.22.0.tar.gz"), "curl-7.22.0", True)),
+                "--prefix=\"$TPREFIX\"", False, True)
+         ),
               
          shinstaller(package("PYCURL", "7.19.0",
                              untar(urlfetcher("pycurl-7.19.0.tar.gz"), "pycurl-7.19.0", True),
@@ -125,7 +155,8 @@ MODULES=[cmmi(package("ZLIB", "1.2.4",
                      "./bootstrap.sh --prefix=\"$TPREFIX\" --with-python=\"$TPREFIX/bin/python\" --without-icu --with-libraries=filesystem,program_options,thread && ./bjam install"), 
 
          cmmi(package("PQXX", "3.1",
-                      untar(urlfetcher("libpqxx-3.1.tar.gz"), "libpqxx-3.1", True)),
+                      patcher(untar(urlfetcher("libpqxx-3.1.tar.gz"), "libpqxx-3.1", True),
+                              ["pqxx_3.1/pqxx-3.1-cstddef.patch"])),
               "--prefix=\"$TPREFIX\" --enable-shared", False, True),
 
          cmmi(package("SWIG", "1.3.40",
@@ -396,7 +427,12 @@ Options:
     
 --force
     Unused at the moment
-  
+    
+--experimental
+    When running into problems with building, like missing libraries, link problems
+    or other miscellaneous problems. This might be the option to specify. Some modules
+    are currently beeing evaluated if they are stable enough to be used in production
+    and by specifying this option these modules will be built instead.
 """
 
 def parse_buildzlib_argument(arg):
@@ -432,7 +468,7 @@ def handle_tomcat_arguments(benv):
     benv.addArg("TOMCATPORT", "8080")
     benv.addArg("TOMCATURL", "http://localhost:%s"%benv.getArg("TOMCATPORT"))  
   
-
+True
 def parse_buildpsql_argument(arg):
   tokens = arg.split(",")
   if len(tokens) == 2:
@@ -467,6 +503,7 @@ if __name__=="__main__":
                                    'reinstalldb','excludedb', 'runas=','datadir=',
                                    'urlrepo=','gitrepo=','offline',
                                    'print-modules', 'print-config', 'exclude-tomcat', 'forget-last',
+                                   'experimental',
                                    'force','tomcatport=','tomcaturl=','tomcatpwd=','help'])
   except getopt.GetoptError, e:
     usage(True, e.__str__())
@@ -499,6 +536,7 @@ if __name__=="__main__":
 
   reinstalldb=False
   rebuild = []
+  experimental_build=False
   
   for o, a in optlist:
     if o == "--prefix":
@@ -574,6 +612,8 @@ if __name__=="__main__":
       pass
     elif o == "--forget-last":
       pass
+    elif o == "--experimental":
+      experimental_build = True
     else:
       usage(True, "Unsupported argument: %s"%o)
       sys.exit(127)
@@ -602,6 +642,15 @@ if __name__=="__main__":
   env.addUniqueArg("RAVE_PGF_PORT", "8085")
   env.addUniqueArg("RAVE_CENTER_ID", "82")
   env.addUniqueArg("RAVE_DEX_SPOE", env.expandArgs("localhost:${TOMCATPORT}"))
+
+  #
+  # If we are running in experimental mode, then mark all affected installers with
+  # that information.
+  #
+  if experimental_build:
+    for m in MODULES:
+      if isinstance(m, experimental):
+        m.setExperimentalMode(True)
 
   #
   # Print the configuration settings
