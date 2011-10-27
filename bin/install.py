@@ -259,9 +259,8 @@ script will install everything in one go.
 
 The script will remember several configuration parameters between
 runs but some of them will not be stored, like passwords and
-similar items. This means that you will have to specify them
-on each run. You can also "forget" the configuration parameters
-by specifying --forget-last.
+similar items. If you want to use the previous parameters, then
+you can specify --recall-last-args
 
 Command:
 Valid commands are:
@@ -283,11 +282,10 @@ Options:
 --help
     Shows this text
 
---forget-last
-    As a default behaviour the installation script will try to
-    restore the configuration parameters from the last run.
-    However, in some circumstances this might not be a wanted
-    scenario and then you can specify this flag.
+--recall-last-args
+    If you want to use the previous arguments, then you can use
+    this option. It will try to restore the configuration parameters
+    used in the last run. 
 
 --prefix=<prefix>
     Points out where the system should be installed. 
@@ -502,14 +500,14 @@ if __name__=="__main__":
                                    'dbuser=', 'dbpwd=','dbname=','dbhost=',
                                    'reinstalldb','excludedb', 'runas=','datadir=',
                                    'urlrepo=','gitrepo=','offline',
-                                   'print-modules', 'print-config', 'exclude-tomcat', 'forget-last',
+                                   'print-modules', 'print-config', 'exclude-tomcat', 'recall-last-args',
                                    'experimental',
                                    'force','tomcatport=','tomcaturl=','tomcatpwd=','help'])
   except getopt.GetoptError, e:
     usage(True, e.__str__())
     sys.exit(127)
   
-  dorestore = True
+  dorestore = False
   doprintconfig = False
   doprintmodules = False
   
@@ -521,8 +519,8 @@ if __name__=="__main__":
       sys.exit(0)
     elif o == "--print-modules":
       doprintmodules = True
-    elif o == "--forget-last":
-      dorestore = False
+    elif o == "--recall-last-args":
+      dorestore = True
     elif o == "--print-config":
       doprintconfig = True
       
@@ -610,7 +608,7 @@ if __name__=="__main__":
       pass
     elif o == "--print-config":
       pass
-    elif o == "--forget-last":
+    elif o == "--recall-last-args":
       pass
     elif o == "--experimental":
       experimental_build = True
