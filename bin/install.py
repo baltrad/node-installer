@@ -492,7 +492,7 @@ if __name__=="__main__":
   
   try:
     optlist, args = getopt.getopt(sys.argv[1:], 'x', 
-                                  ['prefix=','tprefix','jdkhome=','with-zlib=',
+                                  ['prefix=','tprefix=','jdkhome=','with-zlib=',
                                    'with-psql=','with-rave','with-rave-gmap','with-bropo',
                                    'with-hdfjava=', 'with-bdbfs','rebuild=',
                                    'bdb-pool-max-size=',
