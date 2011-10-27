@@ -195,9 +195,10 @@ MODULES=[cmmi(package("ZLIB", "1.2.4",
 def print_modules(env):
   for module in MODULES:
     installed = "NOT INSTALLED"
-    if env.getInstalled(module.package().name()) != None:
+    ver = env.getInstalled(module.package().name())
+    if ver != None:
       installed = "INSTALLED"
-    print "{0:20s} {1:35s} {2:14s}".format(module.package().name(),module.package().version(), installed)
+    print "{0:20s} {1:35s} {2:14s}".format(module.package().name(),ver, installed)
 
 ##
 # Prints the current configuration
