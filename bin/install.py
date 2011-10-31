@@ -280,6 +280,9 @@ Valid commands are:
      Fetch all packages so that it is possible to run an installation
      in 'offline' mode. It will atempt to clean up any unessecary 
      content but it is suggested to execute clean prior fetch.
+ 
+ - dist
+     Create distribution tarball
      
 Options:
 --help
@@ -675,7 +678,7 @@ if __name__=="__main__":
     usage(True, "You can only specify one command %s"%`args`)
     sys.exit(127)
   
-  if args[0] not in ["install", "check", "clean", "fetch"]:
+  if args[0] not in ["install", "check", "clean", "fetch", "dist"]:
     usage(True, "Unknown command %s"%`args[0]`)
     sys.exit(127)
 
@@ -775,4 +778,5 @@ if __name__=="__main__":
     ni.clean(env)
   elif args[0] == "fetch":
     ni.fetch_offline_content(env)
-
+  elif args[0] == "dist":
+    ni.create_offline_tarball(env)

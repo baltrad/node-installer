@@ -23,24 +23,13 @@ Deployer
 @author Anders Henja (Swedish Meteorological and Hydrological Institute, SMHI)
 @date 2011-02-15
 '''
+import version
 from installer import installer
 from InstallerException import InstallerException
 import subprocess
 import shutil, os,tempfile
 from osenv import osenv
-from gitutil import git_describe
 
-##
-# get node version either from ../etc/version or from git tag
-def _get_node_version():
-    version_file = os.path.join(
-        os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
-        "etc/version"
-    )
-    if os.path.exists(version_file):
-        return open(version_file).read().strip(" \r\n")
-    else:
-        return git_describe()
 ##
 # Function that performs chmod. Called by a walker
 # @param mode: the mode
@@ -78,8 +67,7 @@ class deployer(installer):
 
     super(deployer, self).__init__(package, None)
 
-    self.node_version = _get_node_version()
-  
+    self.node_version = version.get_node_version()
   
   ##
   # Performs the actual installation

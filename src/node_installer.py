@@ -23,6 +23,11 @@ The overall installer that performs the installation, dependency checking et al.
 @author Anders Henja (Swedish Meteorological and Hydrological Institute, SMHI)
 @date 2011-02-02
 '''
+import os
+import subprocess
+import tempfile
+import version
+
 class node_installer:
   _installers = []
   _rebuild = []
@@ -73,4 +78,23 @@ class node_installer:
       m = self._installers[i]
       m.fetch_offline_content(benv)
     
-    
+  ##
+  #
+  def create_offline_tarball(self, benv):
+    self.fetch_offline_content(benv)
+    version.set_offline_node_version()
+    node_version = version.get_node_version()
+    target = os.path.join(
+        tempfile.gettempdir(),
+        "node-installer-%s.tar.gz" % node_version
+    )
+    os.chdir(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+    subprocess.check_call([
+        "tar",
+        "-cvpzf", target,
+        "--exclude-vcs",
+        "--exclude='*.pyc'",
+        "--transform=s/^./node-installer-%s/" % node_version,
+        "--show-transformed-names",
+        "."
+    ])
