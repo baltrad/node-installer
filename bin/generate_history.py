@@ -10,6 +10,7 @@ sys.path.append(os.path.join(FILE_DIR, "../src"))
 import gitutil
 from gitfetcher import gitfetcher
 from nodedefinition import PACKAGES, NODE_REPOSITORY
+from buildenv import buildenv
 
 PACKAGES_DIR = os.path.join(FILE_DIR, "../packages")
 
@@ -37,6 +38,11 @@ def package_path(pkg):
       gitfetcher(NODE_REPOSITORY[pkg].geturi()).project
     )
   )
+
+def fetch_package(pkg, env):
+  os.chdir(PACKAGES_DIR)
+  gitfetcher(NODE_REPOSITORY[pkg].geturi()).fetch(env)
+
 
 def find_tickets(log):
   tickets = re.findall(r"^\s+Ticket \d+.*$", log, re.M)
@@ -66,6 +72,11 @@ def main():
   else:
     until_rev = gitutil.git_describe()
   
+  env = buildenv()
+  env.addUniqueArg("GITREPO", "gitosis@git.baltrad.eu")
+
+  for pkg in PACKAGES:
+    fetch_package(pkg, env)
 
   print "Changes from", since_rev, "to", until_rev, "\n"
   
