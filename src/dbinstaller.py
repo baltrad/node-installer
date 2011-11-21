@@ -61,11 +61,11 @@ class dbinstaller(installer):
     buildfile = "%s/etc/install_db.xml"%env.getInstallerPath()
     
     if env.hasArg("REINSTALLDB") and env.getArg("REINSTALLDB") == True:
-      ocode = subprocess.call(env.expandArgs("ant -f %s %s drop-db"%(buildfile,args)), shell=True)
+      ocode = subprocess.call(env.expandArgs("$TPREFIX/ant/bin/ant -f %s %s drop-db"%(buildfile,args)), shell=True)
       if ocode != 0:
         raise InstallerException, "Failed to drop database tables"
     
-    ocode = subprocess.call(env.expandArgs("ant -f %s %s install-db"%(buildfile,args)), shell=True)
+    ocode = subprocess.call(env.expandArgs("$TPREFIX/ant/bin/ant -f %s %s install-db"%(buildfile,args)), shell=True)
     if ocode != 0:
       raise InstallerException, "Failed to install database tables"
 
