@@ -32,6 +32,7 @@ along with the baltrad-node.  If not, see http://www.gnu.org/licenses.
   <fail unless="db.name" message="You must specify -Ddb.name=db name" /> 
 
   <available file="${baltrad.db.path}/share/baltrad-db/sql/postgresql/create.sql" property="baltrad.db.create.available" />
+  <available file="${baltrad.db.path}/share/baltrad-db/sql/postgresql/data.sql" property="baltrad.db.data.available"/>
   <available file="${baltrad.db.path}/share/baltrad-db/sql/postgresql/drop.sql" property="baltrad.db.drop.available" />
 
   <available file="${baltrad.beast.path}/sql/create_db.sql" property="baltrad.beast.create.available" />
@@ -42,6 +43,7 @@ along with the baltrad-node.  If not, see http://www.gnu.org/licenses.
   <available file="${baltrad.dex.path}/sql/insert_default_dex_data.sql" property="baltrad.dex.default.available" />
 
   <fail unless="baltrad.db.create.available" message="Could not find baltrad-db sql files, use -Dbaltrad.db.path=pth" /> 
+  <fail unless="baltrad.db.data.available" message="Could not find baltrad-db sql files, use -Dbaltrad.db.path=pth" />
   <fail unless="baltrad.db.drop.available" message="Could not find baltrad-db sql files, use -Dbaltrad.db.path=pth" /> 
 
   <fail unless="baltrad.beast.create.available" message="Could not find beast sql files, use -Dbaltrad.beast.path=pth" /> 
@@ -61,6 +63,7 @@ along with the baltrad-node.  If not, see http://www.gnu.org/licenses.
          expandproperties="false"
          delimitertype="row">
       <transaction src="${baltrad.db.path}/share/baltrad-db/sql/postgresql/create.sql"/>
+      <transaction src="${baltrad.db.path}/share/baltrad-db/sql/postgresql/data.sql"/>
       <transaction src="${baltrad.beast.path}/sql/create_db.sql"/>
       <transaction src="${baltrad.dex.path}/sql/create_dex_schema.sql"/>
       <transaction src="${baltrad.dex.path}/sql/insert_default_dex_data.sql"/>
