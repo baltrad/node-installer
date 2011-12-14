@@ -53,6 +53,27 @@ class nodescripts(object):
     self._raveinstalled = raveinstalled
   
   ##
+  # Destructor that hopefully is called upon exit
+  #
+  def __del__(self):
+    self._deletefile(self._nodescript)
+    self._deletefile(self._initdscript)
+    self._deletefile(self._raveinitdscript)
+    self._deletefile(self._rcsource)
+
+  ##
+  # Tries to delete a specific file.
+  # @param name: the name of the file to be removed
+  #
+  def _deletefile(self, name):
+    try:
+      if name != None and os.path.isfile(name):
+        os.unlink(name)
+    except:
+      pass
+    
+  
+  ##
   # Creates the scripts
   #
   def create_scripts(self, env):
