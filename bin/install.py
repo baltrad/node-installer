@@ -504,7 +504,7 @@ if __name__=="__main__":
                                    'bdb-pool-max-size=',
                                    'rave-pgf-port=', "rave-center-id=", "rave-dex-spoe=",
                                    'dbuser=', 'dbpwd=','dbname=','dbhost=',
-                                   'reinstalldb','excludedb', 'runas=','datadir=',
+                                   'reinstalldb','excludedb', 'runas=','datadir=','warfile=',
                                    'urlrepo=','gitrepo=','offline',
                                    'print-modules', 'print-config', 'exclude-tomcat', 'recall-last-args',
                                    'experimental',
@@ -604,6 +604,8 @@ if __name__=="__main__":
       env.addArg("RUNASUSER", a)
     elif o == "--datadir":
       env.addArg("DATADIR", a)
+    elif o == "--warfile":
+      env.addArgInternal("WARFILE", a)
     elif o == "--urlrepo":
       env.addArg("URLREPO", a)
     elif o == "--gitrepo":
