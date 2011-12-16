@@ -46,6 +46,7 @@ class raveinstaller(installer):
                     "PGF_PORT":"$RAVE_PGF_PORT",
                     "CENTER_ID":"$RAVE_CENTER_ID",
                     "DEX_SPOE":"$RAVE_DEX_SPOE",
+                    "BUFRARG":"",
                     "RAVEROOT":"$PREFIX/rave"}, # RAVEROOT is the installation path....
                     defaultosenv={"LD_LIBRARY_PATH":""})
     super(raveinstaller, self).__init__(pkg, oenv)
@@ -58,6 +59,10 @@ class raveinstaller(installer):
     dir = self.package().fetch(env)
     
     os.chdir(dir)
+    
+    if not env.isExcluded("BBUFR"):
+      self.osenvironment().setEnvironmentVariable(env, "BUFRARG", "$PREFIX/bbufr")
+    
     self.osenvironment().setEnvironmentVariable(env, "LD_LIBRARY_PATH", "%s:%s"%(env.getLdLibraryPath(),self.osenvironment().getSnapshotVariable("LD_LIBRARY_PATH")))
     self.osenvironment().setEnvironmentVariable(env, "PATH", "%s:%s"%(env.getPath(),self.osenvironment().getSnapshotVariable("PATH")))
 

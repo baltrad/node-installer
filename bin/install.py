@@ -28,6 +28,7 @@ from jdkvalidator import jdkvalidator
 from zlibvalidator import zlibvalidator
 from psqlvalidator import psqlvalidator
 from hlhdfinstaller import hlhdfinstaller
+from bbufrinstaller import bbufrinstaller
 from bdbinstaller import bdbinstaller
 from beastinstaller import beastinstaller
 from dexinstaller import dexinstaller
@@ -168,13 +169,15 @@ MODULES=[cmmi(package("ZLIB", "1.2.4",
          # Time to install baltrad node software
          hlhdfinstaller(node_package("HLHDF", depends=["ZLIB", "HDF5"])),
 
+         bbufrinstaller(node_package("BBUFR", depends=["ZLIB"])),
+
          bdbinstaller(node_package("BALTRAD-DB", depends=["ZLIB", "HDF5", "HLHDF", "PQXX"])),
          
          beastinstaller(node_package("BEAST", depends=["BALTRAD-DB"])),
          
          dexinstaller(node_package("BALTRAD-DEX", depends=["HDFJAVA", "TOMCAT", "BALTRAD-DB", "BEAST"])),
          
-         raveinstaller(node_package("RAVE", depends=["EXPAT", "PROJ.4", "PYTHON", "NUMPY", "PYSETUPTOOLS", "PYCURL", "HLHDF"])),
+         raveinstaller(node_package("RAVE", depends=["EXPAT", "PROJ.4", "PYTHON", "NUMPY", "PYSETUPTOOLS", "PYCURL", "HLHDF", "BBUFR"])),
          
          ravegmapinstaller(node_package("RAVE-GMAP", depends=["RAVE"])), #Just use rave as dependency, rest of dependencies will trigger rave rebuild
 
@@ -378,6 +381,11 @@ Options:
     Set the port rave should run on.
     [default: 8085]
 
+--with-bufr
+    Install the bufr software. This will also affect rave so that if
+    we have specified bufr support rave will be built with bufr support
+    enabled as well.
+
 --rave-center-id=<id>
     Originating center id to be used by rave as the source of its products.
     [default: 82]
@@ -499,7 +507,7 @@ if __name__=="__main__":
   try:
     optlist, args = getopt.getopt(sys.argv[1:], 'x', 
                                   ['prefix=','tprefix=','jdkhome=','with-zlib=',
-                                   'with-psql=','with-rave','with-rave-gmap','with-bropo',
+                                   'with-psql=','with-bufr', 'with-rave','with-rave-gmap','with-bropo',
                                    'with-hdfjava=', 'with-bdbfs','rebuild=',
                                    'bdb-pool-max-size=',
                                    'rave-pgf-port=', "rave-center-id=", "rave-dex-spoe=",
@@ -537,7 +545,8 @@ if __name__=="__main__":
   env.excludeModule("RAVE")
   env.excludeModule("RAVE-GMAP")
   env.excludeModule("BROPO")
-
+  env.excludeModule("BBUFR")
+  
   reinstalldb=False
   rebuild = []
   experimental_build=False
@@ -581,6 +590,8 @@ if __name__=="__main__":
       env.addArg("BUILD_BDBFS", "yes")
     elif o == "--bdb-pool-max-size":
       env.addArg("BDB_POOL_MAX_SIZE", a)
+    elif o == "--with-bufr":
+      env.addArg("WITH_BBUFR", True)
     elif o == "--with-rave":
       env.addArg("WITH_RAVE", True)
     elif o == "--rave-pgf-port":
@@ -684,6 +695,9 @@ if __name__=="__main__":
     usage(True, "Unknown command %s"%`args[0]`)
     sys.exit(127)
 
+  if env.hasArg("WITH_BBUFR") and env.getArg("WITH_BBUFR") == True:
+    env.removeExclude("BBUFR")
+
   if env.hasArg("WITH_RAVE") and env.getArg("WITH_RAVE") == True:
     env.removeExclude("RAVE")
 
@@ -726,6 +740,8 @@ if __name__=="__main__":
     ldpath = "$TPREFIX/lib"
     ldpath = "$HDFJAVAHOME/lib/linux:%s"%ldpath
     ldpath = "%s:$PREFIX/hlhdf/lib"%ldpath
+    if not env.isExcluded("BBUFR"):
+      ldpath = "%s:$PREFIX/bbufr/lib"%ldpath
     ldpath = "%s:$PREFIX/baltrad-db/lib"%ldpath
     ldpath = "%s:$PREFIX/lib"%ldpath
     if env.hasArg("PSQLLIB") and env.getArg("PSQLLIB") != None:
