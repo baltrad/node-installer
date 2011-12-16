@@ -23,7 +23,12 @@ def git_show(obj):
 def git_log(since="", until=""):
   args = ["git", "log"]
   if since or until:
-    args.append("%s..%s" % (since, until))
+    if since != None and until != None:
+      args.append("%s..%s" % (since, until))
+    elif since != None:
+      args.append("%s.."%since)
+    elif until != None:
+      args.append(until)
   proc = subprocess.Popen(" ".join(args), shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
   stdout, stderr = proc.communicate()
   if proc.returncode != 0:
