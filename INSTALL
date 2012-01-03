@@ -70,7 +70,7 @@ good idea to remember username, password, database name and on what ip-address
 you can reach the database.
 
 *) An installed Java SDK, currently it must be OpenJDK or SUN JDK (> 1.6)
-*) gcc/g++ (version 4.1 or higher)
+*) gcc/g++/gcc-c++ (version 4.1 or higher)
 *) make (version 3.8 or higher)
 *) autoconf (version 2.59 or higher)
 *) unicode support (ICU)
