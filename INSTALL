@@ -23,8 +23,8 @@ along with node-installer.  If not, see <http://www.gnu.org/licenses/>.
 INTRODUCTION
 This installer will setup and deploy the baltrad node software. The software
 has been designed for 64-bit (and eventually 32-bit) linux distributions.
-The main installation script requires a python interpreeter even though another
-one will be installed as part of the system.
+The main installation script requires a python interpreeter even 
+though another one will be installed as part of the system.
 
 Before you start you will have to ensure that you have a number of software packages
 installed that are not allowed/not practical to be distributed as part of this package.
@@ -69,6 +69,9 @@ These parameters will be used when building the software so it probably is a
 good idea to remember username, password, database name and on what ip-address 
 you can reach the database.
 
+You will need the following packages installed before atempting to build
+the system.
+
 *) An installed Java SDK, currently it must be OpenJDK or SUN JDK (> 1.6)
 *) gcc/g++/gcc-c++ (version 4.1 or higher)
 *) make (version 3.8 or higher)
@@ -79,9 +82,12 @@ you can reach the database.
 *) bzip2 development libraries
    for redhat, centos, etc.. yum install bzip2-devel.x86_64
    for debian, ubuntu, etc.. sudo apt-get install libbz2-dev
+*) Postgres development libraries
+   for redhat, centos, etc.. yum install postgresql-devel.x86_64
+   for debian, ubuntu, etc.. sudo apt-get install postgresql-client-8.4 postgresql-client-common
 
-Some modules requires specific dependencies in order to build/compile
-and it might be a good idea installing these as well.
+You might also need to install these packages since one or more modules depends on
+these.
 
 *) PNG development libraries (Used by for example bropo)
    for redhat, centos, etc... yum install libpng-devel.x86_64
