@@ -31,5 +31,6 @@ versions = {
   "RAVE": "hudson-Rave-225-SUCCESS",
   "RAVE-GMAP": "hudson-GoogleMapsPlugin-24-SUCCESS",
   "BROPO": "hudson-bRopo-36-SUCCESS",
-  "BBUFR": "hudson-bbufr-5-SUCCESS"
+  "BBUFR": "hudson-bbufr-5-SUCCESS",
+  "BEAMB": "hudson-beamb-24-SUCCESS"
 }

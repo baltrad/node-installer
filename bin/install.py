@@ -35,6 +35,7 @@ from dexinstaller import dexinstaller
 from raveinstaller import raveinstaller
 from ravegmapinstaller import ravegmapinstaller
 from bropoinstaller import bropoinstaller
+from beambinstaller import beambinstaller
 from dbinstaller import dbinstaller, dbupgrader
 from nodescripts import nodescripts
 from deployer import deployer
@@ -182,6 +183,8 @@ MODULES=[cmmi(package("ZLIB", "1.2.4",
          ravegmapinstaller(node_package("RAVE-GMAP", depends=["RAVE"])), #Just use rave as dependency, rest of dependencies will trigger rave rebuild
 
          bropoinstaller(node_package("BROPO", depends=["RAVE"])), #Just use rave as dependency, rest of dependencies will trigger rave rebuild
+
+         beambinstaller(node_package("BEAMB", depends=["RAVE"])), #Just use rave as dependency, rest of dependencies will trigger rave rebuild
          
          dbinstaller(package("DBINSTALL", "1.0", nodir())),
          
@@ -237,6 +240,8 @@ def print_arguments(env):
     arguments.append(("--with-rave-gmap", ""))
   if env.hasArg("WITH_BROPO") and env.getArg("WITH_BROPO") == True:
     arguments.append(("--with-bropo", ""))
+  if env.hasArg("WITH_BEAMB") and env.getArg("WITH_BEAMB") == True:
+    arguments.append(("--with-beamb", ""))
   if env.hasArg("JDKHOME"):
     arguments.append(("--jdkhome=", env.getArg("JDKHOME")))
   
@@ -400,6 +405,9 @@ Options:
 --with-bropo
     Install the anomaly detector bropo. Will also cause rave to be installed.
 
+--with-beamb
+    Install the beam blockage detector beamb. Will also cause rave to be installed.
+
 --with-bdbfs
     Will build and install the baltrad db file system driver
 
@@ -507,7 +515,7 @@ if __name__=="__main__":
   try:
     optlist, args = getopt.getopt(sys.argv[1:], 'x', 
                                   ['prefix=','tprefix=','jdkhome=','with-zlib=',
-                                   'with-psql=','with-bufr', 'with-rave','with-rave-gmap','with-bropo',
+                                   'with-psql=','with-bufr', 'with-rave','with-rave-gmap','with-bropo','with-beamb',
                                    'with-hdfjava=', 'with-bdbfs','rebuild=',
                                    'bdb-pool-max-size=',
                                    'rave-pgf-port=', "rave-center-id=", "rave-dex-spoe=",
@@ -546,6 +554,7 @@ if __name__=="__main__":
   env.excludeModule("RAVE-GMAP")
   env.excludeModule("BROPO")
   env.excludeModule("BBUFR")
+  env.excludeModule("BEAMB")
   
   reinstalldb=False
   rebuild = []
@@ -604,6 +613,8 @@ if __name__=="__main__":
       env.addArg("WITH_RAVE_GMAP", True)
     elif o == "--with-bropo":
       env.addArg("WITH_BROPO", True)
+    elif o == "--with-beamb":
+      env.addArg("WITH_BEAMB", True)
     elif o == "--reinstalldb":
       reinstalldb=True
       env.addArgInternal("REINSTALLDB", True)
@@ -708,7 +719,11 @@ if __name__=="__main__":
   if env.hasArg("WITH_BROPO") and env.getArg("WITH_BROPO") == True:
     env.removeExclude("RAVE")
     env.removeExclude("BROPO")
-
+    
+  if env.hasArg("WITH_BEAMB") and env.getArg("WITH_BEAMB") == True:
+    env.removeExclude("RAVE")
+    env.removeExclude("BEAMB")
+    
   if env.hasArg("ZLIBARG"):
     buildzlib, zinc, zlib = parse_buildzlib_argument(env.getArg("ZLIBARG"))
     env.addArgInternal("ZLIBINC", zinc)

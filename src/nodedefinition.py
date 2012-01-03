@@ -51,14 +51,16 @@ _REPOS = {
   "RAVE": "$GITREPO:rave.git",
   "RAVE-GMAP": "$GITREPO:GoogleMapsPlugin.git",
   "BROPO": "$GITREPO:bropo.git",
-  "BBUFR": "$GITREPO:bbufr.git"
+  "BBUFR": "$GITREPO:bbufr.git",
+  "BEAMB": "$GITREPO:beamb.git"
 }
 
 PACKAGES = [
-  "HLHDF", "BALTRAD-DB", "BEAST", "BALTRAD-DEX", "RAVE", "RAVE-GMAP", "BROPO", "BBUFR"
+  "HLHDF", "BALTRAD-DB", "BEAST", "BALTRAD-DEX", "RAVE", "RAVE-GMAP", "BROPO", "BBUFR", "BEAMB"
 ]
 
 NODE_REPOSITORY={}
 
 for pkg in PACKAGES:
     NODE_REPOSITORY[pkg] = nodedefinition(_REPOS[pkg], versions[pkg])
+
