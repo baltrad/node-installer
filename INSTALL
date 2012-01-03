@@ -23,13 +23,18 @@ along with node-installer.  If not, see <http://www.gnu.org/licenses/>.
 INTRODUCTION
 This installer will setup and deploy the baltrad node software. The software
 has been designed for 64-bit (and eventually 32-bit) linux distributions.
-The main installation script requires a python interpreeter even 
+The main installation script requires a Python (version 2.5 or higher) interpreeter even 
 though another one will be installed as part of the system.
 
 Before you start you will have to ensure that you have a number of software packages
 installed that are not allowed/not practical to be distributed as part of this package.
 
 =========== PREREQUISITES ===========
+*) Python 2.5 or higher.
+Even though the installation script will install a python interpreeter as part
+of the system we require a Python interpreeter (> 2.5) in order to be able to
+run the installation script.
+
 *) A postgres database server must be installed (8.3.9 or higher, preferrably 
 8.4+), does not need to be installed on the same server this software is 
 installed but it must be accessible.
