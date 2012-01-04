@@ -23,13 +23,18 @@ along with node-installer.  If not, see <http://www.gnu.org/licenses/>.
 INTRODUCTION
 This installer will setup and deploy the baltrad node software. The software
 has been designed for 64-bit (and eventually 32-bit) linux distributions.
-The main installation script requires a python interpreeter even 
+The main installation script requires a Python (version 2.5 or higher) interpreeter even 
 though another one will be installed as part of the system.
 
 Before you start you will have to ensure that you have a number of software packages
 installed that are not allowed/not practical to be distributed as part of this package.
 
 =========== PREREQUISITES ===========
+*) Python 2.5 or higher.
+Even though the installation script will install a python interpreeter as part
+of the system we require a Python interpreeter (> 2.5) in order to be able to
+run the installation script.
+
 *) A postgres database server must be installed (8.3.9 or higher, preferrably 
 8.4+), does not need to be installed on the same server this software is 
 installed but it must be accessible.
@@ -111,13 +116,19 @@ to give the user an easy way to perform upgrades or rebuild specific modules if
 necessary. The installed modules are also following a dependency scheme which means
 that if you rebuild one module, all dependant modules will be rebuilt and so on.
 
+As usual when it comes to unices, depending on who you are when running the setup call, 
+you might have to create the installation directories. For example, if specifying 
+'--prefix=/opt/n2' as user 'baltrad'. You will have to create the directory /opt/n2 with 
+proper permissions before issuing the setup call.
+
 Let's get to how an installation can be performed. We want to install the software
 in /opt/n2. The java we are using is located in /opt/jdk1.6.0 and we want to use
 the postgresql apis on a ubuntu 10.10. We also want rave and bropo to be installed.
+
 This can be achieved by executing the following command:
   %> ./setup --prefix=/opt/n2 --jdkhome=/opt/jdk1.6.0 \
       --with-psql=/usr/include/postgresql,/usr/lib --with-rave-gmap --with-bropo install
-      
+
 Now the software will start fetching the different packages and hopefully build
 everything successfully but as you probably can imagine, there is always something
 that will go wrong or you forgot to specify a feature you want to install. 
