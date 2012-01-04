@@ -40,6 +40,7 @@ from dbinstaller import dbinstaller, dbupgrader
 from nodescripts import nodescripts
 from deployer import deployer
 from configinstaller import configinstaller
+from raveconfiginstaller import raveconfiginstaller
 from scriptinstaller import scriptinstaller
 from patcher import patcher
 from finished import finished
@@ -175,6 +176,8 @@ MODULES=[cmmi(package("ZLIB", "1.2.4",
          beambinstaller(node_package("BEAMB", depends=["RAVE"])), #Just use rave as dependency, rest of dependencies will trigger rave rebuild
 
          configinstaller(package("CONFIG", "1.0", nodir(), remembered=False)),
+         
+         raveconfiginstaller(package("RAVECONFIG", "1.0", nodir(), remembered=False)),
          
          dbinstaller(package("DBINSTALL", "1.0", nodir())),
          
@@ -485,7 +488,7 @@ def handle_tomcat_arguments(benv):
     benv.addArg("TOMCATPORT", "8080")
     benv.addArg("TOMCATURL", "http://localhost:%s"%benv.getArg("TOMCATPORT"))  
   
-True
+
 def parse_buildpsql_argument(arg):
   tokens = arg.split(",")
   if len(tokens) == 2:

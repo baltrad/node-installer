@@ -28,39 +28,46 @@ import time
 from installer import installer
 from InstallerException import InstallerException
 
-class configinstaller(installer):
+class raveconfiginstaller(installer):
   ##
   # Constructor
   #
   def __init__(self, package):
-    super(configinstaller, self).__init__(package, None)
-    
-  ##
-  # Checks if the provided dir exists and if not creates it
-  # @param dir: the dir name
-  def _createdir(self, dir):
-    if not os.path.exists(dir):
-      os.mkdir(dir)
-    elif not os.path.isdir(dir):
-      raise InstallerException, "%s exists but is not a directory"%dir
+    super(raveconfiginstaller, self).__init__(package, None)
+
   ##
   # Performs the actual installation
   # @param env: the build environment
   #
   def doinstall(self, env):
-    self._createdir(env.expandArgs("$PREFIX/etc"))
-
-    dst = env.expandArgs("$PREFIX/etc/bltnode.properties")
+    if not env.isExcluded("RAVE"):
+      self._create_quality_registry(env)
+    
+  ##
+  # Creates the quality registry for the various quality plugins that
+  # belongs to the different modules
+  # @param env: the build environment
+  #
+  def _create_quality_registry(self, env):
+    dst = env.expandArgs("$PREFIX/rave/etc/rave_pgf_quality_registry.xml")
     backup = dst + "%s.bak" % time.strftime("%Y%m%dT%H%M%S")
     if os.path.exists(dst):
-        shutil.move(dst, backup)
+      shutil.move(dst, backup)
     
     with open(dst, "w") as outfile:
-        outfile.write(env.expandArgs("""
-baltrad.bdb.server.type = werkzeug
-baltrad.bdb.server.uri = http://localhost:$BDB_PORT
-baltrad.bdb.server.backend.type = sqlalchemy
-baltrad.bdb.server.backend.uri = postgresql://$DBUSER:$DBPWD@$DBHOST/$DBNAME
-baltrad.bdb.server.backend.pool_size = $BDB_POOL_MAX_SIZE
-baltrad.bdb.server.backend.storage.type=database
-"""))
+      outfile.write("""<?xml version='1.0' encoding='UTF-8'?>
+<rave-pgf-quality-registry>
+  <quality-plugin name="rave-overshooting" module="rave_overshooting_quality_plugin" class="rave_overshooting_quality_plugin"/>""")
+
+      if not env.isExcluded("BROPO"):
+        outfile.write("""
+  <quality-plugin name="ropo" module="ropo_quality_plugin" class="ropo_quality_plugin"/>""")
+      
+      if not env.isExcluded("BEAMB"):
+        outfile.write("""
+  <quality-plugin name="beamb" module="beamb_quality_plugin" class="beamb_quality_plugin"/>""")
+
+      outfile.write("""
+</rave-pgf-quality-registry>
+""")
+      
