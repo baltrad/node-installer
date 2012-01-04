@@ -68,7 +68,7 @@ class dbinstaller(installer):
         raise InstallerException, "Failed to drop database tables"
       
       ocode = subprocess.call([
-        env.expandArgs("$PREFIX/baltrad-db/bin/baltrad-bdb-drop)"),
+        env.expandArgs("$PREFIX/baltrad-db/bin/baltrad-bdb-drop"),
         env.expandArgs("--conf=$PREFIX/etc/bltnode.properties")
       ])
       if ocode != 0:
@@ -79,7 +79,7 @@ class dbinstaller(installer):
       raise InstallerException, "Failed to install database tables"
 
     ocode = subprocess.call([
-      env.expandArgs("$PREFIX/baltrad-db/bin/baltrad-bdb-create)"),
+      env.expandArgs("$PREFIX/baltrad-db/bin/baltrad-bdb-create"),
       env.expandArgs("--conf=$PREFIX/etc/bltnode.properties")
     ])
     if ocode != 0:
