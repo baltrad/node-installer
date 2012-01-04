@@ -42,6 +42,7 @@ from deployer import deployer
 from configinstaller import configinstaller
 from scriptinstaller import scriptinstaller
 from patcher import patcher
+from finished import finished
 
 from node_package import node_package
 
@@ -182,6 +183,10 @@ MODULES=[cmmi(package("ZLIB", "1.2.4",
          deployer(package("DEPLOY", "1.0", nodir(), depends=["BALTRAD-DEX"], remembered=False)),
 
          scriptinstaller(package("SCRIPT", "1.0", nodir(), remembered=False)),
+         
+         # Always keep this installer at the end. It will start the system
+         # and print out relevant information.
+         finished(package("FINISHED", "1.0", nodir(), remembered=False)),
         ]
 
 ##
