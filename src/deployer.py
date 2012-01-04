@@ -79,7 +79,6 @@ class deployer(installer):
     if not os.path.exists(env.expandArgs("$TPREFIX/ant/lib/catalina-ant.jar")):
       shutil.copyfile(env.expandArgs("$TPREFIX/tomcat/lib/catalina-ant.jar"), env.expandArgs("$TPREFIX/ant/lib/catalina-ant.jar"))
     
-    self._link_baltrad_db(env)
     self._setup_permissions(env)
 
     script.restart(node=True)
@@ -119,17 +118,6 @@ class deployer(installer):
       os.chdir(cdir)
       shutil.rmtree(tmppath, True)
 
-  ##
-  # Creates a symbolic link from baltrad dbs baltrad-bdb-client.jar into tomcats lib dir
-  # @param env: the build environment
-  #
-  def _link_baltrad_db(self, env):
-    target = env.expandArgs("$TPREFIX/tomcat/lib/baltrad-bdb-client.jar")
-    source = env.expandArgs("$PREFIX/baltrad-db/share/baltrad-bdb/java/baltrad-bdb-client.jar")
-    if os.path.lexists(target):
-      os.unlink(target)
-    os.symlink(source, target)
-  
   ##
   # Setups the appropriate tomcat permissions on the tomcat installation or
   # gives information to the user that it is necessary
