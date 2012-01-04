@@ -55,7 +55,13 @@ class beastinstaller(installer):
 
     self.osenvironment().setEnvironmentVariable(env, "LD_LIBRARY_PATH", env.getLdLibraryPath())
     
-    ocode = subprocess.call(env.expandArgs("$TPREFIX/ant/bin/ant -Dprefix=$PREFIX -Dbaltraddb.path=$PREFIX/baltrad-db install"), shell=True)
+    ocode = subprocess.call([env.expandArgs(arg) for arg in [
+        "$TPREFIX/ant/bin/ant",
+        "-Dprefix=$PREFIX",
+        "-Dbaltraddb.path=$PREFIX/baltrad-db",
+        "-Dbaltraddb.bin.path=$PREFIX/baltrad-db/bin",
+        "install",
+    ]])
     if ocode != 0:
       raise InstallerException, "Failed to install beast"
     

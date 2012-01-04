@@ -49,41 +49,78 @@ class bdbinstaller(installer):
   # @param env: the build environment
   #
   def doinstall(self, env):
-    dir = self.package().fetch(env)
-    
+    dir = os.path.abspath(self.package().fetch(env))
+
     os.chdir(dir)
-    
-    ocode = subprocess.call("./waf distclean", shell=True)
-    if ocode != 0:
-      raise InstallerException, "Failed to perform distclean"
-    
-    cmd = "./waf configure --prefix=$PREFIX/baltrad-db"
-    cmd = cmd + " --jdk_dir=$JDKHOME"
-    cmd = cmd + " --hlhdf_dir=$PREFIX/hlhdf"
-    cmd = cmd + " --hdf5_dir=$TPREFIX"
-    cmd = cmd + " --boost_dir=$TPREFIX"
-    cmd = cmd + " --pqxx_dir=$TPREFIX"
-    cmd = cmd + " --build_java=yes"
-    cmd = cmd + " --build_bdbtool=yes"
-    cmd = cmd + " --build_bdbfs=$BUILD_BDBFS"
-    cmd = cmd + " --ant=$TPREFIX/ant/bin/ant"
-    cmd = cmd + " --swig=$TPREFIX/bin/swig"
-    
-    newcmd = env.expandArgs(cmd)
-    
-    ocode = subprocess.call(newcmd, shell=True)
-    if ocode != 0:
-      raise InstallerException, "Failed to configure bdb"
 
-    ocode = subprocess.call("./waf build", shell=True)
-    if ocode != 0:
-      raise InstallerException, "Failed to build bdb"
-
-    ocode = subprocess.call("./waf test", shell=True)
-    if ocode != 0:
-      raise InstallerException, "Failed to test bdb"
-
-    ocode = subprocess.call("./waf install", shell=True)
-    if ocode != 0:
-      raise InstallerException, "Failed to install bdb"
+    python = env.expandArgs("$TPREFIX/bin/python")
     
+    # create a virtual python environment
+    ocode = subprocess.call([
+        python, "./misc/virtualenv/virtualenv.py",
+         "--system-site-packages", "--distribute",
+         env.expandArgs("${PREFIX}/baltrad-db")
+    ])
+
+    if ocode != 0:
+      raise InstallerException, "Failed to create virtual environment"
+
+    pip = env.expandArgs("${PREFIX}/baltrad-db/bin/pip")
+    python = env.expandArgs("${PREFIX}/baltrad-db/bin/python")
+    
+    # we are going to run tests post-install, so add nose and mock to the env
+    self._pip_install(pip, "nose >= 1.1")
+    self._pip_install(pip, "mock >= 0.7")
+
+    self._install_and_test_python_package(
+        "baltrad.bdbcommon",
+        path=os.path.join(dir, "common"),
+        python=python,
+    )
+
+    self._install_and_test_python_package(
+        "baltrad.bdbserver",
+        path=os.path.join(dir, "server"),
+        python=python,
+    )
+
+    self._install_and_test_python_package(
+        "baltrad.bdbclient",
+        path=os.path.join(dir, "client/python"),
+        python=python,
+    )
+
+    ant = env.expandArgs("${TPREFIX}/ant/bin/ant")
+
+    self._install_java_client(
+        os.path.join(dir, "client/java"),
+        prefix=env.expandArgs("${PREFIX}/baltrad-db"),
+        ant=ant
+    )
+
+  def _install_and_test_python_package(self, name, path, python):
+    os.chdir(path)
+
+    ocode = subprocess.call([python, "setup.py", "--quiet", "install"])
+    if ocode != 0:
+        raise InstallerException, "Failed to install %s" % name
+    
+    ocode = subprocess.call([
+        python, "setup.py", "nosetests",
+        "--first-package-wins",
+        "-A 'not dbtest'",
+    ])
+    if ocode != 0:
+        raise InstallerException, "%s tests failed" % name
+    
+  def _pip_install(self, pip, package):
+    ocode = subprocess.call([pip, "install", "%s" % package])
+    if ocode != 0:
+        raise InstallerException, "Failed to pip-install '%s'" % package
+  
+  def _install_java_client(self, path, prefix, ant):
+    os.chdir(path)
+
+    ocode = subprocess.call([ant, "-Dprefix=%s" % prefix, "test", "install"])
+    if ocode != 0:
+        raise InstallerException, "Failed to install BDB java client"

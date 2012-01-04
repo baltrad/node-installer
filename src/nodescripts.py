@@ -179,9 +179,59 @@ status_ravepgf() {
   fi
 }
 
+get_bdb_pid() {
+  local  __resultvar=$$1
+  local  result=''
+
+  if [ -f "$PREFIX/etc/baltrad-bdb-server.pid" ]; then
+    result=`cat $PREFIX/etc/baltrad-bdb-server.pid`
+  fi
+
+  eval $$__resultvar="'$$result'"
+}
+
+check_bdb_status() {
+  get_bdb_pid pid
+  if [ $$pid ]; then
+    ps -p $$pid > /dev/null
+    return $$?
+  else
+    return 1
+  fi
+}
+
+status_bdb() {
+  check_bdb_status
+  if [ $$? -eq 0 ]; then
+    echo "Running"
+  else
+    echo "Stopped"
+  fi
+}
+
+start_bdb() {
+  echo -n "Starting BDB..."
+  check_bdb_status
+  if [ $$? -eq 0 ]; then
+    echo " already running"
+  else
+    $PREFIX/baltrad-db/bin/baltrad-bdb-server \
+      --conf=$PREFIX/etc/bltnode.properties \
+      --pidfile=$PREFIX/etc/baltrad-bdb-server.pid
+    echo "done"
+  fi
+}
+
+stop_bdb() {
+  echo "Stopping BDB..."
+  get_bdb_pid pid
+  kill $$pid 2&> /dev/null
+}
+
 print_usage() {
   echo "Usage: $$0 [options] {start|stop|status}"
   echo "Options: --ravepgf  - only affect ravepgf"
+  echo "         --bdb      - only affect BDB"
   echo "         --all      - affect all processes"
   echo "No options will result in only the node server to be managed"
 }
@@ -207,6 +257,9 @@ for arg in $$*; do
     --ravepgf)
       RAVEPGF_REQUEST=yes
       ;;
+    --bdb)
+      BDB_REQUEST=yes
+      ;;
     --all)
       ALL_REQUEST=yes
       ;;
@@ -224,7 +277,10 @@ fi
 if [ "$${START_REQUEST}" = "yes" ]; then
   if [ "$${RAVEPGF_REQUEST}" = "yes" ]; then
     start_ravepgf
+  elif [ "$${BDB_REQUEST}" = "yes" ]; then
+    start_bdb
   elif [ "$${ALL_REQUEST}" = "yes" ]; then
+    start_bdb
     if [ "$${RAVEPGF_SUPPORT}" = "yes" ]; then
       start_ravepgf
     fi
@@ -235,11 +291,14 @@ if [ "$${START_REQUEST}" = "yes" ]; then
 elif [ "$${STOP_REQUEST}" = "yes" ]; then
   if [ "$${RAVEPGF_REQUEST}" = "yes" ]; then
     stop_ravepgf
+  elif [ "$${BDB_REQUEST}" = "yes" ]; then
+    stop_bdb
   elif [ "$${ALL_REQUEST}" = "yes" ]; then
     stop
     if [ "$${RAVEPGF_SUPPORT}" = "yes" ]; then
       stop_ravepgf
     fi
+    stop_bdb
   else
     stop
   fi
@@ -247,6 +306,9 @@ elif [ "$${STATUS_REQUEST}" = "yes" ]; then
   if [ "$${RAVEPGF_REQUEST}" = "yes" ]; then
     echo -n "Rave PGF: "
     status_ravepgf
+  elif [ "$${BDB_REQUEST}" = "yes" ]; then
+    echo -n "BDB: "
+    status_bdb
   elif [ "$${ALL_REQUEST}" = "yes" ]; then
     echo -n "Node: "
     status
@@ -254,6 +316,8 @@ elif [ "$${STATUS_REQUEST}" = "yes" ]; then
       echo -n "Rave PGF: "
       status_ravepgf
     fi
+    echo -n "BDB: "
+    status_bdb
   else
     echo -n "Node: "
     status

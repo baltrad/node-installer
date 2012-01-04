@@ -39,6 +39,7 @@ from beambinstaller import beambinstaller
 from dbinstaller import dbinstaller, dbupgrader
 from nodescripts import nodescripts
 from deployer import deployer
+from configinstaller import configinstaller
 from scriptinstaller import scriptinstaller
 from patcher import patcher
 
@@ -150,21 +151,7 @@ MODULES=[cmmi(package("ZLIB", "1.2.4",
          shinstaller(package("ANT", "1.8.0",
                              untar(urlfetcher("apache-ant-1.8.0-bin.tar.gz"), ".", True)),
                      "rm -fr \"$TPREFIX/ant\"; mv -f apache-ant-1.8.0 \"$TPREFIX/ant\""),
-                     
-         shinstaller(package("BOOST", "1.42.0",
-                             patcher(untar(urlfetcher("boost_1_42_0.tar.gz"), "boost_1_42_0", True),
-                                     ["boost_1_42/gcc-4.5-mpl-1.42.0.patch"])),
-                     "./bootstrap.sh --prefix=\"$TPREFIX\" --with-python=\"$TPREFIX/bin/python\" --without-icu --with-libraries=filesystem,program_options,thread && ./bjam install"), 
-
-         cmmi(package("PQXX", "3.1",
-                      patcher(untar(urlfetcher("libpqxx-3.1.tar.gz"), "libpqxx-3.1", True),
-                              ["pqxx_3.1/pqxx-3.1-cstddef.patch"])),
-              "--prefix=\"$TPREFIX\" --enable-shared", False, True),
-
-         cmmi(package("SWIG", "1.3.40",
-                      untar(urlfetcher("swig-1.3.40.tar.gz"), "swig-1.3.40", True)),
-              "--prefix=\"$TPREFIX\" --with-java=\"$JDKHOME/bin/java\" --with-javac=\"$JDKHOME/bin/javac\" --with-javaincl=\"$JDKHOME/include\" --with-python=\"$TPREFIX/bin/python\"", False, True),
-              
+                                   
          hdfjavasetupinstaller(package("HDFJAVASETUP", "2.6.1", depends=["TOMCAT", "HDFJAVA"])),
          
          # Time to install baltrad node software
@@ -185,6 +172,8 @@ MODULES=[cmmi(package("ZLIB", "1.2.4",
          bropoinstaller(node_package("BROPO", depends=["RAVE"])), #Just use rave as dependency, rest of dependencies will trigger rave rebuild
 
          beambinstaller(node_package("BEAMB", depends=["RAVE"])), #Just use rave as dependency, rest of dependencies will trigger rave rebuild
+
+         configinstaller(package("CONFIG", "1.0", nodir(), remembered=False)),
          
          dbinstaller(package("DBINSTALL", "1.0", nodir())),
          
@@ -411,6 +400,9 @@ Options:
 --with-bdbfs
     Will build and install the baltrad db file system driver
 
+--bdb-port=8090
+    BDB server port
+
 --bdb-pool-max-size=<N>
     Set the pool size for bdb connections to <N>
     [default: 10]
@@ -517,7 +509,7 @@ if __name__=="__main__":
                                   ['prefix=','tprefix=','jdkhome=','with-zlib=',
                                    'with-psql=','with-bufr', 'with-rave','with-rave-gmap','with-bropo','with-beamb',
                                    'with-hdfjava=', 'with-bdbfs','rebuild=',
-                                   'bdb-pool-max-size=',
+                                   'bdb-pool-max-size=', "bdb-port=",
                                    'rave-pgf-port=', "rave-center-id=", "rave-dex-spoe=",
                                    'dbuser=', 'dbpwd=','dbname=','dbhost=',
                                    'reinstalldb','excludedb', 'runas=','datadir=','warfile=',
@@ -599,6 +591,8 @@ if __name__=="__main__":
       env.addArg("BUILD_BDBFS", "yes")
     elif o == "--bdb-pool-max-size":
       env.addArg("BDB_POOL_MAX_SIZE", a)
+    elif o == "--bdb-port":
+      env.addArg("BDB_PORT", a)
     elif o == "--with-bufr":
       env.addArg("WITH_BBUFR", True)
     elif o == "--with-rave":
@@ -667,6 +661,7 @@ if __name__=="__main__":
   handle_tomcat_arguments(env)
   
   env.addUniqueArg("BDB_POOL_MAX_SIZE", "10")
+  env.addUniqueArg("BDB_PORT", "8090")
   env.addUniqueArg("RAVE_PGF_PORT", "8085")
   env.addUniqueArg("RAVE_CENTER_ID", "82")
   env.addUniqueArg("RAVE_DEX_SPOE", env.expandArgs("localhost:${TOMCATPORT}"))

@@ -40,7 +40,9 @@ class dbinstaller(installer):
     if oenv == None:
       oenv = osenv({"ANT_HOME":"$TPREFIX/ant",
                     "JAVA_HOME":"$JDKHOME",
-                    "PATH":"$TPREFIX/bin:$$PATH"})
+                    "PATH":"$TPREFIX/bin:$$PATH",
+                    "LD_LIBRARY_PATH":"$TPREFIX/lib:$PREFIX/hlhdf/lib:$$LD_LIBRARY_PATH"},
+                    defaultosenv={"LD_LIBRARY_PATH":""})
     super(dbinstaller, self).__init__(pkg, oenv)
   
   ##
@@ -52,7 +54,7 @@ class dbinstaller(installer):
       print "Excluded: Database table installation"
       return
     dbargs = "-Ddb.user=$DBUSER -Ddb.pwd=$DBPWD -Ddb.host=$DBHOST -Ddb.name=$DBNAME"
-    args = "%s -Dbaltrad.db.path=$PREFIX/baltrad-db -Dbaltrad.beast.path=$PREFIX/beast -Dbaltrad.dex.path=$PREFIX/BaltradDex" % dbargs
+    args = "%s -Dbaltrad.beast.path=$PREFIX/beast -Dbaltrad.dex.path=$PREFIX/BaltradDex" % dbargs
     
     if not os.path.isdir(env.expandArgs("$DATADIR")):
       os.mkdir(env.expandArgs("$DATADIR"))
@@ -64,11 +66,25 @@ class dbinstaller(installer):
       ocode = subprocess.call(env.expandArgs("$TPREFIX/ant/bin/ant -f %s %s drop-db"%(buildfile,args)), shell=True)
       if ocode != 0:
         raise InstallerException, "Failed to drop database tables"
-    
+      
+      ocode = subprocess.call([
+        env.expandArgs("$PREFIX/baltrad-db/bin/baltrad-bdb-drop)"),
+        env.expandArgs("--conf=$PREFIX/etc/bltnode.properties")
+      ])
+      if ocode != 0:
+        raise InstallerException, "Faield to drop BDB"
+        
     ocode = subprocess.call(env.expandArgs("$TPREFIX/ant/bin/ant -f %s %s install-db"%(buildfile,args)), shell=True)
     if ocode != 0:
       raise InstallerException, "Failed to install database tables"
 
+    ocode = subprocess.call([
+      env.expandArgs("$PREFIX/baltrad-db/bin/baltrad-bdb-create)"),
+      env.expandArgs("--conf=$PREFIX/etc/bltnode.properties")
+    ])
+    if ocode != 0:
+      raise InstallerException, "Faield to create BDB"
+    
 
 ##
 # The database upgrader, should always be executed so setup package for that
@@ -82,7 +98,9 @@ class dbupgrader(dbinstaller):
     if oenv == None:
       oenv = osenv({"ANT_HOME":"$TPREFIX/ant",
                     "JAVA_HOME":"$JDKHOME",
-                    "PATH":"$TPREFIX/bin:$$PATH"})
+                    "PATH":"$TPREFIX/bin:$$PATH",
+                    "LD_LIBRARY_PATH":"$TPREFIX/lib:$PREFIX/hlhdf/lib:$$LD_LIBRARY_PATH"},
+                    defaultosenv={"LD_LIBRARY_PATH":""})
     super(dbupgrader, self).__init__(pkg, oenv)
   
   ##
@@ -100,3 +118,9 @@ class dbupgrader(dbinstaller):
     if ocode != 0:
       raise InstallerException, "Failed to upgrade db"
 
+    ocode = subprocess.call([
+      env.expandArgs("$PREFIX/baltrad-db/bin/baltrad-bdb-upgrade"),
+      env.expandArgs("--conf=$PREFIX/etc/bltnode.properties")
+    ])
+    if ocode != 0:
+      raise InstallerException, "Failed to upgrade BDB"
