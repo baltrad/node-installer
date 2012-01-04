@@ -63,4 +63,18 @@ class finished(installer):
     print "System has been installed and started"
     print "You should be able to access the system by navigating a browser to:"
     print env.expandArgs("$TOMCATURL/BaltradDex")
-
+    print ""
+    print ""
+    print "Your BDB sources might not be up-to-date. You can import them from"
+    print "Rave's radar-db with the following command:"
+    print ""
+    print env.expandArgs("$PREFIX/baltrad-db/bin/baltrad-bdb-client \\")
+    print "  import_sources \\"
+    print env.expandArgs("  --url=http://localhost:$BDB_PORT \\")
+    print env.expandArgs("  --dry-run \\")
+    print env.expandArgs("  $PREFIX/rave/config/odim_source.xml")
+    print ""
+    print "You can omit some changes by adding '--ignore=src' to the command."  
+    print "Once you are satisified with what the importer will do, omit the"
+    print "'--dry-run' switch and let it work on the actual database."
+    print ""
