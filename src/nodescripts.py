@@ -224,9 +224,14 @@ start_bdb() {
 }
 
 stop_bdb() {
-  echo "Stopping BDB..."
+  echo -n "Stopping BDB..."
   get_bdb_pid pid
-  kill $$pid 2&> /dev/null
+  if [ $$pid ]; then
+    kill $$pid 2&> /dev/null
+    echo "done"
+  else
+    echo "not running"
+  fi
 }
 
 print_usage() {
