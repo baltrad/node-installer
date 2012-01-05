@@ -702,7 +702,7 @@ if __name__=="__main__":
     env.addArgInternal("KEYSTOREPWD", pwd)
   
   # set defaults for whatever arguments we didn't get from the user
-  env.addUniqueArg("PREFIX", "/opt/n2")
+  env.addUniqueArg("PREFIX", "/opt/baltrad")
   env.addUniqueArg("TPREFIX", env.expandArgs("${PREFIX}/third_party"))
   env.addUniqueArg("URLREPO", "http://git.baltrad.eu/blt_dependencies")
   env.addUniqueArg("GITREPO", "gitosis@git.baltrad.eu")
