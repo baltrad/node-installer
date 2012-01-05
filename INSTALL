@@ -103,6 +103,23 @@ Most of the software is built from scratch (both third-party libraries and
 the baltrad software). During the build all fetched software will be placed
 in the directory <node-installer-root>/packages.
 
+The communication between the different nodes are handled by certificates. You can
+either specify a specific keystore file on command line and if you haven't, you
+will get a number of questions during installation.
+
+There are three arguments that are quite cruicial for this to work.
+--keystore=<file>   points at a specific keystore file. Can be omitted and then it will use the already installed one
+ or if there is no such file, ask a number of questions and generate it for you.
+ 
+--keystorepwd=<pwd>  specify this one to add the key and store password to either open or create the keystore file.
+
+--nodename=<name>    This is essential for identification purposes in the keystore for a specific alias.
+ I.e. if you specify a keystore, make sure that node name is the one 
+
+If not provided, the hostname will be used but
+ it is recommended that you specify this on installation. The node name is also the name of the alias in the keystore
+
+
 The installation only requires a call to the setup script. There are quite a few
 arguments that can be provided to the script in order to enable/disable features
 and also to generate offline installation content etc. Please type

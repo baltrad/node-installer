@@ -69,19 +69,19 @@ class bbufrinstaller(installer):
     cdir = self.package().fetch(env)
     
     os.chdir(cdir)
-    
+
     # Dont check error code for distclean, it will fail if fresh build
     # so we wait with failing until next call is performed
     subprocess.call("make distclean", shell=True)
 
     cmd = "./configure --prefix=\"$PREFIX/bbufr\""
-    cflags=""
-    ldflags=""
+    cflags="CFLAGS=-I$TPREFIX/include"
+    ldflags="LDFLAGS=-L$TPREFIX/lib"
     zinc,zlib = self.get_zlib_args(env)
     if zinc != None:
-      cflags="CFLAGS=%s"%zinc
+      cflags="%s %s"%(cflags, zinc)
     if zlib != None:
-      ldflags="LDFLAGS=%s"%zlib
+      ldflags="%s %s"%(ldflags, zlib)
 
     cmd = "%s %s %s"%(cflags,ldflags,cmd)
     

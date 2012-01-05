@@ -103,7 +103,6 @@ class deployer(installer):
       ocode = subprocess.call(env.expandArgs("$JDKHOME/bin/jar -xvf %s"%warFile), shell=True)
       if ocode != 0:
         raise InstallerException, "Could not extract war"
-      print "tmppath = %s"%tmppath
       self._write_dex_jdbc_properties(env)
       self._write_dex_fc_properties(env)
       self._write_db_properties(env)
@@ -117,7 +116,7 @@ class deployer(installer):
       self._deploywar(env, tmpwarpath)
     finally:
       os.chdir(cdir)
-      #shutil.rmtree(tmppath, True)
+      shutil.rmtree(tmppath, True)
 
   ##
   # Setups the appropriate tomcat permissions on the tomcat installation or
