@@ -65,7 +65,7 @@ class deployer(installer):
                     "PATH":"$TPREFIX/bin:$$PATH",
                     "LD_LIBRARY_PATH":""})
 
-    super(deployer, self).__init__(package, None)
+    super(deployer, self).__init__(package, oenv)
 
     self.node_version = version.get_node_version()
   
