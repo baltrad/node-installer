@@ -217,15 +217,21 @@ start_bdb() {
   else
     $PREFIX/baltrad-db/bin/baltrad-bdb-server \
       --conf=$PREFIX/etc/bltnode.properties \
-      --pidfile=$PREFIX/etc/baltrad-bdb-server.pid
+      --pidfile=$PREFIX/etc/baltrad-bdb-server.pid \
+      --logfile=$PREFIX/baltrad-db/baltrad-bdb-server.log
     echo "done"
   fi
 }
 
 stop_bdb() {
-  echo "Stopping BDB..."
+  echo -n "Stopping BDB..."
   get_bdb_pid pid
-  kill $$pid 2&> /dev/null
+  if [ $$pid ]; then
+    kill $$pid 2&> /dev/null
+    echo "done"
+  else
+    echo "not running"
+  fi
 }
 
 print_usage() {
