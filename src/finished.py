@@ -25,7 +25,7 @@ This is the final step. The system is stopped and started.
 '''
 from installer import installer
 from InstallerException import InstallerException
-import subprocess, os, stat
+import subprocess
 
 ##
 # The node starter
@@ -60,7 +60,8 @@ class finished(installer):
       raise InstallerException, "Could not start node"
 
     print ""
-    print "System has been installed and started"
+    print "===== SUCCESS ======"
+    print "System has sucessfully been installed and started"
     print "You should be able to access the system by navigating a browser to:"
     print env.expandArgs("$TOMCATURL/BaltradDex")
     print ""

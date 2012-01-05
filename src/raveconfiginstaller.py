@@ -26,7 +26,6 @@ import shutil
 import time
 
 from installer import installer
-from InstallerException import InstallerException
 
 class raveconfiginstaller(installer):
   ##

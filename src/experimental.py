@@ -24,9 +24,6 @@ ways. For example when trying out an upgraded module.
 @author Anders Henja (Swedish Meteorological and Hydrological Institute, SMHI)
 @date 2011-10-26
 '''
-import os
-import subprocess
-from InstallerException import InstallerException
 from installer import installer
 
 ##

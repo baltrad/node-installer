@@ -24,7 +24,7 @@ RAVE Installer
 @date 2011-10-05
 '''
 from installer import installer
-import os, subprocess, string
+import os, subprocess
 from osenv import osenv
 from InstallerException import InstallerException
 

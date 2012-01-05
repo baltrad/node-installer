@@ -24,7 +24,7 @@ BBUFR Installer
 @date 2011-12-16
 '''
 from installer import installer
-import os, subprocess, platform, shutil, string
+import os, subprocess
 from osenv import osenv
 from InstallerException import InstallerException
 

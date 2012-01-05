@@ -44,6 +44,7 @@ from raveconfiginstaller import raveconfiginstaller
 from scriptinstaller import scriptinstaller
 from patcher import patcher
 from finished import finished
+from prepareinstaller import prepareinstaller
 
 from node_package import node_package
 
@@ -61,7 +62,9 @@ from experimental import experimental
 # HDF5. But since HDF5 is dependent on ZLIB, HDF5 must get the depends set to ZLIB
 # so that HDF5 is rebuilt each time ZLIB is rebuilt.
 ##
-MODULES=[cmmi(package("ZLIB", "1.2.4",
+MODULES=[prepareinstaller(package("PREPARE", "1.0", nodir(), remembered=False)),
+         
+         cmmi(package("ZLIB", "1.2.4",
                       untar(urlfetcher("zlib-1.2.4.tar.gz"), "zlib-1.2.4", True)),
               "--prefix=\"${TPREFIX}\"", False, True,
               foptionalarg=zlib_optional_arg),
