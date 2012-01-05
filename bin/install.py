@@ -45,6 +45,7 @@ from scriptinstaller import scriptinstaller
 from patcher import patcher
 from finished import finished
 from prepareinstaller import prepareinstaller
+from keystoreinstaller import keystoreinstaller
 
 from node_package import node_package
 
@@ -160,6 +161,8 @@ MODULES=[prepareinstaller(package("PREPARE", "1.0", nodir(), remembered=False)),
          hdfjavasetupinstaller(package("HDFJAVASETUP", "2.6.1", depends=["TOMCAT", "HDFJAVA"])),
          
          # Time to install baltrad node software
+         keystoreinstaller(package("KEYSTORE", "1.0", nodir())),
+         
          hlhdfinstaller(node_package("HLHDF", depends=["ZLIB", "HDF5"])),
 
          bbufrinstaller(node_package("BBUFR", depends=["ZLIB"])),
@@ -212,7 +215,6 @@ def print_modules(env):
 # Prints the current configuration
 #
 def print_arguments(env):
-  
   arguments = [("--prefix=", env.getArg("PREFIX")),
                ("--tprefix=", env.getArg("TPREFIX")),
                ("--urlrepo=", env.getArg("URLREPO")),
@@ -220,7 +222,8 @@ def print_arguments(env):
                ("--dbname=", env.getArg("DBNAME")),
                ("--dbhost=", env.getArg("DBHOST")),
                ("--runas=", env.getArg("RUNASUSER")),
-               ("--with-hdfjava=", env.getArg("HDFJAVAHOME"))]
+               ("--with-hdfjava=", env.getArg("HDFJAVAHOME")),
+               ("--nodename=", env.getArg("NODENAME"))]
   
   if env.hasArg("ZLIBARG"):
     arguments.append(("--with-zlib=", env.getArg("ZLIBARG")))
@@ -244,7 +247,9 @@ def print_arguments(env):
     arguments.append(("--with-beamb", ""))
   if env.hasArg("JDKHOME"):
     arguments.append(("--jdkhome=", env.getArg("JDKHOME")))
-  
+  if env.hasArg("KEYSTORE"):
+    arguments.append(("--keystore=", env.getArg("KEYSTORE")))
+
   for a in arguments:
     print "{0:25s} {1:35s}".format(a[0], a[1])
 
@@ -301,6 +306,10 @@ Options:
     this option. It will try to restore the configuration parameters
     used in the last run. 
 
+--nodename
+    This attribute should really be specified but there is a default value which
+    is the hostname as shown by the command 'hostname'.
+
 --prefix=<prefix>
     Points out where the system should be installed. 
     [Default /opt/n2]
@@ -312,6 +321,17 @@ Options:
 --jdkhome=<jdkhome>
     Points out the jdkhome directory. If omitted, the installer will
     try to find a valid jdk.
+
+--keystore=<path>
+    Point out the java keystore to use when configuring setting up the
+    different modules for certification.
+    If not specified, a number of questions will be asked and then a
+    keystore will be generated for you. Unless the keystore file can
+    be found in $PREFIX/etc/.java-keystore, in that case it will be
+    verified and eventually used.
+
+--keystorepwd=<pwd>
+    Specifies the password to use when opening the keystore and the certificate
 
 --with-zlib=yes|no|<zlibroot>|<zlibinc>,<zliblib>
     Specifies if zlib should be built by the installer or not. 
@@ -349,7 +369,7 @@ Options:
 --dbhost=<host>
     Specified the database host to use. 
     [Default 127.0.0.1]
-    
+
 --with-hdfjava=<hdf java root>
     Specifies the hdf java root installation directory. 
     If omitted, the installer will install it's own version of hdf-java.
@@ -522,7 +542,7 @@ if __name__=="__main__":
                                    'with-hdfjava=', 'with-bdbfs','rebuild=',
                                    'bdb-pool-max-size=', "bdb-port=",
                                    'rave-pgf-port=', "rave-center-id=", "rave-dex-spoe=",
-                                   'dbuser=', 'dbpwd=','dbname=','dbhost=',
+                                   'dbuser=', 'dbpwd=','dbname=','dbhost=','keystore=','keystorepwd=','nodename=',
                                    'reinstalldb','excludedb', 'runas=','datadir=','warfile=',
                                    'urlrepo=','gitrepo=','offline',
                                    'print-modules', 'print-config', 'exclude-tomcat', 'recall-last-args',
@@ -578,6 +598,12 @@ if __name__=="__main__":
       env.addArg("DBNAME", a)
     elif o == "--dbhost":
       env.addArg("DBHOST", a)
+    elif o == "--nodename":
+      env.addArg("NODENAME", a)
+    elif o == "--keystore":
+      env.addArg("KEYSTORE", a)
+    elif o == "--keystorepwd":
+      env.addArgInternal("KEYSTOREPWD", a)
     elif o == "--rebuild":
       rebuild = a.split(",")
     elif o == "--with-zlib":
@@ -651,12 +677,35 @@ if __name__=="__main__":
       usage(True, "Unsupported argument: %s"%o)
       sys.exit(127)
 
+  if not env.hasArg("TOMCATPWD"):
+    print "--tomcatpwd not specified, please specify password."
+    pwd = None
+    while pwd == None:
+      pwd1 = raw_input("Enter password: ")
+      pwd2 = raw_input("Again: ")
+      if pwd1 == pwd2:
+        pwd = pwd1
+      else:
+        print "Passwords not matching"
+    env.addArgInternal("TOMCATPWD", pwd)
+
+  if not env.hasArg("KEYSTOREPWD"):
+    print "--keystorepass not specified, please specify password."
+    pwd = None
+    while pwd == None:
+      pwd1 = raw_input("Enter password: ")
+      pwd2 = raw_input("Again: ")
+      if pwd1 == pwd2:
+        pwd = pwd1
+      else:
+        print "Passwords not matching"
+    env.addArgInternal("KEYSTOREPWD", pwd)
+  
   # set defaults for whatever arguments we didn't get from the user
   env.addUniqueArg("PREFIX", "/opt/n2")
   env.addUniqueArg("TPREFIX", env.expandArgs("${PREFIX}/third_party"))
   env.addUniqueArg("URLREPO", "http://git.baltrad.eu/blt_dependencies")
   env.addUniqueArg("GITREPO", "gitosis@git.baltrad.eu")
-  env.addUniqueArgInternal("TOMCATPWD", "secret")
   env.addUniqueArg("HDFJAVAHOME", env.expandArgs("${TPREFIX}/hdf-java"))
   env.addUniqueArg("DBUSER", "baltrad")
   env.addUniqueArgInternal("DBPWD", "baltrad")
@@ -664,6 +713,12 @@ if __name__=="__main__":
   env.addUniqueArg("DBHOST", "127.0.0.1")
   env.addUniqueArg("BUILD_BDBFS", "no")
   env.addUniqueArg("RUNASUSER", getpass.getuser())
+  
+  if not env.hasArg("NODENAME"):
+    import socket
+    nodename = socket.gethostname()
+    print "NODENAME WASN'T SPECIFIED, DEFAULTING TO: %s"%nodename
+    env.addArg("NODENAME", nodename)
   
   #
   # We must ensure that the tomcatport and tomcaturl port is not conflicting

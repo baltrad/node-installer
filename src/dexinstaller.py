@@ -56,7 +56,7 @@ class dexinstaller(installer):
 
     self.osenvironment().setEnvironmentVariable(env, "LD_LIBRARY_PATH", env.getLdLibraryPath())
     
-    ocode = subprocess.call(env.expandArgs("$TPREFIX/ant/bin/ant -Dinstall.prefix=$PREFIX -Dbaltrad.db.path=$PREFIX/baltrad-db -Dbeast.path=$PREFIX/beast -Djavahdf.path=$HDFJAVAHOME install"), shell=True)
+    ocode = subprocess.call(env.expandArgs("$TPREFIX/ant/bin/ant -Dinstall.prefix=$PREFIX -Dbaltrad.db.path=$PREFIX/baltrad-db -Dbeast.path=$PREFIX/beast -Djavahdf.path=$HDFJAVAHOME -Djksfile=$PREFIX/etc/.java-keystore install"), shell=True)
     if ocode != 0:
       raise InstallerException, "Failed to install dex"
     
