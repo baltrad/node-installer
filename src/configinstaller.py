@@ -55,8 +55,8 @@ class configinstaller(installer):
     if os.path.exists(dst):
         shutil.move(dst, backup)
     
-    with open(dst, "w") as outfile:
-        outfile.write(env.expandArgs("""
+    outfile = open(dst, "w")
+    outfile.write(env.expandArgs("""
 baltrad.bdb.server.type = werkzeug
 baltrad.bdb.server.uri = http://localhost:$BDB_PORT
 baltrad.bdb.server.backend.type = sqlalchemy

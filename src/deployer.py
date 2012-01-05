@@ -217,12 +217,12 @@ db.pwd=$DBPWD
     source2 = "./WEB-INF/conf/%s"%configfile
     lines = []
     if os.path.exists(source1):
-      with open(source1) as fp:
-        lines = fp.readlines()
+      fp = open(source1)
+      lines = fp.readlines()
       fp.close()
     elif os.path.exists(source2):
-      with open(source2) as fp:
-        lines = fp.readlines()
+      fp = open(source2)
+      lines = fp.readlines()
       fp.close()
     
     outlines = []

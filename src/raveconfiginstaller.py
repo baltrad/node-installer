@@ -53,20 +53,20 @@ class raveconfiginstaller(installer):
     if os.path.exists(dst):
       shutil.move(dst, backup)
     
-    with open(dst, "w") as outfile:
-      outfile.write("""<?xml version='1.0' encoding='UTF-8'?>
+    outfile = open(dst, "w")
+    outfile.write("""<?xml version='1.0' encoding='UTF-8'?>
 <rave-pgf-quality-registry>
   <quality-plugin name="rave-overshooting" module="rave_overshooting_quality_plugin" class="rave_overshooting_quality_plugin"/>""")
 
-      if not env.isExcluded("BROPO"):
-        outfile.write("""
+    if not env.isExcluded("BROPO"):
+      outfile.write("""
   <quality-plugin name="ropo" module="ropo_quality_plugin" class="ropo_quality_plugin"/>""")
       
-      if not env.isExcluded("BEAMB"):
-        outfile.write("""
+    if not env.isExcluded("BEAMB"):
+      outfile.write("""
   <quality-plugin name="beamb" module="beamb_quality_plugin" class="beamb_quality_plugin"/>""")
 
-      outfile.write("""
+    outfile.write("""
 </rave-pgf-quality-registry>
 """)
-      
+  
