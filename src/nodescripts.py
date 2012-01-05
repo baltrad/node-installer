@@ -217,7 +217,8 @@ start_bdb() {
   else
     $PREFIX/baltrad-db/bin/baltrad-bdb-server \
       --conf=$PREFIX/etc/bltnode.properties \
-      --pidfile=$PREFIX/etc/baltrad-bdb-server.pid
+      --pidfile=$PREFIX/etc/baltrad-bdb-server.pid \
+      --logfile=$PREFIX/baltrad-db/baltrad-bdb-server.log
     echo "done"
   fi
 }
