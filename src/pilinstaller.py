@@ -58,8 +58,11 @@ class pilinstaller(installer):
   # @return the name of the generated setup script
   #
   def generate_setupscript(self, env):
+    import re
     zinc = "%s/include"%env.getArg("TPREFIX")
     zlib = "%s/lib"%env.getArg("TPREFIX")
+    
+    zlibexcluded = env.isExcluded("ZLIB")
     
     if env.hasArg("ZLIBLIB") or env.hasArg("ZLIBINC"):
       zinc=""
@@ -75,7 +78,12 @@ class pilinstaller(installer):
     for l in inlines:
       tl = l
       if tl.find("ZLIB_ROOT = None") >= 0:
-        tl = "ZLIB_ROOT = \"%s\",\"%s\"\n"%(zlib,zinc)
+        if not zlibexcluded:
+          tl = "ZLIB_ROOT = \"%s\",\"%s\"\n"%(zlib,zinc)
+      elif tl.find("library_dirs = []") >= 0:
+        tl = re.sub("library_dirs = \[\]",env.expandArgs("library_dirs = [\"$TPREFIX/lib\"]"),tl)
+      elif tl.find("include_dirs = []") >= 0:
+        tl = re.sub("include_dirs = \[\]",env.expandArgs("include_dirs = [\"$TPREFIX/include\"]"),tl)
       ofp.write(tl)
     ifp.close()
     ofp.close()
@@ -93,12 +101,9 @@ class pilinstaller(installer):
     
     os.chdir(dir)
     
-    setupscript="setup.py"
-    if not env.isExcluded("ZLIB"):
-      setupscript = self.generate_setupscript(env)
+    setupscript = self.generate_setupscript(env)
 
     cmdstr = env.expandArgs("\"$TPREFIX/bin/python\" %s install" % setupscript)
     code = subprocess.call(cmdstr, shell=True)
     if code != 0:
       raise InstallerException, "Failed to execute command %s for %s (%s)"%(cmdstr, name,version)
-    
