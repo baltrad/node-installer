@@ -145,6 +145,12 @@ MODULES=[prepareinstaller(package("PREPARE", "1.0", nodir(), remembered=False)),
                      "\"$TPREFIX/bin/python\" setup.py install",
                      osenv({"LD_LIBRARY_PATH":"$TPREFIX/lib", "PATH":"$TPREFIX/bin:$$PATH"})),
          
+         shinstaller(package("PYCRYPTO", "2.4.1",
+                             untar(urlfetcher("pycrypto-2.4.1.tar.gz"), "pycrypto-2.4.1", True),
+                             depends=["PYTHON"]),
+                     "\"$TPREFIX/bin/python\" setup.py install",
+                     osenv({"LD_LIBRARY_PATH":"$TPREFIX/lib", "PATH":"$TPREFIX/bin:$$PATH"})),
+                     
          tomcatinstaller(package("TOMCAT", "6.0.33",
                                  untar(urlfetcher("apache-tomcat-6.0.33.tar.gz"), "apache-tomcat-6.0.33", True))),
          
