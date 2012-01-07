@@ -69,7 +69,7 @@ class keystoreinstaller(installer):
 
     genkey = False
     if os.path.exists(dst):
-      ocode = subprocess.call(env.expandArgs("keytool -list -v -keystore \"$PREFIX/etc/.java-keystore\" -keypass \"$KEYSTOREPWD\" -storepass \"$KEYSTOREPWD\" -alias $NODENAME"), shell=True)
+      ocode = subprocess.call(env.expandArgs("$JDKHOME/bin/keytool -list -v -keystore \"$PREFIX/etc/.java-keystore\" -keypass \"$KEYSTOREPWD\" -storepass \"$KEYSTOREPWD\" -alias $NODENAME"), shell=True)
       if ocode != 0:
         genkey = True
     else:
@@ -85,7 +85,7 @@ class keystoreinstaller(installer):
       country = raw_input("Country: ")
       cc = raw_input("Country code (e.g. PL): ")
 
-      cmd = env.expandArgs("keytool -genkey -alias \"$NODENAME\" -keystore \"$PREFIX/etc/.java-keystore\"" +
+      cmd = env.expandArgs("$JDKHOME/bin/keytool -genkey -alias \"$NODENAME\" -keystore \"$PREFIX/etc/.java-keystore\"" +
                            " -keypass \"$KEYSTOREPWD\" -keyalg DSA -sigalg DSA -validity 1825 "+
                            " -storepass \"$KEYSTOREPWD\" -dname \"cn=%s, ou=%s, o=%s, l=%s, st=%s, c=%s\""%(owner, unit, org, city, country, cc))
 
@@ -97,9 +97,49 @@ class keystoreinstaller(installer):
       if ocode != 0:
         raise InstallerException, "failed to generate keystore alias"
 
-    ocode = subprocess.call(env.expandArgs("keytool -list -v -keystore \"$PREFIX/etc/.java-keystore\" -keypass \"$KEYSTOREPWD\" -storepass \"$KEYSTOREPWD\" -alias $NODENAME"), shell=True)
+    ocode = subprocess.call(env.expandArgs("$JDKHOME/bin/keytool -list -v -keystore \"$PREFIX/etc/.java-keystore\" -keypass \"$KEYSTOREPWD\" -storepass \"$KEYSTOREPWD\" -alias $NODENAME"), shell=True)
     if ocode != 0:
       raise InstallerException, "Could not define wanted keystore alias.."
     else:
       print env.expandArgs("Keystore available in $PREFIX/etc/.java-keystore")
 
+    # Next thing to do is to generate the pkcs12 store
+    if os.path.exists(env.expandArgs("$PREFIX/etc/$NODENAME.pk12")):
+      os.unlink(env.expandArgs("$PREFIX/etc/$NODENAME.pk12"))
+    
+    os.chdir(env.expandArgs("$PREFIX/etc"))
+    
+    print ""
+    print "Exporting certificate to be published"
+    cmd = "$JDKHOME/bin/keytool -export"
+    cmd = cmd + " -alias \"$NODENAME\" -keystore .java-keystore -storetype jks"
+    cmd = cmd + " -storepass $KEYSTOREPWD -rfc -file \"$NODENAME.cer\""
+    ocode = subprocess.call(env.expandArgs(cmd), shell=True)
+    if ocode != 0:
+      raise InstallerException, "Could not export public certificate"
+        
+    print ""
+    print "Exporting java keystore into a openssl compatible pkcs12 store, this might take some time...."
+    
+    cmd = "$JDKHOME/bin/keytool -importkeystore"
+    cmd = cmd + " -srcstoretype JKS -srckeystore .java-keystore"
+    cmd = cmd + " -deststoretype PKCS12 -destkeystore \"$NODENAME.pk12\""
+    cmd = cmd + " -srcstorepass $KEYSTOREPWD -srckeypass $KEYSTOREPWD -srcalias \"$NODENAME\""
+    cmd = cmd + " -deststorepass $KEYSTOREPWD -destkeypass $KEYSTOREPWD -noprompt"
+    ocode = subprocess.call(env.expandArgs(cmd), shell=True)
+    if ocode != 0:
+      raise InstallerException, "Could not create pkcs12"
+    
+    # Finally, export the private key to be used for signing
+    print ""
+    print "Exporting the private key..."
+    
+    cmd = "openssl pkcs12 -passin \"pass:$KEYSTOREPWD\" -in \"$PREFIX/etc/$NODENAME.pk12\" -nodes | awk '/-----BEGIN DSA PRIVATE KEY-----/,/-----END DSA PRIVATE KEY-----/' > \"$PREFIX/etc/$NODENAME.priv\""
+    ocode = subprocess.call(env.expandArgs(cmd), shell=True)
+    if ocode != 0:
+      raise InstallerException, "Could not export the private key"
+    
+    
+    
+    # Here we maybe should modify permissions of the private key file but for now let it be.
+    
