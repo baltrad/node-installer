@@ -89,7 +89,6 @@ class nodescripts(object):
   def _create_bltnode_script(self, env):
     extras = {}
     extras["BALTRAD_NODE_VERSION"] = self._version
-    #print "LDLIBRARYPATH: %s"%self._ldlibrarypath
     extras["LIBPATH"] = env.expandArgs("%s"%self._ldlibrarypath)
     extras["PPATH"] = env.expandArgs("%s"%self._path)
     if self._raveinstalled:
@@ -106,11 +105,21 @@ class nodescripts(object):
 # Prefix: $PREFIX
 # DepPrefix: $TPREFIX
 
-export LD_LIBRARY_PATH="$LIBPATH"
-PATH="$PPATH"
 export JAVA_HOME="$JDKHOME"
 export CATALINA_HOME="$TPREFIX/tomcat"
 export RAVEPGF_SUPPORT="$INSRAVE"
+
+if [ "$${LD_LIBRARY_PATH}" != "" ]; then
+  export LD_LIBRARY_PATH="$LIBPATH:$${LD_LIBRARY_PATH}"
+else
+  export LD_LIBRARY_PATH="$LIBPATH"
+fi
+
+if [ "$${PATH}" != "" ]; then
+  export PATH="$PPATH:$${PATH}"
+else
+  export PATH="$PPATH"
+fi
 
 check_status() {
   ENTRIES=`ps -edalf | grep tomcat | grep "baltrad.node.startup.indicator" | sed -e"s/.*-Dbaltrad.node.startup.indicator=\\"\\([^\\"]*\\)\\".*/\\1/g"`
@@ -435,8 +444,8 @@ esac
   def _create_bltnoderc_script(self, env):
     extras = {}
     extras["BALTRAD_NODE_VERSION"] = self._version
-    extras["LIBPATH"] = env.expandArgs("$PREFIX/rave/lib:%s"%env.getLdLibraryPath())
-    extras["PPATH"] = env.expandArgs("$PREFIX/rave/bin:%s"%env.getPath())
+    extras["LIBPATH"] = env.expandArgs("%s"%self._ldlibrarypath)
+    extras["PPATH"] = env.expandArgs("%s"%self._path)
     if self._raveinstalled:
       extras["INSRAVE"] = "yes"
     else:

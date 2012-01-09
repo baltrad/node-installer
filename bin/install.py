@@ -845,19 +845,32 @@ if __name__=="__main__":
     # We want to wrap everything up in some scripts
     # so that we can stop/start the node
     sldpath = ldpath
+    if not env.isExcluded("BEAMB"):
+      sldpath = "$PREFIX/beamb/lib:%s"%sldpath
+
+    if not env.isExcluded("BROPO"):
+      sldpath = "$PREFIX/bropo/lib:%s"%sldpath
+      
     if not env.isExcluded("RAVE"):
-      sldpath = env.expandArgs("$PREFIX/rave/lib:%s"%ldpath)
+      sldpath = "$PREFIX/rave/lib:%s"%sldpath
   
     spath = pth
     if not env.isExcluded("RAVE"):
       spath = env.expandArgs("$PREFIX/rave/bin:%s"%pth)
 
+#    script = nodescripts(
+#      "%s:$$PATH"%spath,
+#      "%s:$$LD_LIBRARY_PATH"%sldpath,
+#      "1.0.0",
+#      raveinstalled=not env.isExcluded("RAVE")
+#    )
     script = nodescripts(
-      "%s:$$PATH"%spath,
-      "%s:$$LD_LIBRARY_PATH"%sldpath,
+      "%s"%spath,
+      "%s"%sldpath,
       "1.0.0",
       raveinstalled=not env.isExcluded("RAVE")
     )
+
     script.create_scripts(env)
     env.setNodeScript(script)
 
