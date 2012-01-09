@@ -150,6 +150,18 @@ MODULES=[prepareinstaller(package("PREPARE", "1.0", nodir(), remembered=False)),
                              depends=["PYTHON"]),
                      "\"$TPREFIX/bin/python\" setup.py install",
                      osenv({"LD_LIBRARY_PATH":"$TPREFIX/lib", "PATH":"$TPREFIX/bin:$$PATH"})),
+
+         shinstaller(package("PYASN1", "0.1.2",
+                             untar(urlfetcher("pyasn1-0.1.2.tar.gz"), "pyasn1-0.1.2", True),
+                             depends=["PYTHON"]),
+                     "\"$TPREFIX/bin/python\" setup.py install",
+                     osenv({"LD_LIBRARY_PATH":"$TPREFIX/lib", "PATH":"$TPREFIX/bin:$$PATH"})),
+
+         shinstaller(package("PYTHON-KEYCZAR", "0.7b",
+                             untar(urlfetcher("python-keyczar-0.7b.tar.gz"), "python-keyczar-0.7b", True),
+                             depends=["PYTHON", "PYASN1", "PYCRYPTO"]),
+                     "\"$TPREFIX/bin/python\" setup.py install",
+                     osenv({"LD_LIBRARY_PATH":"$TPREFIX/lib", "PATH":"$TPREFIX/bin:$$PATH"})),
                      
          tomcatinstaller(package("TOMCAT", "6.0.33",
                                  untar(urlfetcher("apache-tomcat-6.0.33.tar.gz"), "apache-tomcat-6.0.33", True))),
@@ -608,8 +620,6 @@ if __name__=="__main__":
       env.addArg("NODENAME", a)
     elif o == "--keystore":
       env.addArg("KEYSTORE", a)
-    elif o == "--keystorepwd":
-      env.addArgInternal("KEYSTOREPWD", a)
     elif o == "--rebuild":
       rebuild = a.split(",")
     elif o == "--with-zlib":
@@ -695,18 +705,6 @@ if __name__=="__main__":
         print "Passwords not matching"
     env.addArgInternal("TOMCATPWD", pwd)
 
-  if not env.hasArg("KEYSTOREPWD"):
-    print "--keystorepass not specified, please specify password."
-    pwd = None
-    while pwd == None:
-      pwd1 = raw_input("Enter password: ")
-      pwd2 = raw_input("Again: ")
-      if pwd1 == pwd2:
-        pwd = pwd1
-      else:
-        print "Passwords not matching"
-    env.addArgInternal("KEYSTOREPWD", pwd)
-  
   # set defaults for whatever arguments we didn't get from the user
   env.addUniqueArg("PREFIX", "/opt/baltrad")
   env.addUniqueArg("TPREFIX", env.expandArgs("${PREFIX}/third_party"))
@@ -719,6 +717,7 @@ if __name__=="__main__":
   env.addUniqueArg("DBHOST", "127.0.0.1")
   env.addUniqueArg("BUILD_BDBFS", "no")
   env.addUniqueArg("RUNASUSER", getpass.getuser())
+  env.addUniqueArg("KEYSTORE", env.expandArgs("${PREFIX}/etc/bltnode-keys"))
   
   if not env.hasArg("NODENAME"):
     import socket
