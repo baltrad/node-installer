@@ -47,7 +47,7 @@ class raveinstaller(installer):
                     "CENTER_ID":"$RAVE_CENTER_ID",
                     "DEX_SPOE":"$RAVE_DEX_SPOE",
                     "BUFRARG":"",
-                    "DEX_PRIVATEKEY":"$PREFIX/etc/$NODENAME.priv",
+                    "DEX_PRIVATEKEY":"$PREFIX/etc/bltnode-keys/$NODENAME.priv",
                     "DEX_NODENAME":"$NODENAME",
                     "RAVEROOT":"$PREFIX/rave"}, # RAVEROOT is the installation path....
                     defaultosenv={"LD_LIBRARY_PATH":""})
