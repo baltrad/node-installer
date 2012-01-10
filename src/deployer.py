@@ -280,10 +280,23 @@ software.version=%s
     args = "%s -Dwarfile=%s"%(args, warpath)
     buildfile = "%s/etc/war-deployer.xml"%env.getInstallerPath()
     
+    # remove keystore just in case we are redeploying,
+    # redeployment seems to recursively remove symlinked directories
+    self._unlink_keystore(env)
+    
     #print env.expandArgs("Calling: $TPREFIX/ant/bin/ant -f %s %s deploy"%(buildfile, args))
     ocode = subprocess.call(env.expandArgs("$TPREFIX/ant/bin/ant -f %s %s deploy"%(buildfile, args)), shell=True)
     if ocode != 0:
-      raise InstallerException, "Failed to deploy system"
+      raise InstallerException, "Failed to deploy system"   
+  
+  ##
+  # 
+  def _unlink_keystore(self, env):
+    deployed_confdir = env.expandArgs("$TPREFIX/tomcat/webapps/BaltradDex/WEB-INF/conf/")
+    keystore_dst = os.path.join(deployed_confdir, ".dex_keystore.jks")
+    if os.path.exists(keystore_dst):
+        print "unlinking", keystore_dst
+        os.unlink(keystore_dst)
   
   ##
   # Link the keystore to the tomcat environment
