@@ -39,7 +39,8 @@ from osenv import osenv
 def _walk_chmod(mode, dirname, fnames):
   os.chmod(dirname, mode)
   for file in fnames:
-    os.chmod(os.path.join(dirname, file), mode)
+    if not os.path.islink(os.path.join(dirname, file)):
+      os.chmod(os.path.join(dirname, file), mode)
 
 ##
 # Function that performs chown. Called by a walker
@@ -50,7 +51,8 @@ def _walk_chmod(mode, dirname, fnames):
 def _walk_chown(uidgid, dirname, fnames):
   os.chown(dirname, uidgid[0], uidgid[1])
   for file in fnames:
-    os.chown(os.path.join(dirname, file), uidgid[0], uidgid[1])
+    if not os.path.islink(os.path.join(dirname, file)):
+      os.chown(os.path.join(dirname, file), uidgid[0], uidgid[1])
 
 ##
 # The deployer
