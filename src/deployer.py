@@ -120,7 +120,7 @@ class deployer(installer):
       os.chdir(cdir)
       shutil.rmtree(tmppath, True)
     
-    self._link_keystore(env)
+    #self._link_keystore(env)
 
   ##
   # Setups the appropriate tomcat permissions on the tomcat installation or
@@ -235,6 +235,7 @@ db.pwd=$DBPWD
         continue # Skip these two lines, they will be first anyway
       oline = re.sub("^\s*key.alias\s*=\s*.*",env.expandArgs("key.alias=$NODENAME"),line)
       oline = re.sub("^\s*node.name\s*=\s*.*",env.expandArgs("node.name=$NODENAME"),oline)
+      oline = re.sub("^\s*keystore.directory\s*=\s*.*",env.expandArgs("keystore.directory=$KEYSTORE"),oline)
       outlines.append(oline)
       
     filename = "./WEB-INF/conf/%s"%configfile

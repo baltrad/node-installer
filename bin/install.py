@@ -341,15 +341,9 @@ Options:
     try to find a valid jdk.
 
 --keystore=<path>
-    Point out the java keystore to use when configuring setting up the
-    different modules for certification.
-    If not specified, a number of questions will be asked and then a
-    keystore will be generated for you. Unless the keystore file can
-    be found in $PREFIX/etc/.java-keystore, in that case it will be
-    verified and eventually used.
-
---keystorepwd=<pwd>
-    Specifies the password to use when opening the keystore and the certificate
+    Point out the keystore directory to use when configuring setting up the
+    different modules for certification. If not specified, one will be
+    created for you in $PREFIX/etc/bltnode-keystore.
 
 --with-zlib=yes|no|<zlibroot>|<zlibinc>,<zliblib>
     Specifies if zlib should be built by the installer or not. 
@@ -560,7 +554,7 @@ if __name__=="__main__":
                                    'with-hdfjava=', 'with-bdbfs','rebuild=',
                                    'bdb-pool-max-size=', "bdb-port=",
                                    'rave-pgf-port=', "rave-center-id=", "rave-dex-spoe=",
-                                   'dbuser=', 'dbpwd=','dbname=','dbhost=','keystore=','keystorepwd=','nodename=',
+                                   'dbuser=', 'dbpwd=','dbname=','dbhost=','keystore=','nodename=',
                                    'reinstalldb','excludedb', 'runas=','datadir=','warfile=',
                                    'urlrepo=','gitrepo=','offline',
                                    'print-modules', 'print-config', 'exclude-tomcat', 'recall-last-args',
