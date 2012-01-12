@@ -89,7 +89,7 @@ MODULES=[prepareinstaller(package("PREPARE", "1.0", nodir(), remembered=False)),
               "--prefix=\"$TPREFIX\" --with-jni=\"$JDKHOME/include\"", False, True,
               osenv({"CFLAGS":"-I\"$JDKHOME/include/linux\""})),
 
-         shinstaller(package("PYTHON", ".".join([str(x) for x in sys.version_info[:3]])),
+         shinstaller(package("PYTHON", ".".join([str(x) for x in sys.version_info[:3]]), nodir()),
                      ":"),
 
          experimental(
