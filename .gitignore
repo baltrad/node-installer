@@ -3,3 +3,4 @@
 test
 packages/*
 etc/version
+*.swp

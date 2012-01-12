@@ -90,13 +90,27 @@ if [ -z $TPREFIX ]; then
 fi
 
 PYTHON_EXECUTABLE=$TPREFIX/bin/python
-
 if [ -f $PYTHON_EXECUTABLE ]; then
   echo "have python at $TPREFIX/bin/python"
 else
   bootstrap $TPREFIX
 fi
 
+# make sure python's shared libraries are on linker path
+export LD_LIBRARY_PATH=$TPREFIX/lib
+
+EASYINSTALL_EXECUTABLE=$TPREFIX/bin/easy_install
+if [ ! -f $EASYINSTALL_EXECUTABLE ]; then
+  echo "installing distribute"
+  $PYTHON_EXECUTABLE $SCRIPTPATH/bin/distribute_setup.py > /dev/null
+fi
+
+PIP_EXECUTABLE=$TPREFIX/bin/pip
+if [ ! -f $PIP_EXECUTABLE ]; then
+  echo "installing pip"
+  $PYTHON_EXECUTABLE $SCRIPTPATH/bin/get-pip.py > /dev/null
+fi
+
 # pass the torch to the python node-installer
 cd "$SCRIPTPATH/packages"
-LD_LIBRARY_PATH=$TPREFIX/lib $PYTHON_EXECUTABLE $SCRIPTPATH/bin/install.py $*
+ $PYTHON_EXECUTABLE $SCRIPTPATH/bin/install.py $*
