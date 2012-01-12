@@ -65,3 +65,12 @@ class beastinstaller(installer):
     if ocode != 0:
       raise InstallerException, "Failed to install beast"
     
+    # We use beasts document installer and just change prefix to the doc-root
+    #
+    ocode = subprocess.call(env.expandArgs("$TPREFIX/ant/bin/ant "+
+                                           " -Dprefix=$PREFIX/doc -Dbaltraddb.path=$PREFIX/baltrad-db"+
+                                           " -Dbaltraddb.bin.path=$PREFIX/baltrad-db/bin"+
+                                           " install-doc > /dev/null 2>&1"), shell=True)
+    if ocode != 0:
+      print "Failed to generate BEAST documentation"
+

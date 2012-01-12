@@ -78,18 +78,28 @@ You will need the following packages installed before atempting to build
 the system.
 
 *) An installed Java SDK, currently it must be OpenJDK or SUN JDK (> 1.6)
+
 *) gcc/g++/gcc-c++ (version 4.1 or higher)
+
 *) make (version 3.8 or higher)
+
 *) autoconf (version 2.59 or higher)
+
 *) unicode support (ICU)
    for redhat, centos, etc.. yum install libicu.x86_64 libicu-devel.x86_64
    for debian, ubuntu, etc.. sudo apt-get install libicu-dev
+
 *) bzip2 development libraries
    for redhat, centos, etc.. yum install bzip2-devel.x86_64
    for debian, ubuntu, etc.. sudo apt-get install libbz2-dev
+
 *) Postgres development libraries
    for redhat, centos, etc.. yum install postgresql-devel.x86_64
    for debian, ubuntu, etc.. sudo apt-get install postgresql-client-8.4 postgresql-client-common
+   
+*) doxygen
+   for redhat, centos, etc.. yum install doxygen.x86_64
+   for debian, ubuntu, etc.. sudo apt-get install doxygen
 
 You might also need to install these packages since one or more modules depends on
 these.

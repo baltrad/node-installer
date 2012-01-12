@@ -66,6 +66,16 @@ class hlhdfinstaller(installer):
     return result
   
   ##
+  # Installs the documentation
+  # @param env: the build environment
+  def _install_doc(self, env):
+    pth = env.expandArgs("$PREFIX/doc/hlhdf")
+    if os.path.exists("doxygen/doxygen/html"):
+      if os.path.exists(pth):
+        shutil.rmtree(pth, True)
+      shutil.copytree("doxygen/doxygen/html", pth)
+  
+  ##
   # Performs the actual installation
   # @param env: the build environment
   #
@@ -98,6 +108,12 @@ class hlhdfinstaller(installer):
       if ocode != 0:
         raise InstallerException, "Failed to test hlhdf"      
 
+    ocode = subprocess.call("make doc > /dev/null 2>&1", shell=True)
+    if ocode != 0:
+      print "Failed to generate HLHDF documentation"
+    else:
+      self._install_doc(env)
+
     ocode = subprocess.call("make install", shell=True)
     if ocode != 0:
       raise InstallerException, "Failed to install hlhdf"
@@ -106,5 +122,3 @@ class hlhdfinstaller(installer):
     cmd = "python -c \"import sys;import os;print os.sep.join([sys.prefix, 'lib', 'python'+sys.version[:3],'site-packages'])\""
     plc = subprocess.Popen(cmd, stdout=subprocess.PIPE, shell=True).communicate()[0]
     shutil.copy(env.expandArgs("$PREFIX/hlhdf/hlhdf.pth"), "%s/"%string.strip(plc))
- 
-    

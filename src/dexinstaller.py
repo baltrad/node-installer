@@ -24,7 +24,7 @@ DEX Installer
 @date 2011-02-11
 '''
 from installer import installer
-import os, subprocess
+import os, subprocess, shutil
 from osenv import osenv
 from InstallerException import InstallerException
 
@@ -44,7 +44,18 @@ class dexinstaller(installer):
                     "PATH":"$TPREFIX/bin:$$PATH",
                     "LD_LIBRARY_PATH":""})
     super(dexinstaller, self).__init__(pkg, oenv)
-  
+
+  ##
+  # Installs the documentation
+  # @param env: the build environment
+  #
+  def _install_doc(self, env):
+    pth = env.expandArgs("$PREFIX/doc/dex")
+    if os.path.exists("docs"):
+      if os.path.exists(pth):
+        shutil.rmtree(pth, True)
+      shutil.copytree("docs", pth)
+    
   ##
   # Performs the actual installation
   # @param env: the build environment
@@ -59,4 +70,12 @@ class dexinstaller(installer):
     ocode = subprocess.call(env.expandArgs("$TPREFIX/ant/bin/ant -Dinstall.prefix=$PREFIX -Dbaltrad.db.path=$PREFIX/baltrad-db -Dbeast.path=$PREFIX/beast -Djavahdf.path=$HDFJAVAHOME -Djksfile=$PREFIX/etc/.java-keystore install"), shell=True)
     if ocode != 0:
       raise InstallerException, "Failed to install dex"
+
+    ocode = subprocess.call(env.expandArgs("$TPREFIX/ant/bin/ant -Dinstall.prefix=$PREFIX -Dbaltrad.db.path=$PREFIX/baltrad-db -Dbeast.path=$PREFIX/beast -Djavahdf.path=$HDFJAVAHOME -Djksfile=$PREFIX/etc/.java-keystore javadocs > /dev/null 2>&1"), shell=True)
+    if ocode != 0:
+      print "Failed to generate DEX documentation"
+    else:
+      self._install_doc(env)
+
+
     

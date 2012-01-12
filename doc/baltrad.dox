@@ -1,0 +1,40 @@
+/** \mainpage Baltrad exchange system (BALTRAD)
+\date 12 January 2012
+\version 1.0
+\par Copyright 
+&copy; 2012 the Swedish Meteorological and Hydrological Institute (SMHI), Norrk&ouml;ping, Sweden
+
+\par Legals
+BALTRAD is free software: you can redistribute it and/or modify
+it under the terms of the GNU Lesser General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+\par
+BALTRAD is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU Lesser General Public License for more details.
+
+\par
+You should have received a copy of the GNU Lesser General Public License
+along with BALTRAD.  If not, see http://www.gnu.org/licenses/.
+By obtaining, using, and/or copying this software and/or its associated 
+documentation, you agree that you have read, understood, and will comply
+with the following terms and conditions:
+
+\section about About
+The baltrad exchange system has been developed as part of the ..daniel.. please
+add..
+
+\section introduction Introduction
+Since the system is built by several different partners we have decided to
+keep this introduction to a minimum. Instead you might want to jump to
+the user guide that can be found in ...
+
+If you already know what you are after, you can jump to the specific section
+describing the module.
+
+$REPLACE_MODULES_BY_DOCINSTALLER$
+
+ */

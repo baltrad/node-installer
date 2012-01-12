@@ -3,3 +3,5 @@
 test
 packages/*
 etc/version
+doxygen/baltrad.dox
+doxygen/doxygen

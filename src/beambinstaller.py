@@ -24,7 +24,7 @@ RAVE Installer
 @date 2011-10-05
 '''
 from installer import installer
-import os, subprocess
+import os, subprocess, shutil
 from osenv import osenv
 from InstallerException import InstallerException
 
@@ -40,6 +40,17 @@ class beambinstaller(installer):
                     "LD_LIBRARY_PATH":"$TPREFIX/lib:$$LD_LIBRARY_PATH"},
                     defaultosenv={"LD_LIBRARY_PATH":""})
     super(beambinstaller, self).__init__(pkg, oenv)
+
+  ##
+  # Installs the documentation
+  # @param env: the build environment
+  def _install_doc(self, env):
+    pth = env.expandArgs("$PREFIX/doc/beamb")
+    if os.path.exists("doxygen/doxygen/html"):
+      if os.path.exists(pth):
+        shutil.rmtree(pth, True)
+      shutil.copytree("doxygen/doxygen/html", pth)
+
 
   ##
   # Performs the actual installation
@@ -70,6 +81,12 @@ class beambinstaller(installer):
     ocode = subprocess.call("make test", shell=True)
     if ocode != 0:
       raise InstallerException, "Failed to test beamb"      
+
+    ocode = subprocess.call("make doc > /dev/null 2>&1", shell=True)
+    if ocode != 0:
+      print "Failed to generate BEAMB documentation"
+    else:
+      self._install_doc(env)
 
     ocode = subprocess.call("make install", shell=True)
     if ocode != 0:

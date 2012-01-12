@@ -27,6 +27,7 @@ from machinefetcher import machinefetcher
 from jdkvalidator import jdkvalidator
 from zlibvalidator import zlibvalidator
 from psqlvalidator import psqlvalidator
+from doxygenvalidator import doxygenvalidator
 from hlhdfinstaller import hlhdfinstaller
 from bbufrinstaller import bbufrinstaller
 from bdbinstaller import bdbinstaller
@@ -46,6 +47,7 @@ from patcher import patcher
 from finished import finished
 from prepareinstaller import prepareinstaller
 from keystoreinstaller import keystoreinstaller
+from docinstaller import docinstaller
 
 from node_package import node_package
 
@@ -199,6 +201,8 @@ MODULES=[prepareinstaller(package("PREPARE", "1.0", nodir(), remembered=False)),
 
          beambinstaller(node_package("BEAMB", depends=["RAVE"])), #Just use rave as dependency, rest of dependencies will trigger rave rebuild
 
+         docinstaller(package("DOCS", "1.0", nodir(), remembered=False)),
+         
          configinstaller(package("CONFIG", "1.0", nodir(), remembered=False)),
          
          raveconfiginstaller(package("RAVECONFIG", "1.0", nodir(), remembered=False)),
@@ -803,7 +807,7 @@ if __name__=="__main__":
     env.addArgInternal("PSQLLIB", psqllib)
   
   if args[0] in ["install", "check"]:
-    for validator in [jdkvalidator(), zlibvalidator(), psqlvalidator()]:
+    for validator in [jdkvalidator(), zlibvalidator(), psqlvalidator(), doxygenvalidator()]:
       validator.validate(env)
 
     if not env.hasArg("JDKHOME"):
