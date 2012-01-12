@@ -106,6 +106,10 @@ MODULES=[prepareinstaller(package("PREPARE", "1.0", nodir(), remembered=False)),
              pypi_name="numpy",
            )
          ),
+
+         pilinstaller(package("PIL", "1.1.7",
+                              untar(urlfetcher("Imaging-1.1.7.tar.gz"), "Imaging-1.1.7", True),
+                              depends=["PYTHON","ZLIB"])),
         
          experimental(
            cmmi(package("CURL", "7.19.0",
