@@ -85,18 +85,12 @@ MODULES=[prepareinstaller(package("PREPARE", "1.0", nodir(), remembered=False)),
               "--prefix=\"$TPREFIX\" --with-jni=\"$JDKHOME/include\"", False, True,
               osenv({"CFLAGS":"-I\"$JDKHOME/include/linux\""})),
 
-         experimental(
-           cmmi(package("PYTHON", "2.6.4",
+         shinstaller(package("PYTHON", ".".join([str(x) for x in sys.version_info[:3]]),
                         untar(urlfetcher("Python-2.6.4.tgz"), "Python-2.6.4", True),
                         depends=["ZLIB"]),
-                "--prefix=\"$TPREFIX\" --enable-shared", False, True),
+                      ":"),
+
                       
-           cmmi(package("PYTHON", "2.7.2",
-                        untar(urlfetcher("Python-2.7.2.tgz"), "Python-2.7.2", True),
-                        depends=["ZLIB"]),
-                "--prefix=\"$TPREFIX\" --enable-shared", False, True)
-         ),
-         
          experimental(
            shinstaller(package("NUMPY", "1.3.0",
                                untar(urlfetcher("numpy-1.3.0.tar.gz"), "numpy-1.3.0", True),
