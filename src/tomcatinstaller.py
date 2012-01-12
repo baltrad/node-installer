@@ -70,7 +70,7 @@ class tomcatinstaller(installer):
     processes = ps.split('\n')
     for p in processes:
       if p.find("tomcat") >= 0:
-        if p.find(env.expandArgs("$TPREFIX")) >= 0:
+        if p.find(env.expandArgs("$TPREFIX/tomcat")) >= 0:
           result = True
     
     return result 

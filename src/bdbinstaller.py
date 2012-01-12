@@ -105,11 +105,9 @@ class bdbinstaller(installer):
     if ocode != 0:
         raise InstallerException, "Failed to install %s" % name
     
-    ocode = subprocess.call([
-        python, "setup.py", "nosetests",
-        "--first-package-wins",
-        "-A 'not dbtest'",
-    ])
+    ocode = subprocess.call(" ".join([
+        python, "setup.py", "nosetests", "--first-package-wins", "-w test",
+    ]), shell=True)
     if ocode != 0:
         raise InstallerException, "%s tests failed" % name
     

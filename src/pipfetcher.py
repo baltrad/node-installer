@@ -17,20 +17,39 @@ You should have received a copy of the GNU Lesser General Public License
 along with this software.  If not, see <http://www.gnu.org/licenses/>.
 ------------------------------------------------------------------------*/
 
-Actual versions for the different software modules that should be installed
-
-@file
-@author Anders Henja (Swedish Meteorological and Hydrological Institute, SMHI)
-@date 2011-02-09
+Fetcher class to combine with packages installed from PIP
 '''
-versions = {
-  "HLHDF": "v0.8.0",
-  "BALTRAD-DB": "hudson-baltrad-db-311-SUCCESS",
-  "BEAST": "hudson-Beast-229-SUCCESS",
-  "BALTRAD-DEX": "hudson-BaltradDex-278-SUCCESS",
-  "RAVE": "hudson-Rave-236-SUCCESS",
-  "RAVE-GMAP": "hudson-GoogleMapsPlugin-24-SUCCESS",
-  "BROPO": "hudson-bRopo-37-SUCCESS",
-  "BBUFR": "hudson-bbufr-5-SUCCESS",
-  "BEAMB": "hudson-beamb-37-SUCCESS"
-}
+
+from fetcher import fetcher
+
+##
+# The url fetcher class
+class pipfetcher(fetcher):
+  ##
+  # Constructor
+  # @param url: the url to the file to be fetched
+  #
+  def __init__(self):
+    super(pipfetcher, self).__init__()
+  
+  ##
+  # Fetches the file
+  # @param env: the build environment
+  # @return the name of the file that was fetched
+  #
+  def dofetch(self, env=None):
+    return None
+
+  ##
+  # Fetches the file
+  # @param env: the build environment
+  #  
+  def dofetch_offline_content(self, env=None):
+    pass
+  
+  ##
+  # Removes the file
+  # @param env: the build environment
+  #
+  def doclean(self, env=None):
+    pass

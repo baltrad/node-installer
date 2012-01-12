@@ -23,9 +23,94 @@
 # @author Anders Henja (Swedish Meteorological and Hydrological Institute, SMHI)
 # @date 2011-09-27
 ###########################################################################
-SCRFILE=`python -c "import os;print os.path.abspath(\"$0\")"`
-SCRIPTPATH=`dirname "$SCRFILE"`
+SCRIPTPATH=$(dirname $(readlink -f $0))
+PACKAGEPATH=$SCRIPTPATH/packages
 
+PREFIX=/opt/baltrad
+EXPERIMENTAL=
+URLREPO=http://git.baltrad.eu/blt_dependencies
+
+fetch_python_sources() {
+  file=$1
+  src=$2
+  dst=$3
+    
+  if [ ! -f $dst/$file ]; then
+    echo "fetching $2 from $src"
+    cd $dst
+    wget -c $src/$file > /dev/null
+  fi
+}
+
+bootstrap() {
+  prefix=$1
+  if [ -z $EXPERIMENTAL ]; then
+    python_version=2.6.4
+  else
+    python_version=2.7.2
+  fi
+  python_src=Python-$python_version.tgz
+
+  echo "bootstrapping python $python_version to $prefix"
+
+  fetch_python_sources $python_src $URLREPO $PACKAGEPATH
+  cd $PACKAGEPATH
+  echo "Unpacking $python_src"
+  tar -xvpzf $python_src > /dev/null
+  cd Python-$python_version
+  echo "configuring Python $python_version"
+  ./configure --prefix=$prefix --enable-shared > /dev/null
+  echo "making Python $python_version"
+  make > /dev/null
+  echo "installing Python $python_version"
+  make install > /dev/null
+}
+
+# pick the args that are interesting for bootstrapping
+for arg in $*; do
+  case $arg in
+    --prefix=*)
+      PREFIX=`echo $arg | sed 's/[-a-zA-Z0-9]*=//'`
+      ;;
+    --tprefix=*)
+      TPREFIX=`echo $arg | sed 's/[-a-zA-Z0-9]*=//'`
+      ;;
+    --experimental)
+      EXPERIMENTAL=yes
+      ;;
+    --urlrepo=*)
+      URLREPO=`echo $arg | sed 's/[-a-zA-Z0-9]*=//'`
+      ;;
+  esac
+done
+
+# set default TPREFIX
+if [ -z $TPREFIX ]; then
+  TPREFIX=$PREFIX/third_party
+fi
+
+PYTHON_EXECUTABLE=$TPREFIX/bin/python
+if [ -f $PYTHON_EXECUTABLE ]; then
+  echo "have python at $TPREFIX/bin/python"
+else
+  bootstrap $TPREFIX
+fi
+
+# make sure python's shared libraries are on linker path
+export LD_LIBRARY_PATH=$TPREFIX/lib
+
+EASYINSTALL_EXECUTABLE=$TPREFIX/bin/easy_install
+if [ ! -f $EASYINSTALL_EXECUTABLE ]; then
+  echo "installing distribute"
+  $PYTHON_EXECUTABLE $SCRIPTPATH/bin/distribute_setup.py > /dev/null
+fi
+
+PIP_EXECUTABLE=$TPREFIX/bin/pip
+if [ ! -f $PIP_EXECUTABLE ]; then
+  echo "installing pip"
+  $PYTHON_EXECUTABLE $SCRIPTPATH/bin/get-pip.py > /dev/null
+fi
+
+# pass the torch to the python node-installer
 cd "$SCRIPTPATH/packages"
-
-python ../bin/install.py $*
+ $PYTHON_EXECUTABLE $SCRIPTPATH/bin/install.py $*

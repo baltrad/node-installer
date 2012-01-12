@@ -45,6 +45,8 @@ from raveconfiginstaller import raveconfiginstaller
 from scriptinstaller import scriptinstaller
 from patcher import patcher
 from finished import finished
+from pipinstaller import pipinstaller
+from pipfetcher import pipfetcher
 from prepareinstaller import prepareinstaller
 from keystoreinstaller import keystoreinstaller
 from docinstaller import docinstaller
@@ -87,50 +89,30 @@ MODULES=[prepareinstaller(package("PREPARE", "1.0", nodir(), remembered=False)),
               "--prefix=\"$TPREFIX\" --with-jni=\"$JDKHOME/include\"", False, True,
               osenv({"CFLAGS":"-I\"$JDKHOME/include/linux\""})),
 
+         shinstaller(package("PYTHON", ".".join([str(x) for x in sys.version_info[:3]])),
+                     ":"),
+
          experimental(
-           cmmi(package("PYTHON", "2.6.4",
-                        untar(urlfetcher("Python-2.6.4.tgz"), "Python-2.6.4", True),
-                        depends=["ZLIB"]),
-                "--prefix=\"$TPREFIX\" --enable-shared", False, True),
-                      
-           cmmi(package("PYTHON", "2.7.2",
-                        untar(urlfetcher("Python-2.7.2.tgz"), "Python-2.7.2", True),
-                        depends=["ZLIB"]),
-                "--prefix=\"$TPREFIX\" --enable-shared", False, True)
+           pipinstaller(
+             package("NUMPY", "1.3.0",
+               fetcher=pipfetcher(),
+               depends=["PYTHON"],
+             ),
+             pypi_name="numpy",
+           ),
+           pipinstaller(
+             package("NUMPY", "1.4.1",
+               fetcher=pipfetcher(),
+               depends=["PYTHON"],
+             ),
+             pypi_name="numpy",
+           )
          ),
-         
-         experimental(
-           shinstaller(package("NUMPY", "1.3.0",
-                               untar(urlfetcher("numpy-1.3.0.tar.gz"), "numpy-1.3.0", True),
-                               depends=["PYTHON"]),
-                       "\"$TPREFIX/bin/python\" setup.py install",
-                       osenv({"PATH":"$TPREFIX/bin:$$PATH", "LD_LIBRARY_PATH":"$TPREFIX/lib"})),
-                      
-           shinstaller(package("NUMPY", "1.4.1",
-                               untar(urlfetcher("numpy-1.4.1.tar.gz"), "numpy-1.4.1", True),
-                               depends=["PYTHON"]),
-                       "\"$TPREFIX/bin/python\" setup.py install",
-                       osenv({"PATH":"$TPREFIX/bin:$$PATH", "LD_LIBRARY_PATH":"$TPREFIX/lib"}))
-         ),
-        
-         experimental(
-           shinstaller(package("PYSETUPTOOLS", "0.6c11-2.6",
-                               nodir(urlfetcher("setuptools-0.6c11-py2.6.egg")),
-                               depends=["PYTHON"]),
-                       "sh setuptools-0.6c11-py2.6.egg",
-                       osenv({"LD_LIBRARY_PATH":"$TPREFIX/lib", "PATH":"$TPREFIX/bin:$$PATH"})),
-                      
-           shinstaller(package("PYSETUPTOOLS", "0.6c11-2.7",
-                               nodir(urlfetcher("setuptools-0.6c11-py2.7.egg")),
-                               depends=["PYTHON"]),
-                       "sh setuptools-0.6c11-py2.7.egg",
-                       osenv({"LD_LIBRARY_PATH":"$TPREFIX/lib", "PATH":"$TPREFIX/bin:$$PATH"}))
-         ),
-                     
+
          pilinstaller(package("PIL", "1.1.7",
                               untar(urlfetcher("Imaging-1.1.7.tar.gz"), "Imaging-1.1.7", True),
                               depends=["PYTHON","ZLIB"])),
-         
+        
          experimental(
            cmmi(package("CURL", "7.19.0",
                         untar(urlfetcher("curl-7.19.0.tar.gz"), "curl-7.19.0", True)),
@@ -147,24 +129,30 @@ MODULES=[prepareinstaller(package("PREPARE", "1.0", nodir(), remembered=False)),
                      "\"$TPREFIX/bin/python\" setup.py install",
                      osenv({"LD_LIBRARY_PATH":"$TPREFIX/lib", "PATH":"$TPREFIX/bin:$$PATH"})),
          
-         shinstaller(package("PYCRYPTO", "2.4.1",
-                             untar(urlfetcher("pycrypto-2.4.1.tar.gz"), "pycrypto-2.4.1", True),
-                             depends=["PYTHON"]),
-                     "\"$TPREFIX/bin/python\" setup.py install",
-                     osenv({"LD_LIBRARY_PATH":"$TPREFIX/lib", "PATH":"$TPREFIX/bin:$$PATH"})),
+         pipinstaller(
+           package("PYCRYPTO", "2.4.1",
+             fetcher=pipfetcher(),
+             depends=["PYTHON"]
+           ),
+           pypi_name="pycrypto"
+         ),
 
-         shinstaller(package("PYASN1", "0.1.2",
-                             untar(urlfetcher("pyasn1-0.1.2.tar.gz"), "pyasn1-0.1.2", True),
-                             depends=["PYTHON"]),
-                     "\"$TPREFIX/bin/python\" setup.py install",
-                     osenv({"LD_LIBRARY_PATH":"$TPREFIX/lib", "PATH":"$TPREFIX/bin:$$PATH"})),
+         pipinstaller(
+           package("PYASN1", "0.1.2",
+             fetcher=pipfetcher(),
+             depends=["PYTHON"]
+           ),
+           pypi_name="pyasn1"
+         ),
 
-         shinstaller(package("PYTHON-KEYCZAR", "0.7b",
-                             untar(urlfetcher("python-keyczar-0.7b.tar.gz"), "python-keyczar-0.7b", True),
-                             depends=["PYTHON", "PYASN1", "PYCRYPTO"]),
-                     "\"$TPREFIX/bin/python\" setup.py install",
-                     osenv({"LD_LIBRARY_PATH":"$TPREFIX/lib", "PATH":"$TPREFIX/bin:$$PATH"})),
-                     
+         pipinstaller(
+           package("PYTHON-KEYCZAR", "0.7b",
+             fetcher=pipfetcher(),
+             depends=["PYTHON", "PYASN1", "PYCRYPTO"]
+           ),
+           pypi_name="python-keyczar"
+         ),
+
          tomcatinstaller(package("TOMCAT", "6.0.33",
                                  untar(urlfetcher("apache-tomcat-6.0.33.tar.gz"), "apache-tomcat-6.0.33", True))),
          
@@ -191,9 +179,9 @@ MODULES=[prepareinstaller(package("PREPARE", "1.0", nodir(), remembered=False)),
          
          beastinstaller(node_package("BEAST", depends=["BALTRAD-DB"])),
          
-         dexinstaller(node_package("BALTRAD-DEX", depends=["HDFJAVA", "TOMCAT", "BALTRAD-DB", "BEAST", "KEYSTORE"])),
+         dexinstaller(node_package("BALTRAD-DEX", depends=["HDFJAVA", "TOMCAT", "BALTRAD-DB", "BEAST"])),
          
-         raveinstaller(node_package("RAVE", depends=["EXPAT", "PROJ.4", "PYTHON", "NUMPY", "PYSETUPTOOLS", "PYCURL", "HLHDF", "BBUFR", "KEYSTORE"])),
+         raveinstaller(node_package("RAVE", depends=["EXPAT", "PROJ.4", "PYTHON", "NUMPY", "PYSETUPTOOLS", "PYCURL", "HLHDF", "BBUFR"])),
          
          ravegmapinstaller(node_package("RAVE-GMAP", depends=["RAVE"])), #Just use rave as dependency, rest of dependencies will trigger rave rebuild
 
@@ -345,15 +333,9 @@ Options:
     try to find a valid jdk.
 
 --keystore=<path>
-    Point out the java keystore to use when configuring setting up the
-    different modules for certification.
-    If not specified, a number of questions will be asked and then a
-    keystore will be generated for you. Unless the keystore file can
-    be found in $PREFIX/etc/.java-keystore, in that case it will be
-    verified and eventually used.
-
---keystorepwd=<pwd>
-    Specifies the password to use when opening the keystore and the certificate
+    Point out the keystore directory to use when configuring setting up the
+    different modules for certification. If not specified, one will be
+    created for you in $PREFIX/etc/bltnode-keystore.
 
 --with-zlib=yes|no|<zlibroot>|<zlibinc>,<zliblib>
     Specifies if zlib should be built by the installer or not. 
@@ -564,7 +546,7 @@ if __name__=="__main__":
                                    'with-hdfjava=', 'with-bdbfs','rebuild=',
                                    'bdb-pool-max-size=', "bdb-port=",
                                    'rave-pgf-port=', "rave-center-id=", "rave-dex-spoe=",
-                                   'dbuser=', 'dbpwd=','dbname=','dbhost=','keystore=','keystorepwd=','nodename=',
+                                   'dbuser=', 'dbpwd=','dbname=','dbhost=','keystore=','nodename=',
                                    'reinstalldb','excludedb', 'runas=','datadir=','warfile=',
                                    'urlrepo=','gitrepo=','offline',
                                    'print-modules', 'print-config', 'exclude-tomcat', 'recall-last-args',
