@@ -20,6 +20,9 @@ import fnmatch
 import tempfile
 import tarfile
 from distutils import log
+import socket
+
+socket.setdefaulttimeout(int(os.getenv("PIP_DEFAULT_TIMEOUT", "60")))
 
 try:
     from site import USER_SITE

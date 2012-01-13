@@ -34,6 +34,7 @@ URLREPO=http://git.baltrad.eu/blt_dependencies
 ZLIBINC=
 ZLIBLIB=
 BUILDZLIB=yes
+PIP_TIMEOUT=30
 
 fetch_sources() {
   file=$1
@@ -123,6 +124,9 @@ for arg in $*; do
     --with-zlib=*)
       ZLIBARG=`echo $arg | sed 's/[-a-zA-Z0-9]*=//'`
       ;;
+    --pip-timeout=*)
+      PIP_TIMEOUT=`echo $arg | sed 's/[-a-zA-Z0-9]*=//'`
+      ;;
   esac
 done
 
@@ -175,6 +179,10 @@ else
   bootstrap $TPREFIX
 fi
 
+# these are exported to propagate to node-installer's pipinstaller
+export PIP_USE_MIRRORS=true 
+export PIP_DEFAULT_TIMEOUT=$PIP_TIMEOUT
+
 # make sure python's shared libraries are on linker path
 export LD_LIBRARY_PATH=$TPREFIX/lib
 if [ "$ZLIBLIB" != "" ]; then
@@ -185,10 +193,6 @@ if [ ! -f $EASYINSTALL_EXECUTABLE ]; then
   echo "installing distribute, this might take a while..."
   $PYTHON_EXECUTABLE $SCRIPTPATH/bin/distribute_setup.py > /dev/null || exit 127
 fi
-
-# this is exported to make node-installer's pipinstaller use
-# mirroring as well
-export PIP_USE_MIRRORS=true 
 
 PIP_EXECUTABLE=$TPREFIX/bin/pip
 if [ ! -f $PIP_EXECUTABLE ]; then
