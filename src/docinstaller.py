@@ -69,7 +69,10 @@ class docinstaller(installer):
   #
   def doinstall(self, env):
     import re
-        
+    ocode = subprocess.call("which doxygen > /dev/null 2>&1", shell=True)
+    if ocode != 0:
+      return
+    
     hlhdf_pth = env.expandArgs("$PREFIX/doc/hlhdf")
     beast_pth = env.expandArgs("$PREFIX/doc/beast")
     dex_pth = env.expandArgs("$PREFIX/doc/dex")

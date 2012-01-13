@@ -23,8 +23,7 @@ Validates that we have a doxygen generator available
 @author Anders Henja (Swedish Meteorological and Hydrological Institute, SMHI)
 @date 2012-01-12
 '''
-from ValidatorException import ValidatorException
-import subprocess, os
+import subprocess
 
 ##
 # Doxygen Validator, tests for an existing doxygen
@@ -42,6 +41,6 @@ class doxygenvalidator:
   def validate(self, env):
     ocode = subprocess.call("which doxygen > /dev/null 2>&1", shell=True)
     if ocode != 0:
-      print "No doxygen command available on path"
-      raise ValidatorException("No doxygen generator available on path.")
-    print "Doxygen: Found"
+      print "Doxygen: Not found"
+    else:
+      print "Doxygen: Found"
