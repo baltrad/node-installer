@@ -170,7 +170,7 @@ fi
 
 PYTHON_EXECUTABLE=$TPREFIX/bin/python
 if [ -f $PYTHON_EXECUTABLE ]; then
-  echo "have python at $TPREFIX/bin/python"
+  echo "PYTHON already installed at $TPREFIX/bin/python"
 else
   bootstrap $TPREFIX
 fi
@@ -183,13 +183,21 @@ fi
 EASYINSTALL_EXECUTABLE=$TPREFIX/bin/easy_install
 if [ ! -f $EASYINSTALL_EXECUTABLE ]; then
   echo "installing distribute, this might take a while..."
-  $PYTHON_EXECUTABLE $SCRIPTPATH/bin/distribute_setup.py
+  $PYTHON_EXECUTABLE $SCRIPTPATH/bin/distribute_setup.py > /dev/null || exit 127
 fi
+
+# this is exported to make node-installer's pipinstaller use
+# mirroring as well
+export PIP_USE_MIRRORS=true 
 
 PIP_EXECUTABLE=$TPREFIX/bin/pip
 if [ ! -f $PIP_EXECUTABLE ]; then
   echo "installing pip, this might take a while..."
-  $PYTHON_EXECUTABLE $SCRIPTPATH/bin/get-pip.py
+  $PYTHON_EXECUTABLE $SCRIPTPATH/bin/get-pip.py > /dev/null
+  # returns 0 on failure, check if the executable appeared to determine success
+  if [ ! -f $PIP_EXECUTABLE ]; then
+    exit 127
+  fi
 fi
 
 # pass the torch to the python node-installer
