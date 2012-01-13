@@ -48,6 +48,14 @@ except ImportError:
 
 DEFAULT_VERSION = "0.6.24"
 DEFAULT_URL = "http://pypi.python.org/packages/source/d/distribute/"
+PYPI_URLS = [
+    "http://pypi.python.org/packages/source/d/distribute/",
+    "http://b.pypi.python.org/packages/source/d/distribute/",
+    "http://c.pypi.python.org/packages/source/d/distribute/",
+    "http://d.pypi.python.org/packages/source/d/distribute/",
+    "http://e.pypi.python.org/packages/source/d/distribute/",
+    "http://f.pypi.python.org/packages/source/d/distribute/",
+]
 SETUPTOOLS_FAKED_VERSION = "0.6c11"
 
 SETUPTOOLS_PKG_INFO = """\
@@ -477,7 +485,16 @@ def _extractall(self, path=".", members=None):
 
 def main(argv, version=DEFAULT_VERSION):
     """Install or upgrade setuptools and EasyInstall"""
-    tarball = download_setuptools()
+    tarball = None
+    for url in PYPI_URLS:
+        try:
+            tarball = download_setuptools(download_base=url)
+        except Exception, e:
+            print >> sys.stderr, e
+        else:
+            break
+    if not tarball:
+        raise SystemExit("Failed to download distribute tarball")
     _install(tarball)
 
 
