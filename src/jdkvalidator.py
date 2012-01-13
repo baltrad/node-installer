@@ -133,9 +133,10 @@ public class TestJava {
 
     self._remove_files(["TestJava.java","TestJava.class"])
     
-    if platform.machine() == "x86_64" and datamodel64 == True:
+    arch_bits = platform.architecture()[0]
+    if arch_bits == "64bit" and datamodel64 == True:
       return "64"
-    elif platform.machine() == "i386" and datamodel32 == True:
+    elif arch_bits == "32bit" and datamodel32 == True:
       return "32"
     else:
       raise ValidatorException, "Incompatible jvm and platform, arch and jvm differs between 32 and 64 bit models"
