@@ -68,11 +68,7 @@ from experimental import experimental
 # so that HDF5 is rebuilt each time ZLIB is rebuilt.
 ##
 MODULES=[prepareinstaller(package("PREPARE", "1.0", nodir(), remembered=False)),
-         
-         cmmi(package("ZLIB", "1.2.4",
-                      untar(urlfetcher("zlib-1.2.4.tar.gz"), "zlib-1.2.4", True)),
-              "--prefix=\"${TPREFIX}\"", False, True,
-              foptionalarg=zlib_optional_arg),
+         shinstaller(package("ZLIB", "1.2.4", nodir()),":"),
 
          cmmi(package("HDF5", "1.8.5-patch1",
                       untar(urlfetcher("hdf5-1.8.5-patch1.tar.gz"), "hdf5-1.8.5-patch1", True),

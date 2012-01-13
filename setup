@@ -28,9 +28,14 @@ PACKAGEPATH=$SCRIPTPATH/packages
 
 PREFIX=/opt/baltrad
 EXPERIMENTAL=
+ZLIBARG=
 URLREPO=http://git.baltrad.eu/blt_dependencies
 
-fetch_python_sources() {
+ZLIBINC=
+ZLIBLIB=
+BUILDZLIB=yes
+
+fetch_sources() {
   file=$1
   src=$2
   dst=$3
@@ -40,6 +45,29 @@ fetch_python_sources() {
     cd $dst
     wget -c $src/$file > /dev/null
   fi
+}
+
+bootstrap_zlib() {
+  prefix=$1
+  arch=`uname -m`
+  zlib_src=zlib-1.2.4.tar.gz
+  
+  echo "bootstrapping zlib to $prefix"
+  
+  fetch_sources $zlib_src $URLREPO $PACKAGEPATH
+
+  cd $PACKAGEPATH
+  
+  tar -xvpzf $zlib_src > /dev/null  || exit 127
+  cd zlib-1.2.4 || exit 127
+  
+  cmd="./configure --prefix=$prefix"
+  if [ "$arch" = "x86_64" ]; then
+    cmd="$cmd --64"
+  fi
+  $cmd > /dev/null || exit 127
+  make > /dev/null  || exit 127
+  make install > /dev/null  || exit 127
 }
 
 bootstrap() {
@@ -53,17 +81,28 @@ bootstrap() {
 
   echo "bootstrapping python $python_version to $prefix"
 
-  fetch_python_sources $python_src $URLREPO $PACKAGEPATH
-  cd $PACKAGEPATH
+  fetch_sources $python_src $URLREPO $PACKAGEPATH
+  cd $PACKAGEPATH || exit 127
   echo "Unpacking $python_src"
-  tar -xvpzf $python_src > /dev/null
-  cd Python-$python_version
+  tar -xvpzf $python_src > /dev/null || exit 127
+  
+  cd Python-$python_version || exit 127
+  
   echo "configuring Python $python_version"
-  ./configure --prefix=$prefix --enable-shared > /dev/null
+
+  if [ "$ZLIBINC" != "" ]; then
+    CFLAGS=-I\"$ZLIBINC\"
+  fi
+  if [ "$ZLIBLIB" != "" ]; then
+    LDFLAGS=-L\"$ZLIBLIB\"
+  fi
+  
+  ./configure --prefix=$prefix --enable-shared
+
   echo "making Python $python_version"
-  make > /dev/null
+  make
   echo "installing Python $python_version"
-  make install > /dev/null
+  make install > /dev/null || exit 127
 }
 
 # pick the args that are interesting for bootstrapping
@@ -81,12 +120,52 @@ for arg in $*; do
     --urlrepo=*)
       URLREPO=`echo $arg | sed 's/[-a-zA-Z0-9]*=//'`
       ;;
+    --with-zlib=*)
+      ZLIBARG=`echo $arg | sed 's/[-a-zA-Z0-9]*=//'`
+      ;;
   esac
 done
 
 # set default TPREFIX
 if [ -z $TPREFIX ]; then
   TPREFIX=$PREFIX/third_party
+fi
+
+if [ -n "$ZLIBARG" ]; then
+  # We have some options here.
+  #  no|false   => don't build zlib, hope it works
+  #  yes|true   => build zlib
+  #  <path>     => root library, i.e.   <path>/include and <path>/lib
+  #  <incpath>,<libpath>
+  
+  # Contains , ?
+  V=`echo $ZLIBARG | grep ","`
+  if [ -n "$V" ]; then
+    ZLIBINC=`echo "$ZLIBARG" | awk '{split($0, a, ","); print a[1];}'`
+    ZLIBLIB=`echo "$ZLIBARG" | awk '{split($0, a, ","); print a[2];}'`
+    BUILDZLIB=no
+  else
+    YN=`echo $ZLIBARG | awk '{print tolower($0)}'`
+    if [ "$YN" = "no" -o "$YN" = "false" ]; then
+      BUILDZLIB=no
+    elif [ "$YN" = "yes" -o "$YN" = "true" ]; then
+      BUILDZLIB=yes
+    else
+      ZLIBINC="$ZLIBARG/include"
+      ZLIBLIB="$ZLIBARG/lib"
+      BUILDZLIB=no
+    fi
+  fi
+fi
+
+if [ "$BUILDZLIB" = "yes" ]; then
+  ZLIBINC=$TPREFIX/include
+  ZLIBLIB=$TPREFIX/lib
+  if [ -f "$ZLIBINC/zlib.h" -a -f "$ZLIBLIB/libz.so" ]; then
+    echo "ZLIB already installed"
+  else
+    bootstrap_zlib $TPREFIX
+  fi
 fi
 
 PYTHON_EXECUTABLE=$TPREFIX/bin/python
@@ -98,19 +177,21 @@ fi
 
 # make sure python's shared libraries are on linker path
 export LD_LIBRARY_PATH=$TPREFIX/lib
-
+if [ "$ZLIBLIB" != "" ]; then
+  export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:$ZLIBLIB"
+fi
 EASYINSTALL_EXECUTABLE=$TPREFIX/bin/easy_install
 if [ ! -f $EASYINSTALL_EXECUTABLE ]; then
-  echo "installing distribute"
-  $PYTHON_EXECUTABLE $SCRIPTPATH/bin/distribute_setup.py > /dev/null
+  echo "installing distribute, this might take a while..."
+  $PYTHON_EXECUTABLE $SCRIPTPATH/bin/distribute_setup.py
 fi
 
 PIP_EXECUTABLE=$TPREFIX/bin/pip
 if [ ! -f $PIP_EXECUTABLE ]; then
-  echo "installing pip"
-  $PYTHON_EXECUTABLE $SCRIPTPATH/bin/get-pip.py > /dev/null
+  echo "installing pip, this might take a while..."
+  $PYTHON_EXECUTABLE $SCRIPTPATH/bin/get-pip.py
 fi
 
 # pass the torch to the python node-installer
 cd "$SCRIPTPATH/packages"
- $PYTHON_EXECUTABLE $SCRIPTPATH/bin/install.py $*
+$PYTHON_EXECUTABLE $SCRIPTPATH/bin/install.py $*
