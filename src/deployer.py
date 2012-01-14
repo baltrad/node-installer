@@ -111,6 +111,7 @@ class deployer(installer):
       self._copy_dex_default_properties(env)
       self._copy_dex_user_properties(env)
       self._write_dex_version_properties()
+      self._insert_help_documentation(env)
       os.chdir("..")
       ocode = subprocess.call(env.expandArgs("$JDKHOME/bin/jar cf %s -C %s/ ."%(tmpwar,foldername)), shell=True)
       if ocode != 0:
@@ -274,6 +275,53 @@ software.version=%s
 """ % self.node_version)
     fp.close()
 
+  ##
+  # Returns all files that are in a directory. It will not
+  # return directories or links.
+  # @param dir: The directory name
+  # @return: a list of files
+  def _get_files_in_directory(self, dir):
+    import glob
+    result = []
+    files = glob.glob("%s/*"%dir)
+    
+    for file in files:
+      if os.path.isfile(file) and not os.path.islink(file):
+        result.append(file)
+    
+    return result
+  
+  ##
+  # Returns all directories that are in a directory. It will not
+  # return files or links.
+  # @param dir: The directory name
+  # @return: a list of files
+  def _get_dirs_in_directory(self, dir):
+    import glob
+    result = []
+    files = glob.glob("%s/*"%dir)
+    
+    for file in files:
+      if os.path.isdir(file) and not os.path.islink(file):
+        result.append(file)
+    
+    return result
+    
+  ##
+  # Inserts the help documentation into the bundle
+  # @param env: the build environment
+  def _insert_help_documentation(self, env):
+    pth = env.expandArgs("$PREFIX/doc")
+    files = self._get_files_in_directory(pth)
+    dirs = self._get_dirs_in_directory(pth)
+    
+    for f in files:
+      shutil.copy(f, "./help/")
+    
+    for d in dirs:
+      basename=os.path.basename(d)
+      shutil.copytree(d, "./help/%s"%basename)
+  
   ##
   # Deploys the war
   def _deploywar(self, env, warpath):

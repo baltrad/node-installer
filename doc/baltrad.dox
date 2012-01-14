@@ -1,8 +1,8 @@
-/** \mainpage Baltrad exchange system (BALTRAD)
+/** \mainpage BALTRAD community-based weather radar networking
 \date 12 January 2012
 \version 1.0
 \par Copyright 
-&copy; 2012 the Swedish Meteorological and Hydrological Institute (SMHI), Norrk&ouml;ping, Sweden
+&copy; 2012 Swedish Meteorological and Hydrological Institute (SMHI), Norrk&ouml;ping, Sweden
 
 \par Legals
 BALTRAD is free software: you can redistribute it and/or modify
@@ -24,16 +24,21 @@ documentation, you agree that you have read, understood, and will comply
 with the following terms and conditions:
 
 \section about About
-The baltrad exchange system has been developed as part of the ..daniel.. please
-add..
+This package installs and deploys BALTRAD software, along with the dependencies it requires. The development of this system has been performed by a distributed partnership with funding in part from the EU's Baltic Sea Region Programme between February 2009 and January 2012. This partnership comprises the following organizations: <br><br>
+Swedish Meteorological and Hydrological Institute <br>
+Finnish Meteorological Institute <br>
+Institute of Meteorology and Water Management, Poland <br>
+Latvian Environmental Geology and Meteorological Centre <br>
+Danish Meteorological Institute <br>
+Republican Hydrometeorological Centre, Belarus <br>
+Finnish Radiation and Nuclear Safety Authority <br>
+Estonian Meteorological and Hydrological Institute
 
 \section introduction Introduction
-Since the system is built by several different partners we have decided to
-keep this introduction to a minimum. Instead you might want to jump to
-the user guide that can be found in ...
+The system is built by several different partners, so we have decided to
+keep this introduction to a minimum. For a more detailed introduction outlining the concepts governing how this system is build, how its various components interact, and how it all works, please read the user guide at ...
 
-If you already know what you are after, you can jump to the specific section
-describing the module.
+If you are seeking technical details at of a given system component, please see the specific section below containing them.
 
 $REPLACE_MODULES_BY_DOCINSTALLER$
 
