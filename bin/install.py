@@ -89,20 +89,16 @@ MODULES=[prepareinstaller(package("PREPARE", "1.0", nodir(), remembered=False)),
                      ":"),
 
          experimental(
-           pipinstaller(
-             package("NUMPY", "1.3.0",
-               fetcher=pipfetcher(),
-               depends=["PYTHON"],
-             ),
-             pypi_name="numpy",
-           ),
-           pipinstaller(
-             package("NUMPY", "1.4.1",
-               fetcher=pipfetcher(),
-               depends=["PYTHON"],
-             ),
-             pypi_name="numpy",
-           )
+           shinstaller(package("NUMPY", "1.3.0",
+                               untar(urlfetcher("numpy-1.3.0.tar.gz"), "numpy-1.3.0", True),
+                               depends=["PYTHON"]),
+                       "\"$TPREFIX/bin/python\" setup.py install",
+                       osenv({"PATH":"$TPREFIX/bin:$$PATH", "LD_LIBRARY_PATH":"$TPREFIX/lib"})),
+           shinstaller(package("NUMPY", "1.4.1",
+                               untar(urlfetcher("numpy-1.4.1.tar.gz"), "numpy-1.4.1", True),
+                               depends=["PYTHON"]),
+                       "\"$TPREFIX/bin/python\" setup.py install",
+                       osenv({"PATH":"$TPREFIX/bin:$$PATH", "LD_LIBRARY_PATH":"$TPREFIX/lib"}))
          ),
 
          pilinstaller(package("PIL", "1.1.7",
