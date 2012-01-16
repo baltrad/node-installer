@@ -100,10 +100,11 @@ class gitfetcher(fetcher):
   
   ##
   # Fetches the code from the git repository
+  # @param package: the package to fetch
   # @param env: the build environment
   # @return the directory name of the package that has been fetched
   #
-  def dofetch(self, env=None):
+  def dofetch(self, package, env=None):
     if env.hasArg("INSTALL_OFFLINE") and env.getArg("INSTALL_OFFLINE") == True:
       code = subprocess.call("tar -xvzf %s.tgz"%self.offlinename, shell=True)
       if code != 0:
@@ -114,9 +115,10 @@ class gitfetcher(fetcher):
 
   ##
   # Cleans up the git repository
+  # @param package: the package to clean
   # @param env: The build environment
   #
-  def doclean(self, env=None):
+  def doclean(self, package, env=None):
     if os.path.exists(self.project):
       if self.project not in [".", "..", "/", "../", "./"]:
         shutil.rmtree(self.project, True)
@@ -129,9 +131,10 @@ class gitfetcher(fetcher):
   ##
   # Fetches the offline content related to the git repository. Will generate a 
   # tar ball for the fetched software
+  # @param package: the package to fetch
   # @param env: the build environment
   #
-  def dofetch_offline_content(self, env=None):
+  def dofetch_offline_content(self, package, env=None):
     self._fetchgit(env)
 
     cdir = os.getcwd()

@@ -51,11 +51,12 @@ class untar(fetcher):
   
   ##
   # Fetches and extracts the tar ball
+  # @param package: the package to fetch
   # @param env: the build environment
   # @return: the directory that was the result of this tar extraction
   #
-  def dofetch(self, env=None):
-    filename = self.fetcher.fetch(env)
+  def dofetch(self, package, env=None):
+    filename = self.fetcher.fetch(package, env)
     args = ""
     if self.compressed == True:
       args = "-xvzf"
@@ -71,18 +72,19 @@ class untar(fetcher):
   ##
   # Removes the tar ball and directory
   #
-  def doclean(self, env=None):
-    self.fetcher.clean(env)
+  def doclean(self, package, env=None):
+    self.fetcher.clean(package, env)
     if os.path.exists(self.dirname):
       if self.dirname not in [".", "..", "/", "../", "./"]:
         shutil.rmtree(self.dirname, True)
         
   ##
   # Executes the fetcher
+  # @param package: the package to fetch
   # @param env: the build environment
   #  
-  def dofetch_offline_content(self, env=None):
-    self.fetcher.dofetch_offline_content(env)
+  def dofetch_offline_content(self, package, env=None):
+    self.fetcher.dofetch_offline_content(package, env)
     if os.path.exists(self.dirname):
       if self.dirname not in [".", "..", "/", "../", "./"]:
         shutil.rmtree(self.dirname, True)

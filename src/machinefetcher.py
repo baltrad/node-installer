@@ -45,28 +45,31 @@ class machinefetcher(fetcher):
   
   ##
   # Executes the machine dependent fetcher
+  # @param package: the package to fetch
   # @param env: the build environment
   # @return the result of the machine specific fetcher
   #
-  def dofetch(self, env=None):
+  def dofetch(self, package, env=None):
     import platform
     m = platform.machine()
     if self._fetchers.has_key(m):
-      return self._fetchers[m].fetch(env)
+      return self._fetchers[m].fetch(package, env)
     raise InstallerException, "Unsupported machine type %s"%m
 
   ##
   # Cleans up the machine dependent fetcher
+  # @param package: the package to clean
   # @param env: the build environment
   #
-  def doclean(self, env=None):
+  def doclean(self, package, env=None):
     for k in self._fetchers.keys():
-      self._fetchers[k].clean(env)
+      self._fetchers[k].clean(package, env)
   
   ##
   # Executes all fetchers regardless of machine type
+  # @param package: the package to fetch
   # @param env: the build environment
   #  
-  def dofetch_offline_content(self, env=None):
+  def dofetch_offline_content(self, package, env=None):
     for k in self._fetchers.keys():
-      self._fetchers[k].dofetch_offline_content(env)
+      self._fetchers[k].dofetch_offline_content(package, env)

@@ -38,54 +38,60 @@ class fetcher(object):
   ##
   # Fetches the software in some way. Requires that subclass
   # has implemented dofetch.
+  # @param package: the package to fetch
   # @param env: The build environment
   # @return the file or directory name of the fetched package
   #
-  def fetch(self,env=None):
+  def fetch(self, package, env=None):
     cdir = os.getcwd()
     try:
-      return self.dofetch(env)
+      return self.dofetch(package, env)
     finally:
       os.chdir(cdir)
 
   ##
   # Fetches the offline content in some way. Requires that subclass
   # has implemented fetch_offline_content
+  # @param package: the package to fetch
   # @param env: the build environment
   #
-  def fetch_offline_content(self,env=None):
-    self.dofetch_offline_content(env)
+  def fetch_offline_content(self, package, env=None):
+    self.dofetch_offline_content(package, env)
 
   ##
   # Cleans up the related software
+  # @param package: the package to fetch
   # @param env: the build environment
   #
-  def clean(self, env=None):
+  def clean(self, package, env=None):
     cdir = os.getcwd()
     try:
-      self.doclean(env)
+      self.doclean(package, env)
     finally:
       os.chdir(cdir)
 
   ##
   # Fetches the software in some way.
+  # @param package: the package to fetch
   # @param env: The build environment
   # @return the file or directory name of the fetched package
   #
-  def dofetch(self, env=None):
+  def dofetch(self, package, env=None):
     raise InstallerException, "Fetcher does not implement dofetch"
 
   ##
   # Fetches the offline content in some way
+  # @param package: the package to fetch
   # @param env: the build environment
   #
-  def dofetch_offline_content(self, env=None):
+  def dofetch_offline_content(self, package, env=None):
     raise InstallerException, "Fetcher does not implement dofetch_offline_content"
 
   ##
   # Cleans the software in some way.
+  # @param package: the package to fetch
   # @param env: The build environment
   #
-  def doclean(self, env=None):
+  def doclean(self, package, env=None):
     raise InstallerException, "Fetcher does not implement doclean"
   

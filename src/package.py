@@ -56,7 +56,7 @@ class package(object):
   # @return: a directory where the package can be accessed
   #
   def fetch(self, env=None):
-    return self._fetcher.fetch(env)
+    return self._fetcher.fetch(self, env=env)
 
   ##
   # Fetches the 'offline' content for this package
@@ -64,7 +64,7 @@ class package(object):
   #  
   def fetch_offline_content(self, env=None):
     if self._fetcher != None:
-      self._fetcher.fetch_offline_content(env)
+      self._fetcher.fetch_offline_content(self, env=env)
 
   ##
   # Executes the fetcher cleanup method
@@ -72,7 +72,7 @@ class package(object):
   #
   def clean(self, env=None):
     if self._fetcher != None:
-      self._fetcher.clean(env)
+      self._fetcher.clean(self, env=env)
   
   ##
   # Returns this packages version

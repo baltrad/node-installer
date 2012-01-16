@@ -67,9 +67,10 @@ class urlfetcher(fetcher):
   ##
   # Fetches the file
   # @param env: the build environment
+  # @param package: the package to fetch
   # @return the name of the file that was fetched
   #
-  def dofetch(self, env=None):
+  def dofetch(self, package, env=None):
     if not os.path.exists(self.fname):
       urllib.urlretrieve("%s/%s"%(env.getArg("URLREPO"),self.url), self.fname)
     else:
@@ -78,16 +79,18 @@ class urlfetcher(fetcher):
 
   ##
   # Fetches the file
+  # @param package: the package to fetch
   # @param env: the build environment
   #  
-  def dofetch_offline_content(self, env=None):
+  def dofetch_offline_content(self, package, env=None):
     if not os.path.exists(self.fname):
       urllib.urlretrieve("%s/%s"%(env.getArg("URLREPO"),self.url), self.fname)
   
   ##
   # Removes the file
+  # @param package: the package to clean
   # @param env: the build environment
   #
-  def doclean(self, env=None):
+  def doclean(self, package, env=None):
     if os.path.exists(self.fname):
       os.remove(self.fname)

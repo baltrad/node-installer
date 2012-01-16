@@ -42,25 +42,28 @@ class nodir(fetcher):
   
   ##
   # Executes the fetcher and then return ".".
+  # @param package: the package to fetch
   # @param env: the build environment
   # @return: "."
-  def dofetch(self, env=None):
+  def dofetch(self, package, env=None):
     if self._fetcher != None:
-      self._fetcher.fetch(env)
+      self._fetcher.fetch(package, env)
     return "."
   
   ##
   # Executes the clean function in the fetcher
+  # @param package: the package to clean
   # @param env: the build environment
   #
-  def doclean(self, env=None):
+  def doclean(self, package, env=None):
     if self._fetcher != None:
-      self._fetcher.clean(env)
+      self._fetcher.clean(package, env)
  
   ##
   # Executes the fetcher
+  # @param package: the package to fetch
   # @param env: the build environment
   #  
-  def dofetch_offline_content(self, env=None):
+  def dofetch_offline_content(self, package, env=None):
     if self._fetcher != None:
-      self._fetcher.dofetch_offline_content(env)
+      self._fetcher.dofetch_offline_content(package, env)

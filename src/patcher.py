@@ -48,13 +48,14 @@ class patcher(fetcher):
   
   ##
   # Executes the fetcher and then patches the software in the resulting directory
+  # @param package: the package to fetch
   # @param env: the build environment
   # @return the directory that was the result of this fetch
   #
-  def dofetch(self, env=None):
+  def dofetch(self, package, env=None):
     cdir = os.getcwd()
     
-    dirname = self._fetcher.fetch(env)
+    dirname = self._fetcher.fetch(package, env)
     os.chdir(dirname)
     
     print "PATCHING %s"%`self._patches`
@@ -69,14 +70,16 @@ class patcher(fetcher):
   
   ##
   # Executes the fetchers clean up
+  # @param package: the package to clean
   # @param env: the build environment
   #
-  def doclean(self, env=None):
-    self._fetcher.clean(env)
+  def doclean(self, package, env=None):
+    self._fetcher.clean(package, env)
 
   ##
   # Executes the fetcher
+  # @param package: the package to fetch
   # @param env: the build environment
   #  
-  def dofetch_offline_content(self, env=None):
-    self._fetcher.dofetch_offline_content(env)
+  def dofetch_offline_content(self, package, env=None):
+    self._fetcher.dofetch_offline_content(package, env)

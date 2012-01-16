@@ -34,22 +34,25 @@ class pipfetcher(fetcher):
   
   ##
   # Fetches the file
+  # @param package: the package to fetch
   # @param env: the build environment
   # @return the name of the file that was fetched
   #
-  def dofetch(self, env=None):
+  def dofetch(self, package, env=None):
     return None
 
   ##
   # Fetches the file
+  # @param package: the package to fetch
   # @param env: the build environment
   #  
-  def dofetch_offline_content(self, env=None):
+  def dofetch_offline_content(self, package, env=None):
     pass
   
   ##
   # Removes the file
+  # @param package: the package to clean
   # @param env: the build environment
   #
-  def doclean(self, env=None):
+  def doclean(self, package, env=None):
     pass
