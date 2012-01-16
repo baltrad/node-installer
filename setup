@@ -31,27 +31,39 @@ EXPERIMENTAL=
 ZLIBARG=
 URLREPO=http://git.baltrad.eu/blt_dependencies
 
+ZLIB_VERSION=1.2.4
+PYTHON_VERSION=2.6.4
+PIP_VERSION=1.0.2
+DISTRIBUTE_VERSION=0.6.9
+
 ZLIBINC=
 ZLIBLIB=
 BUILDZLIB=yes
 PIP_TIMEOUT=30
+OFFLINE=
+CMD=
 
 fetch_sources() {
   file=$1
   src=$2
   dst=$3
-    
-  if [ ! -f $dst/$file ]; then
-    echo "fetching $2 from $src"
-    cd $dst
-    wget -c $src/$file > /dev/null
+
+  if [ ! -f "$dst/$file" ]; then
+    if [ -n $OFFLINE ]; then
+      echo "OFFLINE specified, but $file not available in $dst"
+      exit 127
+    else 
+      echo "fetching $2 from $src"
+      cd $dst
+      wget -c $src/$file > /dev/null
+    fi
   fi
 }
 
 bootstrap_zlib() {
   prefix=$1
   arch=`uname -m`
-  zlib_src=zlib-1.2.4.tar.gz
+  zlib_src=zlib-$2.tar.gz
   
   echo "bootstrapping zlib to $prefix"
   
@@ -60,7 +72,7 @@ bootstrap_zlib() {
   cd $PACKAGEPATH
   
   tar -xvpzf $zlib_src > /dev/null  || exit 127
-  cd zlib-1.2.4 || exit 127
+  cd zlib-$2 || exit 127
   
   cmd="./configure --prefix=$prefix"
   if [ "$arch" = "x86_64" ]; then
@@ -71,13 +83,14 @@ bootstrap_zlib() {
   make install > /dev/null  || exit 127
 }
 
-bootstrap() {
+clean_zlib() {
+  cd $PACKAGEPATH || exit 127
+  rm -rf zlib-$1
+}
+
+bootstrap_python() {
   prefix=$1
-  if [ -z $EXPERIMENTAL ]; then
-    python_version=2.6.4
-  else
-    python_version=2.7.2
-  fi
+  python_version=$2
   python_src=Python-$python_version.tgz
 
   echo "bootstrapping python $python_version to $prefix"
@@ -106,6 +119,46 @@ bootstrap() {
   make install > /dev/null || exit 127
 }
 
+clean_python() {
+  cd $PACKAGEPATH || exit 127
+  rm -rf Python-$1
+}
+
+install_distribute() {
+  python=$1
+  distribute_src=distribute-$2.tar.gz
+
+  fetch_sources $distribute_src $URLREPO $PACKAGEPATH
+
+  cd $PACKAGEPATH || exit 127
+  tar -xvpzf $distribute_src
+  cd `basename $distribute_src .tar.gz` || exit 127
+
+  $python setup.py install || exit 127
+}
+
+clean_distribute() {
+  cd $PACKAGEPATH || exit 127
+  rm -rf distribute-$1
+}
+
+install_pip() {
+  python=$1
+  pip_src=pip-$2.tar.gz
+  fetch_sources $pip_src $URLREPO $PACKAGEPATH
+
+  cd $PACKAGEPATH || exit 127
+  tar -xvpzf $pip_src
+  cd `basename $pip_src .tar.gz` || exit 127
+
+  $PYTHON_EXECUTABLE setup.py install || exit 127
+}
+
+clean_pip() {
+  cd $PACKAGEPATH || exit 127
+  rm -rf pip-$1
+}
+
 # pick the args that are interesting for bootstrapping
 for arg in $*; do
   case $arg in
@@ -127,12 +180,25 @@ for arg in $*; do
     --pip-timeout=*)
       PIP_TIMEOUT=`echo $arg | sed 's/[-a-zA-Z0-9]*=//'`
       ;;
+    --offline)
+      OFFLINE=yes
+      ;;
+    clean)
+      CMD=clean
+      ;;
+    dist)
+      CMD=dist
+      ;;
   esac
 done
 
 # set default TPREFIX
 if [ -z $TPREFIX ]; then
   TPREFIX=$PREFIX/third_party
+fi
+
+if [ -n $EXPERIMENTAL ]; then
+  PYTHON_VERSION=2.7.2
 fi
 
 if [ -n "$ZLIBARG" ]; then
@@ -168,7 +234,7 @@ if [ "$BUILDZLIB" = "yes" ]; then
   if [ -f "$ZLIBINC/zlib.h" -a -f "$ZLIBLIB/libz.so" ]; then
     echo "ZLIB already installed"
   else
-    bootstrap_zlib $TPREFIX
+    bootstrap_zlib $TPREFIX $ZLIB_VERSION
   fi
 fi
 
@@ -176,7 +242,7 @@ PYTHON_EXECUTABLE=$TPREFIX/bin/python
 if [ -f $PYTHON_EXECUTABLE ]; then
   echo "PYTHON already installed at $TPREFIX/bin/python"
 else
-  bootstrap $TPREFIX
+  bootstrap_python $TPREFIX $PYTHON_VERSION
 fi
 
 # these are exported to propagate to node-installer's pipinstaller
@@ -190,18 +256,19 @@ if [ "$ZLIBLIB" != "" ]; then
 fi
 EASYINSTALL_EXECUTABLE=$TPREFIX/bin/easy_install
 if [ ! -f $EASYINSTALL_EXECUTABLE ]; then
-  echo "installing distribute, this might take a while..."
-  $PYTHON_EXECUTABLE $SCRIPTPATH/bin/distribute_setup.py > /dev/null || exit 127
+  install_distribute $PYTHON_EXECUTABLE $DISTRIBUTE_VERSION
 fi
 
 PIP_EXECUTABLE=$TPREFIX/bin/pip
 if [ ! -f $PIP_EXECUTABLE ]; then
-  echo "installing pip, this might take a while..."
-  $PYTHON_EXECUTABLE $SCRIPTPATH/bin/get-pip.py > /dev/null
-  # returns 0 on failure, check if the executable appeared to determine success
-  if [ ! -f $PIP_EXECUTABLE ]; then
-    exit 127
-  fi
+  install_pip $PYTHON_EXECUTABLE $PIP_VERSION
+fi
+
+if [ "$CMD" = "clean" -o "$CMD" = "dist" ]; then
+  clean_zlib $ZLIB_VERSION
+  clean_python $PYTHON_VERSION
+  clean_distribute $DISTRIBUTE_VERSION
+  clean_pip $PIP_VERSION
 fi
 
 # pass the torch to the python node-installer
