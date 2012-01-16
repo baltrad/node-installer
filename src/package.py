@@ -41,14 +41,18 @@ class package(object):
   # @param fetcher: a fetcher, that always returns a directory
   # @param depends: if this package depends on any other packages
   # @param remembered: if this package should be remembered to have been installed or not
+  # @param extra_attrs: extra attributes to define for the package
   #
-  def __init__(self, name, version, fetcher=None, depends=[], remembered=True):
+  def __init__(self, name, version, fetcher=None, depends=[], remembered=True,
+               extra_attrs={}):
     self._name = name
     self._version = version
     self._fetcher = fetcher
     if depends != None:
       self._dependencies = depends
     self._remembered = remembered
+    for k, v in extra_attrs.iteritems():
+        setattr(self, k, v)
     
   ##
   # Executes the fetcher

@@ -32,16 +32,16 @@ class pipinstaller(installer):
   # Constructor
   #
   # @param pkg the package to install
-  # @param pypi_name package name in PYPI, if it differs from package.name()
   # @param pip_path path to the pip executable
   # @param quiet if True, pass '--quiet' to pip
   #
-  def __init__(self, pkg, pypi_name=None,
+  def __init__(self, pkg,
                pip_path="$TPREFIX/bin/pip", quiet=True):
     super(pipinstaller, self).__init__(pkg)
-    if not pypi_name:
-        pypi_name = pkg.name()
-    self._pypi_name = pypi_name
+    if not hasattr(pkg, "pypi_name"):
+      self._pypi_name = pkg.name()
+    else:
+      self._pypi_name = pkg.pypi_name
     self._pip_path = pip_path
     self._quiet = quiet
     
@@ -52,9 +52,18 @@ class pipinstaller(installer):
   def doinstall(self, env):
     pip = env.expandArgs(self._pip_path)
 
+    pkg_dir = os.path.join(
+      env.getInstallerPath(),
+      "packages",
+      self.package().name(),
+    )
+
     args = [pip, "install"]
+    args.append("--build=%s" % pkg_dir)
+    if _is_offline_install(env):
+      args.append("--no-download")
     if self._quiet:
-        args.append("--quiet")
+      args.append("--quiet")
     args.append("%s == %s" % (self._pypi_name, self.package().version()))
 
     print " ".join(args)
@@ -63,3 +72,6 @@ class pipinstaller(installer):
       raise InstallerException(
         "Failed to install '%s' using pip" % self._pypi_name
       )
+
+def _is_offline_install(env):
+  return env.hasArg("INSTALL_OFFLINE") and env.getArg("INSTALL_OFFLINE") == True

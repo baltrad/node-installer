@@ -127,7 +127,8 @@ _PIP_MODULES=[
     ("PYASN1", "0.1.2", "pyasn1", ["PYTHON"]),
     ("PYTHON-KEYCZAR", "0.7b", "python-keyczar", ["PYTHON", "PYASN1", "PYCRYPTO"]),
     ("JPROPS", "0.1", "jprops", ["PYTHON"]),
-    ("PYTHON-DAEMON", "1.6", "python-daemon", ["PYTHON"]),
+    ("LOCKFILE", "0.9.1", "lockfile", ["PYTHON"]),
+    ("PYTHON-DAEMON", "1.6", "python-daemon", ["PYTHON", "LOCKFILE"]),
     ("PSYCOPG2", "2.2.1", "psycopg2", ["PYTHON"]),
     ("SQLALCHEMY", "0.7.4", "sqlalchemy", ["PYTHON"]),
     ("WERKZEUG", "0.8.2", "werkzeug", ["PYTHON"]),
@@ -136,10 +137,18 @@ _PIP_MODULES=[
 ]
 
 for (name, version, pypi_name, deps) in _PIP_MODULES:
-    MODULES.append(
-        pipinstaller(
-            package(name, version, fetcher=pipfetcher(), depends=deps),
-                    pypi_name=pypi_name))
+  MODULES.append(
+    pipinstaller(
+      package(
+        name, version,
+        fetcher=pipfetcher(),
+        depends=deps,
+        extra_attrs={
+          "pypi_name": pypi_name,
+        }
+      )
+    )
+  )
 
 MODULES.extend([
          tomcatinstaller(package("TOMCAT", "6.0.33",

@@ -97,7 +97,7 @@ class bdbinstaller(installer):
   def _install_and_test_python_package(self, name, path, python):
     os.chdir(path)
 
-    ocode = subprocess.call([python, "setup.py", "--quiet", "install"])
+    ocode = subprocess.call([python, "setup.py", "install"])
     if ocode != 0:
         raise InstallerException, "Failed to install %s" % name
     
