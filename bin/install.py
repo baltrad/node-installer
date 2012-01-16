@@ -131,7 +131,7 @@ _PIP_MODULES=[
     ("PYASN1", "0.1.2", "pyasn1", ["PYTHON"]),
     ("PYTHON-KEYCZAR", "0.7b", "python-keyczar", ["PYTHON", "PYASN1", "PYCRYPTO"]),
     ("JPROPS", "0.1", "jprops", ["PYTHON"]),
-    ("PYTHON-DAEMON", "1.5", "python-daemon", ["PYTHON"]),
+    ("PYTHON-DAEMON", "1.6", "python-daemon", ["PYTHON"]),
     ("PSYCOPG2", "2.2.1", "psycopg2", ["PYTHON"]),
     ("SQLALCHEMY", "0.7.4", "sqlalchemy", ["PYTHON"]),
     ("WERKZEUG", "0.8.2", "werkzeug", ["PYTHON"]),
