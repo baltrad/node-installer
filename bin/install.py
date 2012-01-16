@@ -124,31 +124,28 @@ MODULES=[prepareinstaller(package("PREPARE", "1.0", nodir(), remembered=False)),
                              depends=["PYTHON","CURL"]),
                      "\"$TPREFIX/bin/python\" setup.py install",
                      osenv({"LD_LIBRARY_PATH":"$TPREFIX/lib", "PATH":"$TPREFIX/bin:$$PATH"})),
-         
-         pipinstaller(
-           package("PYCRYPTO", "2.4.1",
-             fetcher=pipfetcher(),
-             depends=["PYTHON"]
-           ),
-           pypi_name="pycrypto"
-         ),
+]
 
-         pipinstaller(
-           package("PYASN1", "0.1.2",
-             fetcher=pipfetcher(),
-             depends=["PYTHON"]
-           ),
-           pypi_name="pyasn1"
-         ),
+_PIP_MODULES=[
+    ("PYCRYPTO", "2.4.1", "pycrypto", ["PYTHON"]),
+    ("PYASN1", "0.1.2", "pyasn1", ["PYTHON"]),
+    ("PYTHON-KEYCZAR", "0.7b", "python-keyczar", ["PYTHON", "PYASN1", "PYCRYPTO"]),
+    ("JPROPS", "0.1", "jprops", ["PYTHON"]),
+    ("PYTHON-DAEMON", "1.5", "python-daemon", ["PYTHON"]),
+    ("PSYCOPG2", "2.2.1", "psycopg2", ["PYTHON"]),
+    ("SQLALCHEMY", "0.7.4", "sqlalchemy", ["PYTHON"]),
+    ("WERKZEUG", "0.8.2", "werkzeug", ["PYTHON"]),
+    ("PYTHON-MOCK", "0.7.2", "mock", ["PYTHON"]),
+    ("NOSE", "1.1.2", "nose", ["PYTHON"]),
+]
 
-         pipinstaller(
-           package("PYTHON-KEYCZAR", "0.7b",
-             fetcher=pipfetcher(),
-             depends=["PYTHON", "PYASN1", "PYCRYPTO"]
-           ),
-           pypi_name="python-keyczar"
-         ),
+for (name, version, pypi_name, deps) in _PIP_MODULES:
+    MODULES.append(
+        pipinstaller(
+            package(name, version, fetcher=pipfetcher(), depends=deps),
+                    pypi_name=pypi_name))
 
+MODULES.extend([
          tomcatinstaller(package("TOMCAT", "6.0.33",
                                  untar(urlfetcher("apache-tomcat-6.0.33.tar.gz"), "apache-tomcat-6.0.33", True))),
          
@@ -202,7 +199,7 @@ MODULES=[prepareinstaller(package("PREPARE", "1.0", nodir(), remembered=False)),
          # Always keep this installer at the end. It will start the system
          # and print out relevant information.
          finished(package("FINISHED", "1.0", nodir(), remembered=False)),
-        ]
+        ])
 
 ##
 # Prints the modules and the current version they have.

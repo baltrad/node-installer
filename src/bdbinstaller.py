@@ -68,10 +68,6 @@ class bdbinstaller(installer):
     pip = env.expandArgs("${PREFIX}/baltrad-db/bin/pip")
     python = env.expandArgs("${PREFIX}/baltrad-db/bin/python")
     
-    # we are going to run tests post-install, so add nose and mock to the env
-    self._pip_install(pip, "nose >= 1.1")
-    self._pip_install(pip, "mock >= 0.7")
-
     self._install_and_test_python_package(
         "baltrad.bdbcommon",
         path=os.path.join(dir, "common"),
@@ -111,11 +107,6 @@ class bdbinstaller(installer):
     if ocode != 0:
         raise InstallerException, "%s tests failed" % name
     
-  def _pip_install(self, pip, package):
-    ocode = subprocess.call([pip, "install", "%s" % package])
-    if ocode != 0:
-        raise InstallerException, "Failed to pip-install '%s'" % package
-  
   def _install_java_client(self, path, prefix, ant):
     os.chdir(path)
 
