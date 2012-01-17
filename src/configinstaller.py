@@ -24,6 +24,7 @@ Node configuration
 import os
 import shutil
 import time
+import urllib
 
 from installer import installer
 from InstallerException import InstallerException
@@ -60,7 +61,7 @@ class configinstaller(installer):
 baltrad.bdb.server.type = werkzeug
 baltrad.bdb.server.uri = http://localhost:$BDB_PORT
 baltrad.bdb.server.backend.type = sqlalchemy
-baltrad.bdb.server.backend.uri = postgresql://$DBUSER:$DBPWD@$DBHOST/$DBNAME
+baltrad.bdb.server.backend.uri = postgresql://$DBUSER:$ENCODED_DBPWD@$DBHOST/$DBNAME
 baltrad.bdb.server.backend.pool_size = $BDB_POOL_MAX_SIZE
 baltrad.bdb.server.backend.storage.type=database
-"""))
+""", extras={"ENCODED_DBPWD": urllib.quote_plus(env.getArg("DBPWD"))}))
