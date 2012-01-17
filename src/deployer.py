@@ -121,8 +121,6 @@ class deployer(installer):
       os.chdir(cdir)
       shutil.rmtree(tmppath, True)
     
-    #self._link_keystore(env)
-
   ##
   # Setups the appropriate tomcat permissions on the tomcat installation or
   # gives information to the user that it is necessary
@@ -347,18 +345,3 @@ software.version=%s
         print "unlinking", keystore_dst
         os.unlink(keystore_dst)
   
-  ##
-  # Link the keystore to the tomcat environment
-  def _link_keystore(self, env):
-    deployed_confdir = env.expandArgs("$TPREFIX/tomcat/webapps/BaltradDex/WEB-INF/conf/")
-    keystore_dst = os.path.join(deployed_confdir, ".dex_keystore.jks")
-    keystore_src = env.expandArgs("$KEYSTORE")
-    if not os.path.exists(deployed_confdir):
-      print "!!! WARNING !!!"
-      print "Could not find deployed conf directory: '%s'" % deployed_confdir
-      print "If you are using your own tomcat, you must make sure keys from"
-      print "%s are available in %s" % (keystore_src, keystore_dst)
-    else:
-      print "Linking %s to %s" % (keystore_src, keystore_dst)
-      os.unlink(keystore_dst)
-      os.symlink(keystore_src, keystore_dst)

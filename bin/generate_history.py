@@ -41,8 +41,7 @@ def package_path(pkg):
 
 def fetch_package(pkg, env):
   os.chdir(PACKAGES_DIR)
-  gitfetcher(NODE_REPOSITORY[pkg].geturi()).fetch(env)
-
+  gitfetcher(NODE_REPOSITORY[pkg].geturi()).fetch(None, env)
 
 def find_tickets(log):
   tickets = re.findall(r"^\s+Ticket \d+.*$", log, re.M)

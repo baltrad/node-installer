@@ -49,7 +49,7 @@ fetch_sources() {
   dst=$3
 
   if [ ! -f "$dst/$file" ]; then
-    if [ -n $OFFLINE ]; then
+    if [ -n "$OFFLINE" ]; then
       echo "OFFLINE specified, but $file not available in $dst"
       exit 127
     else 
