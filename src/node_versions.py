@@ -25,7 +25,7 @@ Actual versions for the different software modules that should be installed
 '''
 versions = {
   "HLHDF": "v0.8.0",
-  "BALTRAD-DB": "hudson-baltrad-db-319-SUCCESS",
+  "BALTRAD-DB": "hudson-baltrad-db-320-SUCCESS",
   "BEAST": "hudson-Beast-229-SUCCESS",
   "BALTRAD-DEX": "hudson-BaltradDex-293-SUCCESS",
   "RAVE": "hudson-Rave-239-SUCCESS",
