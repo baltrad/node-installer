@@ -90,7 +90,8 @@ MODULES=[prepareinstaller(package("PREPARE", "1.0", nodir(), remembered=False)),
 
          experimental(
            shinstaller(package("NUMPY", "1.3.0",
-                               untar(urlfetcher("numpy-1.3.0.tar.gz"), "numpy-1.3.0", True),
+                               patcher(untar(urlfetcher("numpy-1.3.0.tar.gz"), "numpy-1.3.0", True),
+                                       ["numpy-1.3.0/numpy-1.4.0-python-2.7.patch"]),
                                depends=["PYTHON"]),
                        "\"$TPREFIX/bin/python\" setup.py install",
                        osenv({"PATH":"$TPREFIX/bin:$$PATH", "LD_LIBRARY_PATH":"$TPREFIX/lib"})),
