@@ -320,7 +320,7 @@ Options:
 
 --prefix=<prefix>
     Points out where the system should be installed. 
-    [Default /opt/n2]
+    [Default /opt/baltrad]
     
 --tprefix=<prefix>
     Points out where the third-party software should be installed.
