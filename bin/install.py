@@ -135,6 +135,7 @@ _PIP_MODULES=[
     ("WERKZEUG", "0.8.2", "werkzeug", ["PYTHON"]),
     ("PYTHON-MOCK", "0.7.2", "mock", ["PYTHON"]),
     ("NOSE", "1.1.2", "nose", ["PYTHON"]),
+    ("PYINOTIFY", "0.9.3", "pyinotify", ["PYTHON"]),
 ]
 
 for (name, version, pypi_name, deps) in _PIP_MODULES:
