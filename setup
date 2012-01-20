@@ -42,8 +42,7 @@ BUILDZLIB=yes
 PIP_TIMEOUT=30
 OFFLINE=
 CMD=
-
-
+PRINT_INFO_WANTED=no
 
 fetch_sources() {
   file=$1
@@ -422,8 +421,12 @@ for arg in $*; do
     --bdb-port=*) ;;
     --bdb-pool-max-size=*) ;;
     --rebuild=*) ;;
-    --print-modules) ;;
-    --print-config) ;;
+    --print-modules)
+      PRINT_INFO_WANTED=yes
+      ;;
+    --print-config)
+      PRINT_INFO_WANTED=yes
+      ;;
     --exclude-tomcat) ;;
     --tomcatport=*) ;;
     --tomcaturl=*) ;;
@@ -504,6 +507,20 @@ if [ -n "$ZLIBARG" ]; then
   fi
 fi
 
+PYTHON_EXECUTABLE=$TPREFIX/bin/python
+
+if [ "$PRINT_INFO_WANTED" = "yes" ]; then
+  if [ ! -f "$PYTHON_EXECUTABLE" ]; then
+    if [ -f "$PACKAGEPATH/.arguments.dat" ]; then
+      echo "Can not print information. No python interpreeter found but arguments exists. Have you altered --prefix !?"
+      exit 1
+    else
+      echo "Can not print information. No python interpreeter found. Try installing the system first or type --help"
+      exit 1
+    fi
+  fi
+fi
+
 if [ "$BUILDZLIB" = "yes" ]; then
   ZLIBINC=$TPREFIX/include
   ZLIBLIB=$TPREFIX/lib
@@ -514,7 +531,6 @@ if [ "$BUILDZLIB" = "yes" ]; then
   fi
 fi
 
-PYTHON_EXECUTABLE=$TPREFIX/bin/python
 if [ -f $PYTHON_EXECUTABLE ]; then
   echo "PYTHON already installed at $TPREFIX/bin/python"
 else
