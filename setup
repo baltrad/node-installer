@@ -238,6 +238,13 @@ Options:
     - <psqlinc>,<psqllib> can be used to point out the specific 
       include and library paths
 
+--with-freetype=<freetypeinc>,<freetypelib>
+    In order to get freetype support built in the PIL imaging library
+    (for use with google maps plugin). You might have to specify this
+    library. <freetypeinc> is the path to the freetype include directory
+    as shown when executing freetype-config --cflags excluding the -I of course.
+    <freetypelib> is the path where libfreetype.so can be found.
+
 --dbuser=<user>
     Specifies the database user to use. 
     [Default baltrad]
@@ -399,6 +406,7 @@ for arg in $*; do
     --jdkhome=*) ;;
     --keystore==*) ;;
     --with-psql=*) ;;
+    --with-freetype=*) ;;
     --dbuser=*) ;;
     --dbpwd=*) ;;
     --dbname=*) ;;
@@ -557,6 +565,7 @@ if [ ! -f $PIP_EXECUTABLE ]; then
 fi
 
 if [ "$CMD" = "clean" -o "$CMD" = "dist" ]; then
+  echo "CLEANING ZLIB"
   clean_zlib $ZLIB_VERSION
   clean_python $PYTHON_VERSION
   clean_distribute $DISTRIBUTE_VERSION

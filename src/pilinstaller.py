@@ -63,6 +63,14 @@ class pilinstaller(installer):
     zlib = "%s/lib"%env.getArg("TPREFIX")
     
     zlibexcluded = env.isExcluded("ZLIB")
+    freetype = False
+    freetypeinc=None
+    freetypelib=None
+    if env.hasArg("FREETYPE"):
+      freetype = True
+      tokens = env.getArg("FREETYPE").split(",")
+      freetypeinc=tokens[0]
+      freetypelib=tokens[1]
     
     if env.hasArg("ZLIBLIB") or env.hasArg("ZLIBINC"):
       zinc=""
@@ -80,6 +88,9 @@ class pilinstaller(installer):
       if tl.find("ZLIB_ROOT = None") >= 0:
         if not zlibexcluded:
           tl = "ZLIB_ROOT = \"%s\",\"%s\"\n"%(zlib,zinc)
+      if tl.find("FREETYPE_ROOT = None") >= 0:
+        if freetype:
+          tl = "FREETYPE_ROOT = \"%s\",\"%s\"\n"%(freetypelib,freetypeinc)
       elif tl.find("library_dirs = []") >= 0:
         tl = re.sub("library_dirs = \[\]",env.expandArgs("library_dirs = [\"$TPREFIX/lib\"]"),tl)
       elif tl.find("include_dirs = []") >= 0:

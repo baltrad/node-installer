@@ -237,6 +237,8 @@ def print_arguments(env):
   
   if env.hasArg("ZLIBARG"):
     arguments.append(("--with-zlib=", env.getArg("ZLIBARG")))
+  if env.hasArg("FREETYPE"):
+    arguments.append(("--with-freetype=", env.getArg("FREETYPE")))
   if env.hasArg("PSQLARG"):
     arguments.append(("--with-psql=", env.getArg("PSQLARG")))
   if env.hasArg("DATADIR"):
@@ -357,6 +359,13 @@ Options:
       found in <psqlroot>/include and libraries can be found in <psqlroot>/lib
     - <psqlinc>,<psqllib> can be used to point out the specific 
       include and library paths
+
+--with-freetype=<freetypeinc>,<freetypelib>
+    In order to get freetype support built in the PIL imaging library
+    (for use with google maps plugin). You might have to specify this
+    library. <freetypeinc> is the path to the freetype include directory
+    as shown when executing freetype-config --cflags excluding the -I of course.
+    <freetypelib> is the path where libfreetype.so can be found.
 
 --dbuser=<user>
     Specifies the database user to use. 
@@ -496,6 +505,11 @@ def parse_buildzlib_argument(arg):
   else:
     raise InstallerException, "--zlib should either be (no, yes, <libroot> or <inc>,<lib> where <inc> and/or <lib> may be empty"
 
+def verify_buildfreetype_argument(arg):
+  tokens = arg.split(",")
+  if len(tokens) != 2:
+    raise InstallerException, "--with-freetype should be --with-freetype=<inc>,<lib>"
+
 def handle_tomcat_arguments(benv):
   if benv.hasArg("TOMCATPORT") and benv.hasArg("TOMCATURL"):
     # Verify that port does not conflict
@@ -543,7 +557,7 @@ if __name__=="__main__":
     optlist, args = getopt.getopt(sys.argv[1:], 'x', 
                                   ['prefix=','tprefix=','jdkhome=','with-zlib=',
                                    'with-psql=','with-bufr', 'with-rave','with-rave-gmap','with-bropo','with-beamb',
-                                   'with-hdfjava=', 'with-bdbfs','rebuild=',
+                                   'with-hdfjava=', 'with-freetype=', 'with-bdbfs','rebuild=',
                                    'bdb-pool-max-size=', "bdb-port=",
                                    'rave-pgf-port=', "rave-center-id=", "rave-dex-spoe=",
                                    'dbuser=', 'dbpwd=','dbname=','dbhost=','keystore=','nodename=',
@@ -618,6 +632,8 @@ if __name__=="__main__":
         sys.exit(127)
       else:
         env.addArg("HDFJAVAHOME", a)
+    elif o == "--with-freetype":
+      env.addArg("FREETYPE", a)
     elif o == "--exclude-tomcat":
       env.excludeModule("TOMCAT")
     elif o == "--tomcatport":
@@ -679,7 +695,11 @@ if __name__=="__main__":
       usage(True, "Unsupported argument: %s"%o)
       sys.exit(127)
 
-  if not env.hasArg("TOMCATPWD"):
+  checkpwd = False
+  if args != None and len(args) > 0 and args[0] in ["install","check"]:
+    checkpwd = False
+
+  if checkpwd and not env.hasArg("TOMCATPWD"):
     print "--tomcatpwd not specified, please specify password."
     pwd = None
     while pwd == None:
@@ -704,7 +724,7 @@ if __name__=="__main__":
   env.addUniqueArg("BUILD_BDBFS", "no")
   env.addUniqueArg("RUNASUSER", getpass.getuser())
   env.addUniqueArg("KEYSTORE", env.expandArgs("${PREFIX}/etc/bltnode-keys"))
-  
+
   if not env.hasArg("NODENAME"):
     import socket
     nodename = socket.gethostname()
@@ -775,7 +795,12 @@ if __name__=="__main__":
   if env.hasArg("WITH_BEAMB") and env.getArg("WITH_BEAMB") == True:
     env.removeExclude("RAVE")
     env.removeExclude("BEAMB")
-    
+  
+  # Freetype is not an actual module, it's just an indicator when building
+  # PIL
+  if env.hasArg("FREETYPE"):
+    verify_buildfreetype_argument(env.getArg("FREETYPE"))
+  
   if env.hasArg("ZLIBARG"):
     buildzlib, zinc, zlib = parse_buildzlib_argument(env.getArg("ZLIBARG"))
     env.addArgInternal("ZLIBINC", zinc)
