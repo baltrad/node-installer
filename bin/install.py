@@ -90,7 +90,8 @@ MODULES=[prepareinstaller(package("PREPARE", "1.0", nodir(), remembered=False)),
 
          experimental(
            shinstaller(package("NUMPY", "1.3.0",
-                               untar(urlfetcher("numpy-1.3.0.tar.gz"), "numpy-1.3.0", True),
+                               patcher(untar(urlfetcher("numpy-1.3.0.tar.gz"), "numpy-1.3.0", True),
+                                       ["numpy-1.3.0/numpy-1.4.0-python-2.7.patch"]),
                                depends=["PYTHON"]),
                        "\"$TPREFIX/bin/python\" setup.py install",
                        osenv({"PATH":"$TPREFIX/bin:$$PATH", "LD_LIBRARY_PATH":"$TPREFIX/lib"})),
@@ -134,6 +135,7 @@ _PIP_MODULES=[
     ("WERKZEUG", "0.8.2", "werkzeug", ["PYTHON"]),
     ("PYTHON-MOCK", "0.7.2", "mock", ["PYTHON"]),
     ("NOSE", "1.1.2", "nose", ["PYTHON"]),
+    ("PYINOTIFY", "0.9.3", "pyinotify", ["PYTHON"]),
 ]
 
 for (name, version, pypi_name, deps) in _PIP_MODULES:
@@ -320,7 +322,7 @@ Options:
 
 --prefix=<prefix>
     Points out where the system should be installed. 
-    [Default /opt/n2]
+    [Default /opt/baltrad]
     
 --tprefix=<prefix>
     Points out where the third-party software should be installed.

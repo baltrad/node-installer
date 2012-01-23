@@ -42,6 +42,7 @@ BUILDZLIB=yes
 PIP_TIMEOUT=30
 OFFLINE=
 CMD=
+PRINT_INFO_WANTED=no
 
 fetch_sources() {
   file=$1
@@ -142,6 +143,228 @@ clean_distribute() {
   rm -rf distribute-$1
 }
 
+usage_brief() {
+  echo "Usage: setup <options> command, use --help for information"
+}
+
+##
+# The documentation exists in the python class install.py as well. If you change documentation
+# change it in the python script. The run something like
+# cd bin && python -c "import install;install.usage(False)" to get a new help test
+#
+usage() {
+cat << _EOF_
+
+NODE INSTALLER
+Usage: setup <options> command, use --help for information
+
+This is the main installation script for installing a baltrad node.
+Most of the installation is handled without any interaction. However
+if you don't want to specify --tomcatpwd on command line you will
+get a question about it. 
+
+The script will remember several configuration parameters between
+runs but some of them will not be stored, like passwords and
+similar items. If you want to use the previous parameters, then
+you can specify --recall-last-args
+
+Command:
+Valid commands are:
+ - install
+     Installs the software
+     
+ - check
+     Checks that the provided dependencies are correct
+
+ - clean
+     Cleans up everything
+
+ - fetch
+     Fetch all packages so that it is possible to run an installation
+     in 'offline' mode. It will atempt to clean up any unessecary 
+     content but it is suggested to execute clean prior fetch.
+ 
+ - dist
+     Create distribution tarball
+     
+Options:
+--help
+    Shows this text
+
+--recall-last-args
+    If you want to use the previous arguments, then you can use
+    this option. It will try to restore the configuration parameters
+    used in the last run. 
+
+--nodename
+    This attribute should really be specified but there is a default value which
+    is the hostname as shown by the command 'hostname'.
+
+--prefix=<prefix>
+    Points out where the system should be installed. 
+    [Default /opt/baltrad]
+    
+--tprefix=<prefix>
+    Points out where the third-party software should be installed.
+    [Default <prefix>/third_party]
+    
+--jdkhome=<jdkhome>
+    Points out the jdkhome directory. If omitted, the installer will
+    try to find a valid jdk.
+
+--keystore=<path>
+    Point out the keystore directory to use when configuring setting up the
+    different modules for certification. If not specified, one will be
+    created for you in $PREFIX/etc/bltnode-keystore.
+
+--with-zlib=yes|no|<zlibroot>|<zlibinc>,<zliblib>
+    Specifies if zlib should be built by the installer or not. 
+    [Default yes]
+    - 'yes' means that the installer should install the provided zlib
+    - 'no' means that the installer should atempt to locate a valid
+      zlib installation
+    - zlibroot specifies a zlib installation where includes can be 
+      found in <zlibroot>/include and libraries can be found in 
+      <zlibroot>/lib
+    - <zlibinc>,<zliblib> can be used to point out the specific 
+      include and library paths
+
+--with-psql=<psqlroot>|<psqlinc>,<psqllib>
+    Specifies where to locate the postgresql include and library files.
+    If omitted the install script assumes that they can be found in 
+    the standard locations.
+    - psqlroot specifies a postgres installation where includes can be 
+      found in <psqlroot>/include and libraries can be found in <psqlroot>/lib
+    - <psqlinc>,<psqllib> can be used to point out the specific 
+      include and library paths
+
+--dbuser=<user>
+    Specifies the database user to use. 
+    [Default baltrad]
+
+--dbpwd=<pwd>
+    Specifies the database user password to use. 
+    [Default baltrad]
+    
+--dbname=<name>
+    Specified the database name to use. 
+    [Default baltrad]
+
+--dbhost=<host>
+    Specified the database host to use. 
+    [Default 127.0.0.1]
+
+--with-hdfjava=<hdf java root>
+    Specifies the hdf java root installation directory. 
+    If omitted, the installer will install it's own version of hdf-java.
+    
+--reinstalldb
+    Reinstalls the database tables. Use with care.
+
+--excludedb
+    Ignores installation of the database tables. Might be since they
+    already has been installed. This will cause the DBINSTALL package
+    to be set as installed.
+    
+--runas=<user>
+    Specifies the runas user for tomcat and other processes. It is not 
+    allowed to use a runas user that is root due to security-issues. 
+    [Defaults to user that is installing]
+
+--datadir=<dir>
+    The directory where all the data storage files should be placed for baltrad-db.
+    [Default <prefix>/bdb_storage]
+
+--urlrepo=<url>
+    The url from where the url packages can be fetched.
+    [Default http://git.baltrad.eu/blt_dependencies]
+    
+--gitrepo=<url>
+    The url from where the baltrad node git packages can be fetched.
+    [Default gitosis@git.baltrad.eu]
+
+--with-rave
+    Install the rave pgf
+
+--rave-pgf-port=<port>
+    Set the port rave should run on.
+    [default: 8085]
+
+--with-bufr
+    Install the bufr software. This will also affect rave so that if
+    we have specified bufr support rave will be built with bufr support
+    enabled as well.
+
+--rave-center-id=<id>
+    Originating center id to be used by rave as the source of its products.
+    [default: 82]
+
+--rave-dex-spoe=<spoe>
+    Dex's single point of entry to be used by rave. 
+    [default: localhost:$TOMCATPORT
+    
+--with-rave-gmap
+    Install the rave google map plugin. Will also cause rave pgf to be installed.
+
+--with-bropo
+    Install the anomaly detector bropo. Will also cause rave to be installed.
+
+--with-beamb
+    Install the beam blockage detector beamb. Will also cause rave to be installed.
+
+--with-bdbfs
+    Will build and install the baltrad db file system driver
+
+--bdb-port=8090
+    BDB server port
+
+--bdb-pool-max-size=<N>
+    Set the pool size for bdb connections to <N>
+    [default: 10]
+
+--rebuild=<module1>,<module2>,...
+    Will force a rebuild and installation of the specified modules. To get a 
+    list of available modules and their versions. See option --print-modules.
+    E.g. --rebuild=TOMCAT,RAVE
+    
+--print-modules
+    Prints all available modules and their respective version.
+    
+--print-config
+    Prints the build configuration
+    
+--exclude-tomcat
+    Will exclude installation of tomcat. This is not a recommended procedure but 
+    it is here for the possibility to use your own tomcat installation if it 
+    is necessary.
+
+--tomcatport=<port>
+    Specifies the port on which the tomcat installation should listen on.
+    Don't use together with --tomcaturl. 
+    [Default 8080]
+
+--tomcaturl=<url>
+    Specifies the tomcat url where the tomcat installation resides. Don't
+    use together with --tomcatport. 
+    [Default http://localhost:8080]
+    
+--tomcatpwd=<pwd>
+    Specifies the password that should be used for the manager in the tomcat
+    installation.
+    
+--force
+    Unused at the moment
+    
+--experimental
+    When running into problems with building, like missing libraries, link problems
+    or other miscellaneous problems. This might be the option to specify. Some modules
+    are currently beeing evaluated if they are stable enough to be used in production
+    and by specifying this option these modules will be built instead.
+    
+_EOF_
+  
+}
+
 install_pip() {
   python=$1
   pip_src=pip-$2.tar.gz
@@ -171,6 +394,45 @@ for arg in $*; do
     --experimental)
       EXPERIMENTAL=yes
       ;;
+    --recall-last-args) ;;
+    --nodename=*) ;;
+    --jdkhome=*) ;;
+    --keystore==*) ;;
+    --with-psql=*) ;;
+    --dbuser=*) ;;
+    --dbpwd=*) ;;
+    --dbname=*) ;;
+    --dbhost=*) ;;
+    --with-hdfjava=*) ;;
+    --reinstalldb) ;;
+    --excludedb) ;;
+    --runas=*) ;;
+    --datadir=*) ;;
+    --gitrepo=*) ;;
+    --with-rave) ;;
+    --rave-pgf-port=*) ;;
+    --with-bufr) ;;
+    --rave-center-id=*) ;;
+    --rave-dex-spoe=*) ;;
+    --with-rave-gmap) ;;
+    --with-bropo) ;;
+    --with-beamb) ;;
+    --with-bdbfs) ;;
+    --bdb-port=*) ;;
+    --bdb-pool-max-size=*) ;;
+    --rebuild=*) ;;
+    --print-modules)
+      PRINT_INFO_WANTED=yes
+      ;;
+    --print-config)
+      PRINT_INFO_WANTED=yes
+      ;;
+    --exclude-tomcat) ;;
+    --tomcatport=*) ;;
+    --tomcaturl=*) ;;
+    --tomcatpwd=*) ;;
+    --force) ;;
+    --experimental) ;;
     --urlrepo=*)
       URLREPO=`echo $arg | sed 's/[-a-zA-Z0-9]*=//'`
       ;;
@@ -183,7 +445,6 @@ for arg in $*; do
     --offline)
       OFFLINE=yes
       ;;
-      
     install)
       CMD=install
       ;;
@@ -198,6 +459,14 @@ for arg in $*; do
       ;;
     dist)
       CMD=dist
+      ;;
+    --help)
+      usage
+      exit 0
+      ;;
+    *)
+      usage_brief
+      exit 127
       ;;
   esac
 done
@@ -238,6 +507,20 @@ if [ -n "$ZLIBARG" ]; then
   fi
 fi
 
+PYTHON_EXECUTABLE=$TPREFIX/bin/python
+
+if [ "$PRINT_INFO_WANTED" = "yes" ]; then
+  if [ ! -f "$PYTHON_EXECUTABLE" ]; then
+    if [ -f "$PACKAGEPATH/.arguments.dat" ]; then
+      echo "Can not print information. No python interpreeter found but arguments exists. Have you altered --prefix !?"
+      exit 1
+    else
+      echo "Can not print information. No python interpreeter found. Try installing the system first or type --help"
+      exit 1
+    fi
+  fi
+fi
+
 if [ "$BUILDZLIB" = "yes" ]; then
   ZLIBINC=$TPREFIX/include
   ZLIBLIB=$TPREFIX/lib
@@ -248,7 +531,6 @@ if [ "$BUILDZLIB" = "yes" ]; then
   fi
 fi
 
-PYTHON_EXECUTABLE=$TPREFIX/bin/python
 if [ -f $PYTHON_EXECUTABLE ]; then
   echo "PYTHON already installed at $TPREFIX/bin/python"
 else
