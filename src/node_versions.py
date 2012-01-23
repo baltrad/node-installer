@@ -26,11 +26,11 @@ Actual versions for the different software modules that should be installed
 versions = {
   "HLHDF": "v0.8.0",
   "BALTRAD-DB": "hudson-baltrad-db-326-SUCCESS",
-  "BEAST": "hudson-Beast-233-SUCCESS",
-  "BALTRAD-DEX": "hudson-BaltradDex-296-SUCCESS",
-  "RAVE": "hudson-Rave-246-SUCCESS",
+  "BEAST": "hudson-Beast-235-SUCCESS",
+  "BALTRAD-DEX": "hudson-BaltradDex-297-SUCCESS",
+  "RAVE": "hudson-Rave-249-SUCCESS",
   "RAVE-GMAP": "hudson-GoogleMapsPlugin-24-SUCCESS",
   "BROPO": "hudson-bRopo-37-SUCCESS",
   "BBUFR": "hudson-bbufr-5-SUCCESS",
-  "BEAMB": "hudson-beamb-46-SUCCESS"
+  "BEAMB": "hudson-beamb-47-SUCCESS"
 }

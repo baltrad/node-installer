@@ -44,15 +44,15 @@ class nodedefinition:
     return self._branch
 
 _REPOS = {
-  "HLHDF": "$GITREPO:hlhdf.git",
-  "BALTRAD-DB": "$GITREPO:baltrad-db.git",
-  "BEAST": "$GITREPO:beast.git",
-  "BALTRAD-DEX": "$GITREPO:BaltradDex.git",
-  "RAVE": "$GITREPO:rave.git",
-  "RAVE-GMAP": "$GITREPO:GoogleMapsPlugin.git",
-  "BROPO": "$GITREPO:bropo.git",
-  "BBUFR": "$GITREPO:bbufr.git",
-  "BEAMB": "$GITREPO:beamb.git"
+  "HLHDF": "$GITREPO/hlhdf.git",
+  "BALTRAD-DB": "$GITREPO/baltrad-db.git",
+  "BEAST": "$GITREPO/beast.git",
+  "BALTRAD-DEX": "$GITREPO/BaltradDex.git",
+  "RAVE": "$GITREPO/rave.git",
+  "RAVE-GMAP": "$GITREPO/GoogleMapsPlugin.git",
+  "BROPO": "$GITREPO/bropo.git",
+  "BBUFR": "$GITREPO/bbufr.git",
+  "BEAMB": "$GITREPO/beamb.git"
 }
 
 PACKAGES = [
