@@ -48,7 +48,7 @@ class gitfetcher(fetcher):
   #
   def __init__(self, url, tag=None, branch=None):
     super(fetcher, self).__init__()
-    n = url[string.rfind(url, ":")+1:]
+    n = url[string.rfind(url, "/")+1:]
     self.project = n[:string.rfind(n,".git")]
     self.url = url
     self.tag = tag

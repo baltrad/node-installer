@@ -28,7 +28,7 @@ versions = {
   "BALTRAD-DB": "hudson-baltrad-db-326-SUCCESS",
   "BEAST": "hudson-Beast-235-SUCCESS",
   "BALTRAD-DEX": "hudson-BaltradDex-297-SUCCESS",
-  "RAVE": "hudson-Rave-249-SUCCESS",
+  "RAVE": "hudson-Rave-254-SUCCESS",
   "RAVE-GMAP": "hudson-GoogleMapsPlugin-24-SUCCESS",
   "BROPO": "hudson-bRopo-37-SUCCESS",
   "BBUFR": "hudson-bbufr-5-SUCCESS",
