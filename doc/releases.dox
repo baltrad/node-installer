@@ -1,0 +1,64 @@
+/** \page releases BALTRAD releases
+\date 12 January 2012
+\version 1.0
+\par Copyright 
+&copy; 2012 Swedish Meteorological and Hydrological Institute (SMHI), Norrk&ouml;ping, Sweden
+
+\par Legals
+BALTRAD is free software: you can redistribute it and/or modify
+it under the terms of the GNU Lesser General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+\par
+BALTRAD is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU Lesser General Public License for more details.
+
+\par
+You should have received a copy of the GNU Lesser General Public License
+along with BALTRAD.  If not, see http://www.gnu.org/licenses/.
+By obtaining, using, and/or copying this software and/or its associated 
+documentation, you agree that you have read, understood, and will comply
+with the following terms and conditions:
+
+\section releases_latest Latest
+
+Currently, the latest official release is 
+
+\b 1.0.0
+
+\verbatim
+  %> git clone git://git.baltrad.eu/node-installer.git
+  %> git checkout 1.0.0
+\endverbatim
+
+Or you can download the node-installer as a tar ball <a href="node-installer-1.0.0.tar.gz"> node-installer-1.0.0.tar.gz </a>.
+
+\section releases_fetching Fetching software
+
+The absolutely latest release can always be obtained from the git repository found at
+
+\verbatim
+  %> git clone git://git.baltrad.eu/node-installer.git
+\endverbatim
+
+These releases might and might not be stable so use them with care. The latest official
+release is currently \b 1.0.0.
+
+If you want to ensure that you get access to the correct release, you can always checkout
+the proper release
+\verbatim
+  %> git checkout 1.0.0
+\endverbatim
+
+If you want to update the software to a later release or similar, you will have to execute
+"git pull" after you have checked out the master branch.
+
+\verbatim
+  %> git checkout master
+  %> git pull
+\endverbatim
+
+*/
