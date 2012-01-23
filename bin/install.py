@@ -276,10 +276,10 @@ def usage(brief, msg=None):
 NODE INSTALLER
 Usage: setup <options> command, use --help for information
 
-This is the alternate installer that eventually will replace 
-the original baltrad-node setup scripts. The usage is basically 
-the same as when using the previous setup commands but this 
-script will install everything in one go.
+This is the main installation script for installing a baltrad node.
+Most of the installation is handled without any interaction. However
+if you don't want to specify --tomcatpwd on command line you will
+get a question about it. 
 
 The script will remember several configuration parameters between
 runs but some of them will not be stored, like passwords and
@@ -827,26 +827,20 @@ if __name__=="__main__":
 
     # We want to wrap everything up in some scripts
     # so that we can stop/start the node
+    spath = pth
     sldpath = ldpath
+    
     if not env.isExcluded("BEAMB"):
       sldpath = "$PREFIX/beamb/lib:%s"%sldpath
 
     if not env.isExcluded("BROPO"):
       sldpath = "$PREFIX/bropo/lib:%s"%sldpath
+      spath = env.expandArgs("$PREFIX/bropo/bin:%s"%spath)
       
     if not env.isExcluded("RAVE"):
       sldpath = "$PREFIX/rave/lib:%s"%sldpath
-  
-    spath = pth
-    if not env.isExcluded("RAVE"):
-      spath = env.expandArgs("$PREFIX/rave/bin:%s"%pth)
+      spath = env.expandArgs("$PREFIX/rave/bin:%s"%spath)
 
-#    script = nodescripts(
-#      "%s:$$PATH"%spath,
-#      "%s:$$LD_LIBRARY_PATH"%sldpath,
-#      "1.0.0",
-#      raveinstalled=not env.isExcluded("RAVE")
-#    )
     script = nodescripts(
       "%s"%spath,
       "%s"%sldpath,

@@ -183,6 +183,16 @@ for arg in $*; do
     --offline)
       OFFLINE=yes
       ;;
+      
+    install)
+      CMD=install
+      ;;
+    check)
+      CMD=check
+      ;;
+    fetch)
+      CMD=fetch
+      ;;
     clean)
       CMD=clean
       ;;
