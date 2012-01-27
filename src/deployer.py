@@ -286,6 +286,7 @@ software.version=%s
       '       xsi:schemaLocation="http://www.springframework.org/schema/beans',
       '       http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">',
     ]
+
     auth = env.getArg("BDB_AUTH")
     if auth == "keyczar":
       conf.extend([
@@ -299,18 +300,34 @@ software.version=%s
         '  <bean id="bdb_auth" class="eu.baltrad.bdb.db.rest.NullAuthenticator"/>',
       ])
     else:
-        raise InstallerException, "unrecognized BDB_AUTH: %s" % auth
+      raise InstallerException, "unrecognized BDB_AUTH: %s" % auth
+
     conf.extend([
       '  <bean id="bdb_db" class="eu.baltrad.bdb.db.rest.RestfulDatabase" >',
       '    <constructor-arg value="$${database.uri}" />',
       '    <constructor-arg ref="bdb_auth" />',
       '  </bean>',
     ])
+
+    storage = env.getArg("BDB_STORAGE")
+    if storage == "db":
+      conf.extend([
+        '  <bean id="bdb_storage" class="eu.baltrad.bdb.storage.CacheDirStorage">',
+        '    <constructor-arg index="0" value="$${data.storage.folder}" />',
+        '    <constructor-arg index="1" value="1000" /> <!-- cache size -->',
+        '  </bean>',
+      ])
+    elif storage == "fs":
+      conf.extend([
+        '  <bean id="bdb_storage" class="eu.baltrad.bdb.storage.ServerFileStorage">',
+        '    <constructor-arg index="0" value="$${data.storage.folder}" />',
+        '    <constructor-arg index="1" value="3" /> <!-- number of layers -->',
+        '  </bean>',
+      ])
+    else:
+      raise InstallerException, "unrecognized BDB_AUTH: %s" % auth
+
     conf.extend([
-      '  <bean id="bdb_storage" class="eu.baltrad.bdb.storage.CacheDirStorage">',
-      '    <constructor-arg index="0" value="$${data.storage.folder}" />',
-      '    <constructor-arg index="1" value="1000" /> <!-- cache size -->',
-      '  </bean>',
       '  <bean id="bdb_file_catalog" class="eu.baltrad.bdb.BasicFileCatalog">',
       '    <constructor-arg ref="bdb_db" />',
       '    <constructor-arg ref="bdb_storage" />',

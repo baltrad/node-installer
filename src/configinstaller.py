@@ -63,8 +63,20 @@ class configinstaller(installer):
       "baltrad.bdb.server.backend.type = sqla",
       "baltrad.bdb.server.backend.sqla.uri = postgresql://$DBUSER:$BDB_ENCODED_DBPWD@$DBHOST/$DBNAME",
       "baltrad.bdb.server.backend.sqla.pool_size = $BDB_POOL_MAX_SIZE",
-      "baltrad.bdb.server.backend.sqla.storage.type=db",
     ]
+
+    storage = env.getArg("BDB_STORAGE")
+    if storage == "db":
+      conf.append("baltrad.bdb.server.backend.sqla.storage.type = db")
+    elif storage == "fs":
+      conf.extend([
+        "baltrad.bdb.server.backend.sqla.storage.type = fs",
+        "baltrad.bdb.server.backend.sqla.storage.fs.path = $DATADIR",
+        "baltrad.bdb.server.backend.sqla.storage.fs.layers = 3",
+      ])
+    else:
+      raise InstallerException, "unrecognized BDB_STORAGE: %s" % auth
+
     auth = env.getArg("BDB_AUTH")
     if auth == "keyczar":
       conf.extend([

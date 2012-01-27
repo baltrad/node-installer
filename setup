@@ -330,8 +330,16 @@ Options:
     [default: 10]
 
 --bdb-auth=<authtype>
-    Valid values are 'keyczar' and 'noauth'.
+    BDB authentication model. Valid values are:
+      * 'noauth' - perform no authentication
+      * 'keyczar' - authenticate using Keyczar, reusing host keys
     [default: keyczar]
+
+--bdb-storage=<storagetype>
+    BDB storage model. Valid values are:
+      * db - store files in the database with a cache in $DATADIR
+      * fs - store files in $DATADIR
+    [default: db]
 
 --rebuild=<module1>,<module2>,...
     Will force a rebuild and installation of the specified modules. To get a 
@@ -431,8 +439,9 @@ for arg in $*; do
     --with-beamb) ;;
     --with-bdbfs) ;;
     --bdb-port=*) ;;
-    --bdb-auth=*) ;;
     --bdb-pool-max-size=*) ;;
+    --bdb-auth=*) ;;
+    --bdb-storage=*) ;;
     --rebuild=*) ;;
     --print-modules)
       PRINT_INFO_WANTED=yes

@@ -453,8 +453,16 @@ Options:
     [default: 10]
 
 --bdb-auth=<authtype>
-    Valid values are 'keyczar' and 'noauth'.
+    BDB authentication model. Valid values are:
+      * 'noauth' - perform no authentication
+      * 'keyczar' - authenticate using Keyczar, reusing host keys
     [default: keyczar]
+
+--bdb-storage=<storagetype>
+    BDB storage model. Valid values are:
+      * db - store files in the database with a cache in $DATADIR
+      * fs - store files in $DATADIR
+    [default: db]
 
 --rebuild=<module1>,<module2>,...
     Will force a rebuild and installation of the specified modules. To get a 
@@ -559,11 +567,11 @@ if __name__=="__main__":
   args = []
   
   try:
-    optlist, args = getopt.getopt(sys.argv[1:], 'x', 
+    optlist, args = getopt.getopt(sys.argv[1:], '', 
                                   ['prefix=','tprefix=','jdkhome=','with-zlib=',
                                    'with-psql=','with-bufr', 'with-rave','with-rave-gmap','with-bropo','with-beamb',
                                    'with-hdfjava=', 'with-freetype=', 'with-bdbfs','rebuild=',
-                                   'bdb-pool-max-size=', "bdb-port=", "bdb-auth=",
+                                   'bdb-pool-max-size=', "bdb-port=", "bdb-auth=", "bdb-storage=",
                                    'rave-pgf-port=', "rave-center-id=", "rave-dex-spoe=",
                                    'dbuser=', 'dbpwd=','dbname=','dbhost=','keystore=','nodename=',
                                    'reinstalldb','excludedb', 'runas=','datadir=','warfile=',
@@ -655,6 +663,8 @@ if __name__=="__main__":
       env.addArg("BDB_PORT", a)
     elif o == "--bdb-auth":
       env.addArg("BDB_AUTH", a)
+    elif o == "--bdb-storage":
+      env.addArg("BDB_STORAGE", a)
     elif o == "--with-bufr":
       env.addArg("WITH_BBUFR", True)
     elif o == "--with-rave":
@@ -747,6 +757,7 @@ if __name__=="__main__":
   env.addUniqueArg("BDB_POOL_MAX_SIZE", "10")
   env.addUniqueArg("BDB_PORT", "8090")
   env.addUniqueArg("BDB_AUTH", "keyczar")
+  env.addUniqueArg("BDB_STORAGE", "db")
   env.addUniqueArg("RAVE_PGF_PORT", "8085")
   env.addUniqueArg("RAVE_CENTER_ID", "82")
   env.addUniqueArg("RAVE_DEX_SPOE", env.expandArgs("localhost:${TOMCATPORT}"))
