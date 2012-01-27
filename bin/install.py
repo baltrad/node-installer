@@ -452,6 +452,10 @@ Options:
     Set the pool size for bdb connections to <N>
     [default: 10]
 
+--bdb-auth=<authtype>
+    Valid values are 'keyczar' and 'noauth'.
+    [default: keyczar]
+
 --rebuild=<module1>,<module2>,...
     Will force a rebuild and installation of the specified modules. To get a 
     list of available modules and their versions. See option --print-modules.
@@ -559,7 +563,7 @@ if __name__=="__main__":
                                   ['prefix=','tprefix=','jdkhome=','with-zlib=',
                                    'with-psql=','with-bufr', 'with-rave','with-rave-gmap','with-bropo','with-beamb',
                                    'with-hdfjava=', 'with-freetype=', 'with-bdbfs','rebuild=',
-                                   'bdb-pool-max-size=', "bdb-port=",
+                                   'bdb-pool-max-size=', "bdb-port=", "bdb-auth=",
                                    'rave-pgf-port=', "rave-center-id=", "rave-dex-spoe=",
                                    'dbuser=', 'dbpwd=','dbname=','dbhost=','keystore=','nodename=',
                                    'reinstalldb','excludedb', 'runas=','datadir=','warfile=',
@@ -649,6 +653,8 @@ if __name__=="__main__":
       env.addArg("BDB_POOL_MAX_SIZE", a)
     elif o == "--bdb-port":
       env.addArg("BDB_PORT", a)
+    elif o == "--bdb-auth":
+      env.addArg("BDB_AUTH", a)
     elif o == "--with-bufr":
       env.addArg("WITH_BBUFR", True)
     elif o == "--with-rave":
@@ -740,6 +746,7 @@ if __name__=="__main__":
   
   env.addUniqueArg("BDB_POOL_MAX_SIZE", "10")
   env.addUniqueArg("BDB_PORT", "8090")
+  env.addUniqueArg("BDB_AUTH", "keyczar")
   env.addUniqueArg("RAVE_PGF_PORT", "8085")
   env.addUniqueArg("RAVE_CENTER_ID", "82")
   env.addUniqueArg("RAVE_DEX_SPOE", env.expandArgs("localhost:${TOMCATPORT}"))

@@ -329,6 +329,10 @@ Options:
     Set the pool size for bdb connections to <N>
     [default: 10]
 
+--bdb-auth=<authtype>
+    Valid values are 'keyczar' and 'noauth'.
+    [default: keyczar]
+
 --rebuild=<module1>,<module2>,...
     Will force a rebuild and installation of the specified modules. To get a 
     list of available modules and their versions. See option --print-modules.
@@ -427,6 +431,7 @@ for arg in $*; do
     --with-beamb) ;;
     --with-bdbfs) ;;
     --bdb-port=*) ;;
+    --bdb-auth=*) ;;
     --bdb-pool-max-size=*) ;;
     --rebuild=*) ;;
     --print-modules)

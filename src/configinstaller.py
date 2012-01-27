@@ -56,12 +56,27 @@ class configinstaller(installer):
     if os.path.exists(dst):
         shutil.move(dst, backup)
     
+    env.addArg("BDB_ENCODED_DBPWD", urllib.quote_plus(env.getArg("DBPWD")))
+    conf = [
+      "baltrad.bdb.server.type = werkzeug",
+      "baltrad.bdb.server.uri = http://localhost:$BDB_PORT",
+      "baltrad.bdb.server.backend.type = sqla",
+      "baltrad.bdb.server.backend.sqla.uri = postgresql://$DBUSER:$BDB_ENCODED_DBPWD@$DBHOST/$DBNAME",
+      "baltrad.bdb.server.backend.sqla.pool_size = $BDB_POOL_MAX_SIZE",
+      "baltrad.bdb.server.backend.sqla.storage.type=db",
+    ]
+    auth = env.getArg("BDB_AUTH")
+    if auth == "keyczar":
+      conf.extend([
+        "baltrad.bdb.server.auth.providers=noauth, keyczar",
+        "baltrad.bdb.server.auth.keyczar.keystore_root = $KEYSTORE",
+        "baltrad.bdb.server.auth.keyczar.keys.$NODENAME = $NODENAME.pub",
+      ])
+    elif auth == "noauth":
+      conf.append("baltrad.bdb.server.auth.providers = noauth")
+    else:
+      raise InstallerException, "unrecognized BDB_AUTH: %s" % auth
+
+    conf = [env.expandArgs(c) for c in conf]
     outfile = open(dst, "w")
-    outfile.write(env.expandArgs("""
-baltrad.bdb.server.type = werkzeug
-baltrad.bdb.server.uri = http://localhost:$BDB_PORT
-baltrad.bdb.server.backend.type = sqla
-baltrad.bdb.server.backend.sqla.uri = postgresql://$DBUSER:$ENCODED_DBPWD@$DBHOST/$DBNAME
-baltrad.bdb.server.backend.sqla.pool_size = $BDB_POOL_MAX_SIZE
-baltrad.bdb.server.backend.sqla.storage.type=db
-""", extras={"ENCODED_DBPWD": urllib.quote_plus(env.getArg("DBPWD"))}))
+    outfile.write("\n".join(conf))
