@@ -27,7 +27,7 @@ versions = {
   "HLHDF": "v0.8.0",
   "BALTRAD-DB": "hudson-baltrad-db-336-SUCCESS",
   "BEAST": "hudson-Beast-237-SUCCESS",
-  "BALTRAD-DEX": "hudson-BaltradDex-298-SUCCESS",
+  "BALTRAD-DEX": "hudson-BaltradDex-299-SUCCESS",
   "RAVE": "hudson-Rave-255-SUCCESS",
   "RAVE-GMAP": "hudson-GoogleMapsPlugin-24-SUCCESS",
   "BROPO": "hudson-bRopo-37-SUCCESS",
