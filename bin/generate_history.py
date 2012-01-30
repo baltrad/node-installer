@@ -72,7 +72,7 @@ def main():
     until_rev = gitutil.git_describe()
   
   env = buildenv()
-  env.addUniqueArg("GITREPO", "gitosis@git.baltrad.eu")
+  env.addUniqueArg("GITREPO", "git://git.baltrad.eu")
 
   for pkg in PACKAGES:
     fetch_package(pkg, env)
