@@ -714,7 +714,7 @@ if __name__=="__main__":
 
   checkpwd = False
   if args != None and len(args) > 0 and args[0] in ["install","check"]:
-    checkpwd = False
+    checkpwd = True
 
   if checkpwd and not env.hasArg("TOMCATPWD"):
     print "--tomcatpwd not specified, please specify password."
