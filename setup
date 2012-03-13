@@ -215,7 +215,7 @@ Options:
 --keystore=<path>
     Point out the keystore directory to use when configuring setting up the
     different modules for certification. If not specified, one will be
-    created for you in $PREFIX/etc/bltnode-keystore.
+    created for you in <prefix>/etc/bltnode-keystore.
 
 --with-zlib=yes|no|<zlibroot>|<zlibinc>,<zliblib>
     Specifies if zlib should be built by the installer or not. 
@@ -308,7 +308,7 @@ Options:
 
 --rave-dex-spoe=<spoe>
     Dex's single point of entry to be used by rave. 
-    [default: localhost:$TOMCATPORT
+    [default: localhost:8080]
     
 --with-rave-gmap
     Install the rave google map plugin. Will also cause rave pgf to be installed.
