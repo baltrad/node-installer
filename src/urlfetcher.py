@@ -72,7 +72,7 @@ class urlfetcher(fetcher):
   #
   def dofetch(self, package, env=None):
     if not os.path.exists(self.fname):
-      print "URLURL: %s/%s"%(env.getArg("URLREPO"),self.url)
+      print "Fetching: %s/%s"%(env.getArg("URLREPO"),self.url)
       urllib.urlretrieve("%s/%s"%(env.getArg("URLREPO"),self.url), self.fname)
     else:
       print "%s already fetched"%self.fname
