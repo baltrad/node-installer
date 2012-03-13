@@ -123,8 +123,8 @@ int main(int argc, char** argv) {
     if code != 0:
       self._remove_files(["testpsql.c", "testpsql"])
       raise ValidatorException, "Failed to compile psql test program"
-    
-    cmd = "./testpsql \"user=%s password=%s dbname=%s hostaddr=%s\""%(dbuser,dbpwd,dbname,dbhost)
+
+    cmd = "./testpsql \"user=%s password=%s dbname=%s host=%s\""%(dbuser,dbpwd,dbname,dbhost)
     if psqllib != None and psqllib != "":
       cmd = "LD_LIBRARY_PATH=%s %s"%(psqllib, cmd)
 
