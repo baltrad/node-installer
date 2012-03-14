@@ -487,6 +487,7 @@ for arg in $*; do
       exit 0
       ;;
     *)
+      echo "Unknown option or command: $arg"
       usage_brief
       exit 127
       ;;
