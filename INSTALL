@@ -73,6 +73,8 @@ you can reach the database.
 You will need the following packages installed before atempting to build
 the system.
 
+*) git (for fetching the software)
+
 *) An installed Java SDK, currently it must be OpenJDK or SUN JDK (> 1.6)
 
 *) gcc/g++/gcc-c++ (version 4.1 or higher)

@@ -36,6 +36,9 @@ Currently, the latest official release is
 
 Or you can download the node-installer as a tar ball <a href="node-installer-1.0.0.tar.gz"> node-installer-1.0.0.tar.gz </a>.
 
+<b> NOTE! </b> You will have to have <b>git</b> installed even if you download the node installer tar ball since all software
+is fetched during the installation process.
+
 \section releases_fetching Fetching software
 
 The absolutely latest release can always be obtained from the git repository found at
