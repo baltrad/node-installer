@@ -92,7 +92,7 @@ the system.
    for debian, ubuntu, etc.. sudo apt-get install libbz2-dev
 
 *) Postgres development libraries
-   for redhat, centos, etc.. yum install postgresql-devel.x86_64
+   for redhat, centos, etc.. yum install postgresql-devel.x86_64  (or postgresql84-devel.x86_64)
    for debian, ubuntu, etc.. sudo apt-get install postgresql-client-8.4 postgresql-client-common
    
 *) doxygen
