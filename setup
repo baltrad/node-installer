@@ -288,7 +288,8 @@ Options:
     
 --gitrepo=<url>
     The url from where the baltrad node git packages can be fetched.
-    [Default gitosis@git.baltrad.eu]
+    For example --gitrepo=http://git.baltrad.eu
+    [Default git://git.baltrad.eu]
 
 --with-rave
     Install the rave pgf
@@ -427,6 +428,7 @@ for arg in $*; do
     --reinstalldb) ;;
     --excludedb) ;;
     --runas=*) ;;
+    --warfile=*) ;;
     --datadir=*) ;;
     --gitrepo=*) ;;
     --with-rave) ;;
