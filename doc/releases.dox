@@ -27,17 +27,24 @@ with the following terms and conditions:
 
 Currently, the latest official release is 
 
-\b 1.0.0
+\b 1.1.0
 
 \verbatim
   %> git clone git://git.baltrad.eu/node-installer.git
-  %> git checkout 1.0.0
+  %> git checkout 1.1.0
 \endverbatim
 
-Or you can download the node-installer as a tar ball <a href="node-installer-1.0.0.tar.gz"> node-installer-1.0.0.tar.gz </a>.
+Or you can download the node-installer as a tar ball <a href="node-installer-1.1.0.tar.gz"> node-installer-1.1.0.tar.gz </a>.
 
 <b> NOTE! </b> You will have to have <b>git</b> installed even if you download the node installer tar ball since all software
 is fetched during the installation process.
+
+\section releases_previous Previous
+
+You can also download previous releases (or fetch them from git).
+
+<a href="node-installer-1.0.0.tar.gz"> node-installer-1.0.0.tar.gz </a>
+
 
 \section releases_fetching Fetching software
 
@@ -48,12 +55,12 @@ The absolutely latest release can always be obtained from the git repository fou
 \endverbatim
 
 These releases might and might not be stable so use them with care. The latest official
-release is currently \b 1.0.0.
+release is currently \b 1.1.0.
 
 If you want to ensure that you get access to the correct release, you can always checkout
 the proper release
 \verbatim
-  %> git checkout 1.0.0
+  %> git checkout 1.1.0
 \endverbatim
 
 If you want to update the software to a later release or similar, you will have to execute
