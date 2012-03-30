@@ -69,7 +69,9 @@ class ravegmapinstaller(installer):
 from rave_pgf_registry import PGF_Registry
 a=PGF_Registry(filename="$PREFIX/rave/etc/rave_pgf_registry.xml")
 a.deregister('se.smhi.rave.creategmapimage')
+a.deregister('eu.baltrad.beast.creategmap')
 a.register('se.smhi.rave.creategmapimage', 'googlemap_pgf_plugin', 'generate', 'Google Map Plugin', 'outfile')
+a.register('eu.baltrad.beast.creategmap', 'googlemap_pgf_plugin', 'generate', 'Google Map Plugin', 'outfile')
 """))
     fp.close()
 
