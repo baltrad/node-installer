@@ -196,9 +196,13 @@ Options:
     this option. It will try to restore the configuration parameters
     used in the last run. 
 
---nodename
+--nodename=<name>
     This attribute should really be specified but there is a default value which
-    is the hostname as shown by the command 'hostname'.
+    is the hostname as shown by the command 'hostname'. The node name is a unique
+    identifier that is used for identifying you within the exchange
+    network. The node name should usually explain exactly who you are. A good
+    example is to use the java package naming. For example se.myorg or se.myorg.test or similar. 
+    This node name will also defining what this installations key will be named.
 
 --prefix=<prefix>
     Points out where the system should be installed. 
