@@ -79,3 +79,8 @@ class finished(installer):
     print "Once you are satisified with what the importer will do, omit the"
     print "'--dry-run' switch and let it work on the actual database."
     print ""
+    print "Before running the command you might need to setup your environment"
+    print "by for example sourcing"
+    print env.expandArgs("$PREFIX/etc/bltnode.rc")
+    print ""
+    
