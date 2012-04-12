@@ -93,8 +93,8 @@ the system.
 
 *) Postgres development libraries
    for redhat, centos, etc.. yum install postgresql-devel.x86_64  (or postgresql84-devel.x86_64)
-   for debian, ubuntu, etc.. sudo apt-get install postgresql-client-8.4 postgresql-client-common
-   
+   for debian, ubuntu, etc.. sudo apt-get install postgresql-client-8.4 postgresql-client-common libpq-dev
+
 *) doxygen
    for redhat, centos, etc.. yum install doxygen.x86_64
    for debian, ubuntu, etc.. sudo apt-get install doxygen
@@ -105,6 +105,10 @@ these.
 *) PNG development libraries (Used by for example bropo)
    for redhat, centos, etc... yum install libpng-devel.x86_64
    for debian, ubuntu, etc... sudo apt-get install libpng-dev
+
+*) Freetype2 libraries (Used by for example google map plugin)
+   for redhat, centos, etc... yum install freetype.x86_64 freetype-devel.x86_64
+   for debian, ubuntu, etc... sudo apt-get install libfreetype6 libfreetype6-dev
 
 =========== INSTALLATION ===========
 Most of the software is built from scratch (both third-party libraries and
