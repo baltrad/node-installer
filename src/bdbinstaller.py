@@ -24,7 +24,7 @@ Baltrad DB Installer
 @date 2011-02-09
 '''
 from installer import installer
-import os, subprocess
+import os, subprocess, glob, shutil
 from osenv import osenv
 from InstallerException import InstallerException
 
@@ -54,19 +54,29 @@ class bdbinstaller(installer):
     os.chdir(dir)
 
     python = env.expandArgs("$TPREFIX/bin/python")
-    
+    bdbpython = env.expandArgs("${PREFIX}/baltrad-db/bin/python")
+
     # create a virtual python environment
     ocode = subprocess.call([
         python, "./misc/virtualenv/virtualenv.py",
          "--system-site-packages", "--distribute",
          env.expandArgs("${PREFIX}/baltrad-db")
     ])
-
+    
     if ocode != 0:
       raise InstallerException, "Failed to create virtual environment"
 
-    pip = env.expandArgs("${PREFIX}/baltrad-db/bin/pip")
-    python = env.expandArgs("${PREFIX}/baltrad-db/bin/python")
+    # First we remove old sins
+    spth = subprocess.Popen(["%s -c %s"%(bdbpython, '"from distutils.sysconfig import get_python_lib; print(get_python_lib())"')], stdout=subprocess.PIPE, stderr=subprocess.STDOUT,shell=True).communicate()[0]
+    spth = spth.strip()
+    gstr = "%s/*.egg" % spth
+    eggs = glob.glob(gstr)
+    for egg in eggs:
+      bname = os.path.basename(egg)
+      if bname.startswith("baltrad.bdbcommon-"):
+        shutil.rmtree("%s/%s"%(spth, bname))
+      elif bname.startswith("baltrad.bdbclient-"):
+        shutil.rmtree("%s/%s"%(spth, bname))
     
     self._install_and_test_python_package(
         "baltrad.bdbcommon",
@@ -74,12 +84,13 @@ class bdbinstaller(installer):
         python=python,
     )
 
+    # Install bdbserver in the virtual environment
     self._install_and_test_python_package(
         "baltrad.bdbserver",
         path=os.path.join(dir, "server"),
-        python=python,
+        python=bdbpython,
     )
-
+    
     self._install_and_test_python_package(
         "baltrad.bdbclient",
         path=os.path.join(dir, "client/python"),
