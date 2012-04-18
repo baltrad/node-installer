@@ -449,6 +449,7 @@ for arg in $*; do
     --bdb-auth=*) ;;
     --bdb-storage=*) ;;
     --rebuild=*) ;;
+    --subsystems=*) ;;
     --print-modules)
       PRINT_INFO_WANTED=yes
       ;;

@@ -38,11 +38,12 @@ class nodescripts(object):
   _ldlibrarypath = None
   _version = "0.0.0"
   _raveinstalled = False
+  _subsystems = []
   
   ##
   # Constructor
   #  
-  def __init__(self, path, ldlibrarypath, version, raveinstalled=False):
+  def __init__(self, path, ldlibrarypath, version, raveinstalled=False, subsystems=[]):
     self._path = path
     self._ldlibrarypath = ldlibrarypath
     self._version = version
@@ -51,6 +52,7 @@ class nodescripts(object):
     self._raveinitdscript = None
     self._rcsource = None
     self._raveinstalled = raveinstalled
+    self._subsystems = subsystems
   
   ##
   # Destructor that hopefully is called upon exit
@@ -91,10 +93,18 @@ class nodescripts(object):
     extras["BALTRAD_NODE_VERSION"] = self._version
     extras["LIBPATH"] = env.expandArgs("%s"%self._ldlibrarypath)
     extras["PPATH"] = env.expandArgs("%s"%self._path)
-    if self._raveinstalled:
-      extras["INSRAVE"] = "yes"
-    else:
-      extras["INSRAVE"] = "no"
+    extras["ACTIVATE_NODE"] = "yes"
+    extras["ACTIVATE_BDB"] = "yes"
+    extras["ACTIVATE_RAVE"] = "yes"
+    
+    if len(self._subsystems) > 0:
+      if "RAVE" not in self._subsystems and "STANDALONE_RAVE" not in self._subsystems or not self._raveinstalled:
+        extras["ACTIVATE_RAVE"] = "no"
+      if "DEX" not in self._subsystems:
+        extras["ACTIVATE_NODE"] = "no"
+      if "BDB" not in self._subsystems:
+        extras["ACTIVATE_BDB"] = "no"
+        
     fpd, filename = tempfile.mkstemp(suffix=".tmp", prefix="bltnode")
 
     ofp = os.fdopen(fpd, "w")
@@ -107,7 +117,9 @@ class nodescripts(object):
 
 export JAVA_HOME="$JDKHOME"
 export CATALINA_HOME="$TPREFIX/tomcat"
-export RAVEPGF_SUPPORT="$INSRAVE"
+export ACTIVATE_RAVE="$ACTIVATE_RAVE"
+export ACTIVATE_NODE="$ACTIVATE_NODE"
+export ACTIVATE_BDB="$ACTIVATE_BDB"
 
 if [ "$${LD_LIBRARY_PATH}" != "" ]; then
   export LD_LIBRARY_PATH="$LIBPATH:$${LD_LIBRARY_PATH}"
@@ -255,6 +267,7 @@ START_REQUEST=no
 STOP_REQUEST=no
 STATUS_REQUEST=no
 RAVEPGF_REQUEST=no
+BDB_REQUEST=no
 ALL_REQUEST=no
 
 # See how we were called.
@@ -284,9 +297,19 @@ for arg in $$*; do
   esac
 done
 
-if [ "$${RAVEPGF_SUPPORT}" = "no" -a "$${RAVEPGF_REQUEST}" = "yes" ]; then
-  echo "RavePGF support has not been enabled during installation!"
+if [ "$${ACTIVATE_RAVE}" = "no" -a "$${RAVEPGF_REQUEST}" = "yes" ]; then
+  echo "RavePGF support not enabled!"
   exit 1;
+fi
+
+if [ "$${ACTIVATE_BDB}" = "no" -a "$${BDB_REQUEST}" = "yes" ]; then
+  echo "BDB support not enabled!"
+  exit 1
+fi
+
+if [ "$${ACTIVATE_NODE}" = "no" -a "$${RAVEPGF_REQUEST}" = "no" -a  "$${BDB_REQUEST}" = "no" -a "$${ALL_REQUEST}" = "no" ]; then
+  echo "NODE support not enabled!"
+  exit 1
 fi
 
 if [ "$${START_REQUEST}" = "yes" ]; then
@@ -295,11 +318,15 @@ if [ "$${START_REQUEST}" = "yes" ]; then
   elif [ "$${BDB_REQUEST}" = "yes" ]; then
     start_bdb
   elif [ "$${ALL_REQUEST}" = "yes" ]; then
-    start_bdb
-    if [ "$${RAVEPGF_SUPPORT}" = "yes" ]; then
+    if [ "$${ACTIVATE_BDB}" = "yes" ]; then
+      start_bdb
+    fi
+    if [ "$${ACTIVATE_RAVE}" = "yes" ]; then
       start_ravepgf
     fi
-    start
+    if [ "$${ACTIVATE_NODE}" = "yes" ]; then
+      start
+    fi
   else
     start
   fi
@@ -309,11 +336,15 @@ elif [ "$${STOP_REQUEST}" = "yes" ]; then
   elif [ "$${BDB_REQUEST}" = "yes" ]; then
     stop_bdb
   elif [ "$${ALL_REQUEST}" = "yes" ]; then
-    stop
-    if [ "$${RAVEPGF_SUPPORT}" = "yes" ]; then
+    if [ "$${ACTIVATE_NODE}" = "yes" ]; then
+      stop
+    fi
+    if [ "$${ACTIVATE_RAVE}" = "yes" ]; then
       stop_ravepgf
     fi
-    stop_bdb
+    if [ "$${ACTIVATE_BDB}" = "yes" ]; then
+      stop_bdb
+    fi
   else
     stop
   fi
@@ -325,14 +356,18 @@ elif [ "$${STATUS_REQUEST}" = "yes" ]; then
     echo -n "BDB: "
     status_bdb
   elif [ "$${ALL_REQUEST}" = "yes" ]; then
-    echo -n "Node: "
-    status
-    if [ "$${RAVEPGF_SUPPORT}" = "yes" ]; then
+    if [ "$${ACTIVATE_NODE}" = "yes" ]; then
+      echo -n "Node: "
+      status
+    fi
+    if [ "$${ACTIVATE_RAVE}" = "yes" ]; then
       echo -n "Rave PGF: "
       status_ravepgf
     fi
-    echo -n "BDB: "
-    status_bdb
+    if [ "$${ACTIVATE_BDB}" = "yes" ]; then
+      echo -n "BDB: "
+      status_bdb
+    fi
   else
     echo -n "Node: "
     status
@@ -446,10 +481,6 @@ esac
     extras["BALTRAD_NODE_VERSION"] = self._version
     extras["LIBPATH"] = env.expandArgs("%s"%self._ldlibrarypath)
     extras["PPATH"] = env.expandArgs("%s"%self._path)
-    if self._raveinstalled:
-      extras["INSRAVE"] = "yes"
-    else:
-      extras["INSRAVE"] = "no"
     
     fpd, filename = tempfile.mkstemp(suffix=".tmp", prefix="bltnode.rc")
     ofp = os.fdopen(fpd, "w")

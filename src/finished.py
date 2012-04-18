@@ -42,6 +42,10 @@ class finished(installer):
   #
   def doinstall(self, env):
     import time, sys
+
+    subsystems = []
+    if env.hasArg("SUBSYSTEMS"):
+      subsystems = env.getArg("SUBSYSTEMS")
     
     ocode = subprocess.call(env.expandArgs("$PREFIX/bin/bltnode --all stop"), shell=True)
     if ocode != 0:
@@ -55,32 +59,39 @@ class finished(installer):
       sys.stdout.flush()
     print ""
 
-    ocode = subprocess.call(env.expandArgs("$PREFIX/bin/bltnode --all start"), shell=True)
-    if ocode != 0:
-      raise InstallerException, "Could not start node"
+    # Dont start rave if we are in standalone mode
+    if not "RAVE_STANDALONE" in subsystems:
+      ocode = subprocess.call(env.expandArgs("$PREFIX/bin/bltnode --all start"), shell=True)
+      if ocode != 0:
+        raise InstallerException, "Could not start node"
 
     print ""
     print "===== SUCCESS ======"
-    print "System has sucessfully been installed and started"
-    print "You should be able to access the system by navigating a browser to:"
-    print env.expandArgs("$TOMCATURL/BaltradDex")
-    print ""
-    print ""
-    print "Your BDB sources might not be up-to-date. You can import them from"
-    print "Rave's radar-db with the following command:"
-    print ""
-    print env.expandArgs("$PREFIX/baltrad-db/bin/baltrad-bdb-client \\")
-    print "  import_sources \\"
-    print env.expandArgs("  --url=http://localhost:$BDB_PORT \\")
-    print env.expandArgs("  --dry-run \\")
-    print env.expandArgs("  $PREFIX/rave/config/odim_source.xml")
-    print ""
-    print "You can omit some changes by adding '--ignore=src' to the command."  
-    print "Once you are satisified with what the importer will do, omit the"
-    print "'--dry-run' switch and let it work on the actual database."
-    print ""
-    print "Before running the command you might need to setup your environment"
-    print "by for example sourcing"
+    if len(subsystems) == 0 or "NODE" in subsystems:
+      print "System has sucessfully been installed and started"
+      print "You should be able to access the system by navigating a browser to:"
+      print env.expandArgs("$TOMCATURL/BaltradDex")
+      print ""
+      print ""
+      
+    if len(subsystems) == 0 or "BDB" in subsystems:
+      print "Your BDB sources might not be up-to-date. You can import them from"
+      print "Rave's radar-db with the following command:"
+      print ""
+      print env.expandArgs("$PREFIX/baltrad-db/bin/baltrad-bdb-client \\")
+      print "  import_sources \\"
+      print env.expandArgs("  --url=http://localhost:$BDB_PORT \\")
+      print env.expandArgs("  --dry-run \\")
+      print env.expandArgs("  $PREFIX/rave/config/odim_source.xml")
+      print ""
+      print "You can omit some changes by adding '--ignore=src' to the command."  
+      print "Once you are satisified with what the importer will do, omit the"
+      print "'--dry-run' switch and let it work on the actual database."
+      print ""
+
+    print "If you are planning to use any specific binary from a subsystem you"
+    print "might have to setup your environment so that it is properly"
+    print "configured. An easy way to setup the environment is to source"     
     print env.expandArgs("$PREFIX/etc/bltnode.rc")
     print ""
     

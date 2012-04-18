@@ -142,6 +142,8 @@ _PIP_MODULES=[
     ("PROGRESSBAR", "2.2", "progressbar", ["PYTHON"]),
 ]
 
+_PIP_DEP=[]
+
 for (name, version, pypi_name, deps) in _PIP_MODULES:
   MODULES.append(
     pipinstaller(
@@ -155,6 +157,7 @@ for (name, version, pypi_name, deps) in _PIP_MODULES:
       )
     )
   )
+  _PIP_DEP.append(name)
 
 MODULES.extend([
          tomcatinstaller(package("TOMCAT", "6.0.33",
@@ -179,13 +182,13 @@ MODULES.extend([
 
          bbufrinstaller(node_package("BBUFR", depends=["ZLIB"])),
 
-         bdbinstaller(node_package("BALTRAD-DB", depends=["ZLIB", "HDF5", "HLHDF", "PQXX"])),
+         bdbinstaller(node_package("BALTRAD-DB", depends=["ZLIB", "HDF5", "HLHDF"])),
          
          beastinstaller(node_package("BEAST", depends=["BALTRAD-DB"])),
          
          dexinstaller(node_package("BALTRAD-DEX", depends=["HDFJAVA", "TOMCAT", "BALTRAD-DB", "BEAST"])),
          
-         raveinstaller(node_package("RAVE", depends=["EXPAT", "PROJ.4", "PYTHON", "NUMPY", "PYSETUPTOOLS", "PYCURL", "HLHDF", "BBUFR"])),
+         raveinstaller(node_package("RAVE", depends=["EXPAT", "PROJ.4", "PYTHON", "NUMPY", "PYSETUPTOOLS", "PYCURL", "HLHDF", "BBUFR", "BALTRAD-DB"])),
          
          ravegmapinstaller(node_package("RAVE-GMAP", depends=["RAVE"])), #Just use rave as dependency, rest of dependencies will trigger rave rebuild
 
@@ -212,11 +215,32 @@ MODULES.extend([
          finished(package("FINISHED", "1.0", nodir(), remembered=False)),
         ])
 
+# _PIP_DEP is all PIP installed packages.
+
+## FILTER FOR ALL BALTRAD-DB DEPENDENCIES
+BDB_FILTER=["PREPARE", "ZLIB", "HDF5", "PYTHON", "NUMPY"]+_PIP_DEP+["ANT", "KEYSTORE", "HLHDF", "CURL", "PYCURL",
+            "BALTRAD-DB", "DOCS", "CONFIG", "SCRIPT", "FINISHED"]
+
+## FILTER FOR ALL RAVE DEPENDENCIES. NOTE, RAVE ONLY REQUIRES BDB CLIENT API
+RAVE_FILTER=["PREPARE", "ZLIB", "HDF5", "EXPAT", "PROJ.4", "PYTHON"]+_PIP_DEP+["ANT", "NUMPY",
+             "PIL", "CURL", "PYCURL", "BALTRAD-DB", "KEYSTORE", "HLHDF", "BBUFR", 
+             "RAVE", "RAVE-GMAP", "BROPO", "BEAMB", "DOCS", "CONFIG", 
+             "RAVECONFIG", "SCRIPT", "FINISHED"]
+
+## FILTER FOR ALL STANDALONE RAVE DEPENDENCIES
+STANDALONE_RAVE=["ZLIB", "HDF5", "EXPAT", "PROJ.4", "PYTHON", "NUMPY",
+                 "PIL", "CURL", "PYCURL", "PYCRYPTO", "PYTHON-KEYCZAR", "PYINOTIFY", "HLHDF", "BBUFR",
+                 "RAVE", "RAVE-GMAP", "BROPO", "BEAMB", "DOCS", "CONFIG", "RAVECONFIG", "SCRIPT", "FINISHED"]
+
+#DEX_FILTER=
+#PREPARE, TOMCAT, HDFJAVA, ANT, HDFJAVASETUP, KEYSTORE, BDB-CLIENT, DOCS, CONFIG, DBINSTALL, DBUPGRADE,
+#DEPLOY, SCRIPT, FINISHED
+  
 ##
 # Prints the modules and the current version they have.
 #
-def print_modules(env):
-  for module in MODULES:
+def print_modules(env, modules):
+  for module in modules:
     installed = "NOT INSTALLED"
     ver = env.getInstalled(module.package().name())
     if ver != None:
@@ -224,6 +248,37 @@ def print_modules(env):
     else:
       ver = module.package().version()
     print "{0:20s} {1:35s} {2:14s}".format(module.package().name(),ver, installed)
+
+##
+# All valid subsystems.
+VALID_SUBSYSTEMS=["BDB", "RAVE", "STANDALONE_RAVE", "DEX"]
+
+##
+# Filters out the relevant modules for the specific subsystems
+# 
+def filter_subsystems(modules, subsystems):
+  result = []
+  main_filter = []
+  
+  for s in subsystems:
+    if not s in VALID_SUBSYSTEMS:
+      raise InstallerException("Invalid subsystem: %s"%s)
+  
+  if "BDB" in subsystems:
+    main_filter.extend(BDB_FILTER)
+
+  if "RAVE" in subsystems:
+    main_filter.extend(RAVE_FILTER)
+
+  if "STANDALONE_RAVE" in subsystems:
+    main_filter.extend(STANDALONE_RAVE)
+
+  for module in modules:
+    if module.package().name() in main_filter:
+      result.append(module)
+      print "Appending %s"%module.package().name()
+      
+  return result
 
 ##
 # Prints the current configuration
@@ -510,6 +565,13 @@ Options:
     or other miscellaneous problems. This might be the option to specify. Some modules
     are currently beeing evaluated if they are stable enough to be used in production
     and by specifying this option these modules will be built instead.
+    
+--subsystems=(STANDALONE_RAVE, RAVE ,BDB ,DEX)
+    If you are interested in running a standalone installation of RAVE, BDB or DEX. It
+    is possible to do so by specifying which subsystems that should be installed.
+    Since RAVE is depending on the BALTRAD-DB python client API you are able to specify
+    a specific RAVE module called STANDALONE_RAVE which installs RAVE without any
+    BDB-dependencies.
 """
 
 def parse_buildzlib_argument(arg):
@@ -585,7 +647,7 @@ if __name__=="__main__":
                                    'reinstalldb','excludedb', 'runas=','datadir=','warfile=',
                                    'urlrepo=','gitrepo=','offline',
                                    'print-modules', 'print-config', 'exclude-tomcat', 'recall-last-args',
-                                   'experimental',
+                                   'experimental','subsystems=',
                                    'force','tomcatport=','tomcaturl=','tomcatpwd=','help'])
   except getopt.GetoptError, e:
     usage(True, e.__str__())
@@ -621,6 +683,7 @@ if __name__=="__main__":
   reinstalldb=False
   rebuild = []
   experimental_build=False
+  subsystems = []
   
   for o, a in optlist:
     if o == "--prefix":
@@ -689,6 +752,8 @@ if __name__=="__main__":
       env.addArg("WITH_BROPO", True)
     elif o == "--with-beamb":
       env.addArg("WITH_BEAMB", True)
+    elif o == "--subsystems":
+      subsystems = a.split(",")
     elif o == "--reinstalldb":
       reinstalldb=True
       env.addArgInternal("REINSTALLDB", True)
@@ -721,8 +786,11 @@ if __name__=="__main__":
       sys.exit(127)
 
   checkpwd = False
-  if args != None and len(args) > 0 and args[0] in ["install","check"]:
-    checkpwd = True
+  # We don't want to force a tomcat pwd to be specified unless we are installing something
+  # that needs tomcat.
+  if len(subsystems) == 0 or "DEX" in subsystems:
+    if args != None and len(args) > 0 and args[0] in ["install","check"]:
+      checkpwd = True
 
   if checkpwd and not env.hasArg("TOMCATPWD"):
     print "--tomcatpwd not specified, please specify password."
@@ -770,14 +838,26 @@ if __name__=="__main__":
   env.addUniqueArg("RAVE_CENTER_ID", "82")
   env.addUniqueArg("RAVE_DEX_SPOE", env.expandArgs("localhost:${TOMCATPORT}"))
 
+  modules = MODULES
+  
   #
   # If we are running in experimental mode, then mark all affected installers with
   # that information.
   #
   if experimental_build:
-    for m in MODULES:
+    for m in modules:
       if isinstance(m, experimental):
         m.setExperimentalMode(True)
+
+  #
+  # We might only want to install specific subsystems
+  #
+  if len(subsystems) > 0:
+    modules = filter_subsystems(modules, subsystems)
+  else:
+    subsystems = VALID_SUBSYSTEMS;
+
+  env.addArgInternal("SUBSYSTEMS", subsystems)
 
   #
   # Print the configuration settings
@@ -789,7 +869,7 @@ if __name__=="__main__":
       print ""
     if doprintmodules:
       print "MODULES"
-      print_modules(env)
+      print_modules(env, modules)
       print ""
     
     if len(args) == 0:
@@ -839,9 +919,16 @@ if __name__=="__main__":
     psqlinc, psqllib = parse_buildpsql_argument(env.getArg("PSQLARG"))
     env.addArgInternal("PSQLINC", psqlinc)
     env.addArgInternal("PSQLLIB", psqllib)
+
+  validators = []
+  if "BDB" in subsystems or "DEX" in subsystems:
+    validators.append(psqlvalidator())
+  validators.append(jdkvalidator())
+  validators.append(zlibvalidator())
+  validators.append(doxygenvalidator())
   
   if args[0] in ["install", "check"]:
-    for validator in [jdkvalidator(), zlibvalidator(), psqlvalidator(), doxygenvalidator()]:
+    for validator in validators:
       validator.validate(env)
 
     if not env.hasArg("JDKHOME"):
@@ -899,7 +986,8 @@ if __name__=="__main__":
       "%s"%spath,
       "%s"%sldpath,
       "1.0.0",
-      raveinstalled=not env.isExcluded("RAVE")
+      raveinstalled=not env.isExcluded("RAVE"),
+      subsystems=subsystems
     )
 
     script.create_scripts(env)
@@ -913,7 +1001,7 @@ if __name__=="__main__":
       if not "DBINSTALL" in rebuild:
         rebuild.append("DBINSTALL")
 
-  ni = node_installer(MODULES, rebuild)
+  ni = node_installer(modules, rebuild)
   if args[0] == "install":
     ni.install(env)
   elif args[0] == "check":
