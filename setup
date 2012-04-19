@@ -330,6 +330,13 @@ Options:
 --bdb-port=8090
     BDB server port
 
+--bdb-uri=<uri>
+    The BDB uri, as default this has no use even when specified. It will only be used
+    if subsystems has been specified so that you can specify a different BDB server. Also,
+    if this is specified, bdb-port will not have any meaning.
+    E.g. --bdb-uri=http://somehost:8090
+    [Default: Not used]
+
 --bdb-pool-max-size=<N>
     Set the pool size for bdb connections to <N>
     [default: 10]
@@ -445,6 +452,7 @@ for arg in $*; do
     --with-beamb) ;;
     --with-bdbfs) ;;
     --bdb-port=*) ;;
+    --bdb-uri=*) ;;
     --bdb-pool-max-size=*) ;;
     --bdb-auth=*) ;;
     --bdb-storage=*) ;;

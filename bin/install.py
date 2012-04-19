@@ -276,7 +276,6 @@ def filter_subsystems(modules, subsystems):
   for module in modules:
     if module.package().name() in main_filter:
       result.append(module)
-      print "Appending %s"%module.package().name()
       
   return result
 
@@ -511,6 +510,13 @@ Options:
 --bdb-port=8090
     BDB server port
 
+--bdb-uri=<uri>
+    The BDB uri, as default this has no use even when specified. It will only be used
+    if subsystems has been specified so that you can specify a different BDB server. Also,
+    if this is specified, bdb-port will not have any meaning.
+    E.g. --bdb-uri=http://somehost:8090
+    [Default: Not used]
+
 --bdb-pool-max-size=<N>
     Set the pool size for bdb connections to <N>
     [default: 10]
@@ -641,7 +647,7 @@ if __name__=="__main__":
                                   ['prefix=','tprefix=','jdkhome=','with-zlib=',
                                    'with-psql=','with-bufr', 'with-rave','with-rave-gmap','with-bropo','with-beamb',
                                    'with-hdfjava=', 'with-freetype=', 'with-bdbfs','rebuild=',
-                                   'bdb-pool-max-size=', "bdb-port=", "bdb-auth=", "bdb-storage=",
+                                   'bdb-pool-max-size=', "bdb-port=", "bdb-uri=", "bdb-auth=", "bdb-storage=",
                                    'rave-pgf-port=', "rave-center-id=", "rave-dex-spoe=",
                                    'dbuser=', 'dbpwd=','dbname=','dbhost=','keystore=','nodename=',
                                    'reinstalldb','excludedb', 'runas=','datadir=','warfile=',
@@ -732,6 +738,8 @@ if __name__=="__main__":
       env.addArg("BDB_POOL_MAX_SIZE", a)
     elif o == "--bdb-port":
       env.addArg("BDB_PORT", a)
+    elif o == "--bdb-uri":
+      env.addArg("BDB_URI", a)
     elif o == "--bdb-auth":
       env.addArg("BDB_AUTH", a)
     elif o == "--bdb-storage":
@@ -850,13 +858,22 @@ if __name__=="__main__":
         m.setExperimentalMode(True)
 
   #
+  # We want to ensure that user understands that it is nessecary to specify
+  # --bdb-uri when installing subsystem depending on BDB
+  #
+  if len(subsystems) > 0:
+    if ("RAVE" in subsystems or "DEX" in subsystems) and "BDB" not in subsystems:
+      if not env.hasArg("BDB_URI"):
+        raise InstallerException, "Trying to install subsystem dependant on BDB without providing --bdb-uri"
+   
+  #
   # We might only want to install specific subsystems
   #
   if len(subsystems) > 0:
     modules = filter_subsystems(modules, subsystems)
   else:
     subsystems = VALID_SUBSYSTEMS;
-
+  
   env.addArgInternal("SUBSYSTEMS", subsystems)
 
   #

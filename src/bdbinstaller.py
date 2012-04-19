@@ -84,12 +84,18 @@ class bdbinstaller(installer):
         python=python,
     )
 
+    onlyclient=False
+    if env.hasArg("SUBSYSTEMS") and len(env.getArg("SUBSYSTEMS")) > 0:
+      if "RAVE" in env.getArg("SUBSYSTEMS") and "BDB" not in env.getArg("SUBSYSTEMS"):
+        onlyclient = True
+ 
     # Install bdbserver in the virtual environment
-    self._install_and_test_python_package(
-        "baltrad.bdbserver",
-        path=os.path.join(dir, "server"),
-        python=bdbpython,
-    )
+    if onlyclient == False:
+      self._install_and_test_python_package(
+                                            "baltrad.bdbserver",
+                                            path=os.path.join(dir, "server"),
+                                            python=bdbpython,
+                                            )
     
     self._install_and_test_python_package(
         "baltrad.bdbclient",

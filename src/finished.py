@@ -73,7 +73,13 @@ class finished(installer):
       print env.expandArgs("$TOMCATURL/BaltradDex")
       print ""
       print ""
-      
+    
+    if len(subsystems) > 0 and ("BDB" not in subsystems and ("RAVE" in subsystems or "DEX" in subsystems)):
+      print "Since BDB seems to be configured to run on a different server you will have to make sure"
+      print "that BDB have access to your public key that has been generated in"
+      print env.expandArgs("$KEYSTORE/$NODENAME.pub")
+      print ""
+    
     if len(subsystems) == 0 or "BDB" in subsystems:
       print "Your BDB sources might not be up-to-date. You can import them from"
       print "Rave's radar-db with the following command:"

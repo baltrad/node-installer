@@ -57,25 +57,27 @@ class configinstaller(installer):
         shutil.move(dst, backup)
     
     env.addArg("BDB_ENCODED_DBPWD", urllib.quote_plus(env.getArg("DBPWD")))
-    conf = [
-      "baltrad.bdb.server.type = werkzeug",
-      "baltrad.bdb.server.uri = http://localhost:$BDB_PORT",
-      "baltrad.bdb.server.backend.type = sqla",
-      "baltrad.bdb.server.backend.sqla.uri = postgresql://$DBUSER:$BDB_ENCODED_DBPWD@$DBHOST/$DBNAME",
-      "baltrad.bdb.server.backend.sqla.pool_size = $BDB_POOL_MAX_SIZE",
-    ]
-
-    storage = env.getArg("BDB_STORAGE")
-    if storage == "db":
-      conf.append("baltrad.bdb.server.backend.sqla.storage.type = db")
-    elif storage == "fs":
-      conf.extend([
-        "baltrad.bdb.server.backend.sqla.storage.type = fs",
-        "baltrad.bdb.server.backend.sqla.storage.fs.path = $DATADIR",
-        "baltrad.bdb.server.backend.sqla.storage.fs.layers = 3",
-      ])
+    conf = ["baltrad.bdb.server.type = werkzeug"]
+    subsystems = env.getArg("SUBSYSTEMS")
+    if "BDB" not in subsystems:
+      conf.append("baltrad.bdb.server.uri = $BDB_URI")
     else:
-      raise InstallerException, "unrecognized BDB_STORAGE: %s" % auth
+      conf.extend(["baltrad.bdb.server.uri = http://localhost:$BDB_PORT",
+                   "baltrad.bdb.server.backend.type = sqla",
+                   "baltrad.bdb.server.backend.sqla.uri = postgresql://$DBUSER:$BDB_ENCODED_DBPWD@$DBHOST/$DBNAME",
+                   "baltrad.bdb.server.backend.sqla.pool_size = $BDB_POOL_MAX_SIZE"])
+
+    if "BDB" in subsystems:
+      storage = env.getArg("BDB_STORAGE")
+      if storage == "db":
+        conf.append("baltrad.bdb.server.backend.sqla.storage.type = db")
+      elif storage == "fs":
+        conf.extend(["baltrad.bdb.server.backend.sqla.storage.type = fs",
+                     "baltrad.bdb.server.backend.sqla.storage.fs.path = $DATADIR",
+                     "baltrad.bdb.server.backend.sqla.storage.fs.layers = 3",
+                     ])
+      else:
+        raise InstallerException, "unrecognized BDB_STORAGE: %s" % storage
 
     auth = env.getArg("BDB_AUTH")
     if auth == "keyczar":
