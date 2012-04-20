@@ -219,7 +219,7 @@ MODULES.extend([
 
 ## FILTER FOR ALL BALTRAD-DB DEPENDENCIES
 BDB_FILTER=["PREPARE", "ZLIB", "HDF5", "PYTHON", "NUMPY"]+_PIP_DEP+["ANT", "KEYSTORE", "HLHDF", "CURL", "PYCURL",
-            "BALTRAD-DB", "DOCS", "CONFIG", "SCRIPT", "FINISHED"]
+            "BALTRAD-DB", "DOCS", "CONFIG", "DBINSTALL", "DBUPGRADE", "SCRIPT", "FINISHED"]
 
 ## FILTER FOR ALL RAVE DEPENDENCIES. NOTE, RAVE ONLY REQUIRES BDB CLIENT API
 RAVE_FILTER=["PREPARE", "ZLIB", "HDF5", "EXPAT", "PROJ.4", "PYTHON"]+_PIP_DEP+["ANT", "NUMPY",
@@ -232,9 +232,9 @@ STANDALONE_RAVE=["ZLIB", "HDF5", "EXPAT", "PROJ.4", "PYTHON", "NUMPY",
                  "PIL", "CURL", "PYCURL", "PYCRYPTO", "PYTHON-KEYCZAR", "PYINOTIFY", "HLHDF", "BBUFR",
                  "RAVE", "RAVE-GMAP", "BROPO", "BEAMB", "DOCS", "CONFIG", "RAVECONFIG", "SCRIPT", "FINISHED"]
 
-#DEX_FILTER=
-#PREPARE, TOMCAT, HDFJAVA, ANT, HDFJAVASETUP, KEYSTORE, BDB-CLIENT, DOCS, CONFIG, DBINSTALL, DBUPGRADE,
-#DEPLOY, SCRIPT, FINISHED
+## FILTER FOR ALL DEX DEPENDENCIES. NOTE, DEX ONLY REQUIRES BDB CLIENT API
+DEX_FILTER=["PREPARE", "ZLIB", "HDF5", "PROJ.4", "PYTHON", "NUMPY"]+_PIP_DEP+["TOMCAT", "HDFJAVA", 
+            "ANT", "HDFJAVASETUP", "KEYSTORE", "BALTRAD-DB", "BEAST", "BALTRAD-DEX", "DOCS", "CONFIG", "DEPLOY", "SCRIPT", "FINISHED"]
   
 ##
 # Prints the modules and the current version they have.
@@ -272,6 +272,9 @@ def filter_subsystems(modules, subsystems):
 
   if "STANDALONE_RAVE" in subsystems:
     main_filter.extend(STANDALONE_RAVE)
+
+  if "DEX" in subsystems:
+    main_filter.extend(DEX_FILTER)
 
   for module in modules:
     if module.package().name() in main_filter:
@@ -861,7 +864,7 @@ if __name__=="__main__":
   # We want to ensure that user understands that it is nessecary to specify
   # --bdb-uri when installing subsystem depending on BDB
   #
-  if len(subsystems) > 0:
+  if len(subsystems) > 0 and args[0] != "clean":
     if ("RAVE" in subsystems or "DEX" in subsystems) and "BDB" not in subsystems:
       if not env.hasArg("BDB_URI"):
         raise InstallerException, "Trying to install subsystem dependant on BDB without providing --bdb-uri"

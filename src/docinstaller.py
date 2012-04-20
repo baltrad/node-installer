@@ -121,6 +121,9 @@ class docinstaller(installer):
       return
 
     pth = env.expandArgs("$PREFIX/doc")
+    if not os.path.exists(pth):
+      os.mkdir(pth)
+
     if os.path.exists("doxygen/html"):
       files_in_directory=self._get_files_in_directory(pth)
       for ft in files_in_directory:

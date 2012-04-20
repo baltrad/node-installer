@@ -392,6 +392,12 @@ Options:
     are currently beeing evaluated if they are stable enough to be used in production
     and by specifying this option these modules will be built instead.
     
+--subsystems=(STANDALONE_RAVE, RAVE ,BDB ,DEX)
+    If you are interested in running a standalone installation of RAVE, BDB or DEX. It
+    is possible to do so by specifying which subsystems that should be installed.
+    Since RAVE is depending on the BALTRAD-DB python client API you are able to specify
+    a specific RAVE module called STANDALONE_RAVE which installs RAVE without any
+    BDB-dependencies.    
 _EOF_
   
 }
