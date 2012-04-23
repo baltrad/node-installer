@@ -102,6 +102,12 @@ class bdbinstaller(installer):
         path=os.path.join(dir, "client/python"),
         python=python,
     )
+    
+    if not os.path.exists(env.expandArgs("${PREFIX}/baltrad-db/bin/baltrad-bdb-client")):
+      lncmd=env.expandArgs("ln -s ${TPREFIX}/bin/baltrad-bdb-client ${PREFIX}/baltrad-db/bin/baltrad-bdb-client")
+      ocode = subprocess.call(lncmd, shell=True)
+      if ocode != 0:
+        raise InstallerException, "Failed to create symbolic link for baltrad-bdb-client"
 
     ant = env.expandArgs("${TPREFIX}/ant/bin/ant")
 
