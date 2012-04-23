@@ -110,6 +110,12 @@ these.
    for redhat, centos, etc... yum install freetype.x86_64 freetype-devel.x86_64
    for debian, ubuntu, etc... sudo apt-get install libfreetype6 libfreetype6-dev
 
+On ubuntu 11.10 we have observed that there might be problems related to
+hashlib and the encryption algorithms. This can be solved by running: 
+   
+   sudo apt-get install libssl-dev openssl dpkg-dev
+
+
 =========== INSTALLATION ===========
 Most of the software is built from scratch (both third-party libraries and
 the baltrad software). During the build all fetched software will be placed
