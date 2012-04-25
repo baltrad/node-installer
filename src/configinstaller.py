@@ -65,7 +65,8 @@ class configinstaller(installer):
       conf.extend(["baltrad.bdb.server.uri = http://localhost:$BDB_PORT",
                    "baltrad.bdb.server.backend.type = sqla",
                    "baltrad.bdb.server.backend.sqla.uri = postgresql://$DBUSER:$BDB_ENCODED_DBPWD@$DBHOST/$DBNAME",
-                   "baltrad.bdb.server.backend.sqla.pool_size = $BDB_POOL_MAX_SIZE"])
+                   "baltrad.bdb.server.backend.sqla.pool_size = $BDB_POOL_MAX_SIZE",
+                   "baltrad.bdb.server.log.level = INFO"])
 
     if "BDB" in subsystems:
       storage = env.getArg("BDB_STORAGE")
