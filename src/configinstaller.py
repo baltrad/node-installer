@@ -51,6 +51,8 @@ class configinstaller(installer):
   def doinstall(self, env):
     self._createdir(env.expandArgs("$PREFIX/etc"))
 
+    subsystems = env.getArg("SUBSYSTEMS")
+
     dst = env.expandArgs("$PREFIX/etc/bltnode.properties")
     backup = dst + "%s.bak" % time.strftime("%Y%m%dT%H%M%S")
     if os.path.exists(dst):
@@ -58,15 +60,16 @@ class configinstaller(installer):
     
     env.addArg("BDB_ENCODED_DBPWD", urllib.quote_plus(env.getArg("DBPWD")))
     conf = ["baltrad.bdb.server.type = werkzeug"]
-    subsystems = env.getArg("SUBSYSTEMS")
-    if "BDB" not in subsystems:
-      conf.append("baltrad.bdb.server.uri = $BDB_URI")
-    else:
+    if "BDB" in subsystems:
       conf.extend(["baltrad.bdb.server.uri = http://localhost:$BDB_PORT",
                    "baltrad.bdb.server.backend.type = sqla",
                    "baltrad.bdb.server.backend.sqla.uri = postgresql://$DBUSER:$BDB_ENCODED_DBPWD@$DBHOST/$DBNAME",
                    "baltrad.bdb.server.backend.sqla.pool_size = $BDB_POOL_MAX_SIZE",
                    "baltrad.bdb.server.log.level = INFO"])
+    elif "RAVE" in subsystems or "DEX" in subsystems:
+      conf.append("baltrad.bdb.server.uri = $BDB_URI")
+    else:
+      pass #STANDALONE_RAVE does not require any config
 
     if "BDB" in subsystems:
       storage = env.getArg("BDB_STORAGE")
@@ -80,17 +83,18 @@ class configinstaller(installer):
       else:
         raise InstallerException, "unrecognized BDB_STORAGE: %s" % storage
 
-    auth = env.getArg("BDB_AUTH")
-    if auth == "keyczar":
-      conf.extend([
+    if "BDB" in subsystems or "RAVE" in subsystems or "DEX" in subsystems:
+      auth = env.getArg("BDB_AUTH")
+      if auth == "keyczar":
+        conf.extend([
         "baltrad.bdb.server.auth.providers=noauth, keyczar",
         "baltrad.bdb.server.auth.keyczar.keystore_root = $KEYSTORE",
         "baltrad.bdb.server.auth.keyczar.keys.$NODENAME = $NODENAME.pub",
-      ])
-    elif auth == "noauth":
-      conf.append("baltrad.bdb.server.auth.providers = noauth")
-    else:
-      raise InstallerException, "unrecognized BDB_AUTH: %s" % auth
+        ])
+      elif auth == "noauth":
+        conf.append("baltrad.bdb.server.auth.providers = noauth")
+      else:
+        raise InstallerException, "unrecognized BDB_AUTH: %s" % auth
 
     conf = [env.expandArgs(c) for c in conf]
     outfile = open(dst, "w")
