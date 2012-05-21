@@ -166,6 +166,7 @@ MODULES.extend([
          hdfjavainstaller(package("HDFJAVA", "2.6.1",
                                   machinefetcher({
                                     'i386':untar(urlfetcher("hdf-java-2.6.1-i386-bin.tar"), "hdf-java", False),
+                                    'i686':untar(urlfetcher("hdf-java-2.6.1-i386-bin.tar"), "hdf-java", False), #i686 is 32bit
                                     'x86_64':untar(urlfetcher("hdf-java-2.6.1-x86_64-bin.tar"), "hdf-java", False)}
                                   ))),
          
