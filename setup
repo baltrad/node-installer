@@ -515,6 +515,13 @@ for arg in $*; do
   esac
 done
 
+# Check for ~/.pydistutils.cfg. If it exists, we should not continue since it will
+# cause a lot of mischief in the installation process
+if [ "$CMD" = "install" -a -f ~/.pydistutils.cfg ]; then
+  echo "~/.pydistutils.cfg might conflict with the installation. Please remove it before continuing..."
+  exit 255
+fi
+
 # set default TPREFIX
 if [ -z $TPREFIX ]; then
   TPREFIX=$PREFIX/third_party
