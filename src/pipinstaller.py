@@ -70,7 +70,7 @@ class pipinstaller(installer):
     ocode = subprocess.call(args)
     if ocode != 0:
       raise InstallerException(
-        "Failed to install '%s' using pip" % self._pypi_name
+        "Failed to install '%s' using pip. You might need to set the environment variable http_proxy." % self._pypi_name
       )
 
 def _is_offline_install(env):

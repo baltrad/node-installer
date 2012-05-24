@@ -135,6 +135,11 @@ and safe!
 
 You can point out an alternative keystore location with --keystore=<path>
 
+If you know that you are behind a proxy you might have to specify a proxy in
+order for pypi to be able to fetch the packages. This can be achieved by
+setting the environment variable http_proxy before running setup.
+  %> export http_proxy=http://myproxyurl
+
 The installation only requires a call to the setup script. There are quite a few
 arguments that can be provided to the script in order to enable/disable features
 and also to generate offline installation content etc. Please type
