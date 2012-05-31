@@ -59,7 +59,16 @@ class configinstaller(installer):
         shutil.move(dst, backup)
     
     env.addArg("BDB_ENCODED_DBPWD", urllib.quote_plus(env.getArg("DBPWD")))
-    conf = ["baltrad.bdb.server.type = werkzeug"]
+    conf = ["#baltrad.bdb.server.type = werkzeug",
+            "baltrad.bdb.server.type = cherrypy",
+            "# Number of working threads for cherrypy",
+            "baltrad.bdb.server.cherrypy.threads = 10",
+            "# The request queue size (backlog)",
+            "baltrad.bdb.server.cherrypy.backlog = 5",
+            "# The timeout for accepted connections",
+            "baltrad.bdb.server.cherrypy.timeout = 10"]
+    
+    #conf = ["baltrad.bdb.server.type = werkzeug"]
     if "BDB" in subsystems:
       conf.extend(["baltrad.bdb.server.uri = http://localhost:$BDB_PORT",
                    "baltrad.bdb.server.backend.type = sqla",

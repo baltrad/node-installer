@@ -140,6 +140,7 @@ _PIP_MODULES=[
     ("NOSE", "1.1.2", "nose", ["PYTHON"]),
     ("PYINOTIFY", "0.9.3", "pyinotify", ["PYTHON"]),
     ("PROGRESSBAR", "2.2", "progressbar", ["PYTHON"]),
+    ("CHERRYPY", "3.2.2", "cherrypy", ["PYTHON"]),
 ]
 
 _PIP_DEP=[]
