@@ -105,6 +105,23 @@ class configinstaller(installer):
       else:
         raise InstallerException, "unrecognized BDB_AUTH: %s" % auth
 
+    if "DEX" in subsystems:
+      conf.append("# BEAST PGF Specific values")
+      conf.append("baltrad.beast.server.url=http://$RAVE_DEX_SPOE/BaltradDex/post_file.htm")
+      conf.append("baltrad.beast.pgf.nodename=$NODENAME")
+      conf.append("baltrad.beast.pgf.url=http://localhost")
+      conf.append("baltrad.beast.pgf.key=$KEYSTORE/$NODENAME.priv")
+      
+
     conf = [env.expandArgs(c) for c in conf]
     outfile = open(dst, "w")
     outfile.write("\n".join(conf))
+
+    # We also want to reuse the generated property file for beast
+    if "DEX" in subsystems:
+      beastpgffile = env.expandArgs("$PREFIX/beast/etc/xmlrpcserver.properties")
+      if os.path.exists(beastpgffile):
+        os.unlink(beastpgffile)
+      os.symlink(dst, beastpgffile)
+  
+      
