@@ -26,11 +26,11 @@ Actual versions for the different software modules that should be installed
 versions = {
   "HLHDF": "v0.8.1",
   "BALTRAD-DB": "jenkins-baltrad-db-377",
-  "BEAST": "jenkins-Beast-265",
-  "BALTRAD-DEX": "jenkins-BaltradDex-335",
+  "BEAST": "jenkins-Beast-266",
+  "BALTRAD-DEX": "jenkins-BaltradDex-353",
   "RAVE": "jenkins-Rave-279",
   "RAVE-GMAP": "jenkins-GoogleMapsPlugin-27",
-  "BROPO": "hudson-bRopo-37-SUCCESS",
+  "BROPO": "jenkins-bRopo-38",
   "BBUFR": "hudson-bbufr-5-SUCCESS",
   "BEAMB": "hudson-beamb-49-SUCCESS"
 }
