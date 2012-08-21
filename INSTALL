@@ -95,6 +95,10 @@ the system.
    for redhat, centos, etc.. yum install postgresql-devel.x86_64  (or postgresql84-devel.x86_64)
    for debian, ubuntu, etc.. sudo apt-get install postgresql-client-8.4 postgresql-client-common libpq-dev
 
+*) OpenSSL development packages
+   for redhat, centos, etc.. yum install openssl-devel.x86_64 openssl.x86_64
+   for debian, ubuntu, etc.. sudo apt-get install openssl libssl-dev
+
 *) doxygen
    for redhat, centos, etc.. yum install doxygen.x86_64
    for debian, ubuntu, etc.. sudo apt-get install doxygen
