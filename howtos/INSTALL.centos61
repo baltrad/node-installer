@@ -1,0 +1,43 @@
+root) yum install postgresql postgresql-server postgresql-devel
+root) service postgresql initdb
+root) /etc/init.d/postgresql start
+root) vi /var/lib/pgsql/data/pg_hba.conf
+... edit pg_hba.conf according to INSTALL instructions in node-installer, i.e. change from
+ident to trust for the METHOD...
+
+root) /etc/init.d/postgresql stop
+root) /etc/init.d/postgresql start
+root) adduser baltrad
+root) passwd baltrad
+root) su - postgres
+
+postgres) psql
+postgres) create user baltrad with password '.....';
+postgres) create database baltrad with owner baltrad;
+postgres) \q
+postgres) exit
+postgres) exit
+
+root) yum install java-1.6.0-openjdk java-1.6.0-openjdk-devel
+root) yum install autoconf
+root) yum install make
+root) yum install gcc
+root) yum install gcc-c++
+root) yum install patch
+root) yum install libicu libicu-devel
+root) yum install openssl-devel openssl
+root) yum install bzip2-devel
+root) yum install doxygen
+root) yum install libpng-devel
+root) yum install freetype freetype-devel
+root) mkdir /opt/software
+root) chown baltrad:baltrad /opt/software
+root) mkdir /opt/baltrad
+root) chown baltrad:baltrad /opt/baltrad
+root) su - baltrad
+
+baltrad) cd /opt/software
+baltrad) git clone ​git://git.baltrad.eu/node-installer.git
+baltrad) cd node-installer
+baltrad) ./setup --jdkhome=/usr/lib/jvm/java-1.6.0-openjdk-1.6.0.0 --tomcatpwd=secret --nodename=vbox-cos61  --with-rave-gmap --with-bropo --with-beamb --with-bufr --with-freetype=/usr/include/freetype2,/usr/lib64 install
+
