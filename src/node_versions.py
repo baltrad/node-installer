@@ -19,7 +19,7 @@ along with this software.  If not, see <http://www.gnu.org/licenses/>.
 
 Actual versions for the different software modules that should be installed
 
-@file
+@file  
 @author Anders Henja (Swedish Meteorological and Hydrological Institute, SMHI)
 @date 2011-02-09
 '''
