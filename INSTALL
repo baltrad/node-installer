@@ -21,19 +21,20 @@ along with node-installer.  If not, see <http://www.gnu.org/licenses/>.
 ###########################################################################
 
 INTRODUCTION
-This installer will setup and deploy the baltrad node software. The software
-has been designed for 64-bit (and eventually 32-bit) linux distributions.
-As a first step, the installation will install a python interpreeter and
-eventually zlib. After that it will continue with the rest of the installation
-with the installed interpreeter.
+This installer will setup and deploy the BALTRAD node software. The software
+has been designed for 64-bit (and possibly 32-bit) Linux distributions.
+As a first step, the installation will install a Python interpreter and
+maybe also zlib. After that it will continue with the rest of the installation
+with the installed interpreter.
 
-Before you start you will have to ensure that you have a number of software packages
-installed that are not allowed/not practical to be distributed as part of this package.
+Before you start, you will have to ensure that you have a number of
+software packages installed that are not allowed or are impractical to be
+distributed as part of this package.
 
 =========== PREREQUISITES ===========
-*) A postgres database server must be installed (8.3.9 or higher, preferrably 
-8.4+), does not need to be installed on the same server this software is 
-installed but it must be accessible.
+*) A postgres database server must be installed (8.3.9 or higher, preferably 
+8.4+), does not need to be installed on the same server as this software,
+but it must be accessible.
 
 <optional configuration>
 To increase security a little, and reduce the risk of corrupting the wrong
@@ -52,11 +53,11 @@ After this is done, restart the server:
 # service postgresql restart
 </optional configuration>
 
-You must create a database and a user in the postgres server before atempting 
-to install the software. This is probably done as postgres user but there are 
+You must create a database and a user in the postgres server before attempting 
+to install the software. This is probably done as user postgres but there are 
 of course other alternatives as well.
 
-The two postgres command to use are
+The two postgres commands to use are:
 CREATE USER <user> with PASSWORD '<password>';
 CREATE DATABASE <dbname> with OWNER <user>;
 
@@ -66,14 +67,14 @@ E.g.
 > CREATE USER baltrad with PASSWORD 'baltrad';
 > CREATE DATABASE baltrad with OWNER baltrad;
 
-These parameters will be used when building the software so it probably is a 
-good idea to remember username, password, database name and on what ip-address 
+These parameters will be used when building the software so it is probably a 
+good idea to remember username, password, database name and on what IP-address 
 you can reach the database.
 
-You will need the following packages installed before atempting to build
+You will need the following packages installed before attempting to build
 the system.
 
-*) git (for fetching the software)
+*) git client (for fetching the software)
 
 *) An installed Java SDK, currently it must be OpenJDK or SUN JDK (> 1.6)
 
@@ -103,14 +104,14 @@ the system.
    for redhat, centos, etc.. yum install doxygen.x86_64
    for debian, ubuntu, etc.. sudo apt-get install doxygen
 
-You might also need to install these packages since one or more modules depends on
-these.
+You might also need to install these packages since one or more modules
+depends on these.
 
-*) PNG development libraries (Used by for example bropo)
+*) PNG development libraries (used by e.g. bRopo)
    for redhat, centos, etc... yum install libpng-devel.x86_64
    for debian, ubuntu, etc... sudo apt-get install libpng-dev
 
-*) Freetype2 libraries (Used by for example google map plugin)
+*) Freetype2 libraries (Used by e.g. google map plugin)
    for redhat, centos, etc... yum install freetype.x86_64 freetype-devel.x86_64
    for debian, ubuntu, etc... sudo apt-get install libfreetype6 libfreetype6-dev
 
@@ -128,8 +129,8 @@ in the directory <node-installer-root>/packages.
 It is recommended that you specify --nodename=<name> on installation. This is
 essential for identification purposes. Keys are looked up based on this name.
 So if you specify an alternative keystore, make sure you have a key for your
-node in there. If not provided, the hostname will be used but it is
-recommended that you provide one manually.
+node in there. If not provided, the hostname will be used, but it is
+recommended that you provide one manually anyway.
 
 The communication between the different nodes make use of public key
 cryptography to sign and verify the messages. The node-installer creates
@@ -139,7 +140,7 @@ and safe!
 
 You can point out an alternative keystore location with --keystore=<path>
 
-If you know that you are behind a proxy you might have to specify a proxy in
+If you know that you are behind a proxy, you might have to specify a proxy in
 order for pypi to be able to fetch the packages. This can be achieved by
 setting the environment variable http_proxy before running setup.
   %> export http_proxy=http://myproxyurl
@@ -154,48 +155,52 @@ are recommended to read the help text.
 
 The specified arguments will be stored so that they can be used in the next run
 to give the user an easy way to perform upgrades or rebuild specific modules if
-necessary. The installed modules are also following a dependency scheme which means
-that if you rebuild one module, all dependant modules will be rebuilt and so on.
+necessary. The installed modules also follow a dependency scheme which means
+that if you rebuild one module, all modules dependent on it will be rebuilt too.
 
-As usual when it comes to unices, depending on who you are when running the setup call, 
-you might have to create the installation directories. For example, if specifying 
-'--prefix=/opt/n2' as user 'baltrad'. You will have to create the directory /opt/n2 with 
-proper permissions before issuing the setup call.
+As usual when it comes to unices, depending on who you are when running the
+setup call, you might have to create the installation directories. For
+example, if specifying '--prefix=/opt/blt' as user 'baltrad'. You will have
+to create the directory /opt/blt with proper permissions before issuing the
+setup call.
 
-Let's get to how an installation can be performed. We want to install the software
-in /opt/n2. The java we are using is located in /opt/jdk1.6.0 and we want to use
-the postgresql apis on a ubuntu 10.10. We also want rave and bropo to be installed.
+Let's get to how an installation can be performed. We want to install the
+software in /opt/blt. The java we are using is located in /opt/jdk1.6.0 and
+we want to use the postgresql APIs on a ubuntu 10.10. We also want RAVE and
+bRopo to be installed.
 
 This can be achieved by executing the following command:
-  %> ./setup --prefix=/opt/n2 --jdkhome=/opt/jdk1.6.0 \
+  %> ./setup --prefix=/opt/blt --jdkhome=/opt/jdk1.6.0 \
       --with-psql=/usr/include/postgresql,/usr/lib --with-rave-gmap --with-bropo install
 
 Now the software will start fetching the different packages and hopefully build
-everything successfully but as you probably can imagine, there is always something
-that will go wrong or you forgot to specify a feature you want to install. 
+everything successfully but, as you probably can imagine, there is always
+something that will go wrong or you forgot to specify a feature you want to
+install.
 To see what build settings you have specified, type:
   %> ./setup --print-config
 CONFIGURATION PARAMETERS
---prefix=                 /opt/n2                            
---tprefix=                /opt/n2/third_party                
+--prefix=                 /opt/blt                            
+--tprefix=                /opt/blt/third_party                
 --urlrepo=                http://git.baltrad.eu/blt_dependencies
 --dbuser=                 baltrad                            
 --dbname=                 baltrad                            
 --dbhost=                 127.0.0.1                          
 --runas=                  anders                             
---with-hdfjava=           /opt/n2/third_party/hdf-java       
+--with-hdfjava=           /opt/blt/third_party/hdf-java       
 --with-zlib=              no                                 
 --with-psql=              /usr/include/postgresql,/usr/lib   
 --with-rave-gmap                                             
 --with-bropo                                                 
 --jdkhome=                /opt/jdk1.6.0 
 
-As you can see from this printout, several options that you haven't specified will be shown,
-these are the default values. However, passwords, exclude options and rebuild options are 
-never stored and has to be provided for each run.
+As you can see from this printout, several options that you haven't
+specified will be shown, these are the default values. However, passwords,
+exclude options and rebuild options are never stored and must be provided
+for each run.
 
-So, if you for example had a different db password and the build failed due to that, you will only have
-to specify the --dbpwd option and rerun like:
+So, for example, if you had a different db password and the build failed
+due to that, you will only have to specify the --dbpwd option and rerun like:
   %> ./setup --dbpwd=secret install
 
 To see what you have installed, you can type
@@ -206,5 +211,5 @@ HDF5                 1.8.5-patch1                        INSTALLED
 EXPAT                2.0.1                               INSTALLED     
 ...
 
-First column is the name of the module, second is the version and third if it has been installed or not.
-  
+First column is the name of the module, second is the version and third if
+it has been installed or not.
