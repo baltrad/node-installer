@@ -69,5 +69,7 @@ class scriptinstaller(installer):
     shutil.copyfile(script.get_node_source_path(), env.expandArgs("$PREFIX/etc/bltnode.rc"))
     os.chmod(env.expandArgs("$PREFIX/etc/bltnode.rc"), stat.S_IRWXU|stat.S_IRGRP|stat.S_IXGRP|stat.S_IROTH|stat.S_IXOTH)
 
+    shutil.copyfile("%s/bin/baltrad_post_config.py"%env.getInstallerPath(), env.expandArgs("$PREFIX/bin/baltrad_post_config"))
+    os.chmod(env.expandArgs("$PREFIX/bin/baltrad_post_config"), stat.S_IRWXU|stat.S_IRGRP|stat.S_IXGRP|stat.S_IROTH|stat.S_IXOTH)
 
 
