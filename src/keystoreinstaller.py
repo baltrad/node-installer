@@ -130,7 +130,7 @@ chmod -R 600 %s
         dn = "CN=Unknown,OU=Unknown,O=Unknown,L=Unknown,ST=Unknown,C=Unknown"
       if dn != None:
         args.extend(["-dname", dn])
-    print `args`
+
     ocode = subprocess.call(args)
     if ocode != 0:
       raise InstallerException, "keytool command failed for keystore creation"
