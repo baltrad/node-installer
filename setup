@@ -492,6 +492,7 @@ for arg in $*; do
     --tomcatport=*) ;;
     --tomcaturl=*) ;;
     --tomcatpwd=*) ;;
+    --tomcatfwdports=*) ;;
     --force) ;;
     --experimental) ;;
     --urlrepo=*)

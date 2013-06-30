@@ -579,6 +579,11 @@ Options:
 --tomcatsecureport=<port>
     Specifies the port on which the tomcat installation should listen on for secure messages.
     [Default 8443]
+
+--tomcatfwdports=<httpport>,<httpsport>
+    Specifies that port forwarding has to be supported by the node and hence a secondary mapping
+    is added to the dex applicationContext. This attribute is typically used when having the tomcat
+    server behind a firewall and proxying calls through a webserver like apache.
     
 --tomcaturl=<url>
     Specifies the tomcat url where the tomcat installation resides. Don't
@@ -624,6 +629,16 @@ def verify_buildfreetype_argument(arg):
   tokens = arg.split(",")
   if len(tokens) != 2:
     raise InstallerException, "--with-freetype should be --with-freetype=<inc>,<lib>"
+
+def validate_fwdports(arg):
+  tokens = arg.split(",")
+  if len(tokens) != 2:
+    raise InstallerException, "--tomcatfwdports should be called like --tomcatfwdports=<httpport>,<httpsport> where httpport and httpsport is a number"
+  try:
+    a1 = int(tokens[0])
+    a2 = int(tokens[1])
+  except:
+    raise InstallerException, "--tomcatfwdports should be called like --tomcatfwdports=<httpport>,<httpsport> where httpport and httpsport is a number"
 
 def handle_tomcat_arguments(benv):
   if benv.hasArg("TOMCATPORT") and benv.hasArg("TOMCATURL"):
@@ -680,7 +695,7 @@ if __name__=="__main__":
                                    'print-modules', 'print-config', 'exclude-tomcat', 'recall-last-args',
                                    'experimental','subsystems=',
                                    'force','tomcatport=','tomcaturl=','tomcatpwd=',
-                                   'tomcatsecureport=', 'keystoredn=', 'keystorepwd=','help'])
+                                   'tomcatsecureport=', 'keystoredn=', 'keystorepwd=', 'tomcatfwdports=', 'help'])
   except getopt.GetoptError, e:
     usage(True, e.__str__())
     sys.exit(127)
@@ -764,6 +779,8 @@ if __name__=="__main__":
       env.addArg("TOMCATURL", a)
     elif o == "--tomcatpwd":
       env.addArgInternal("TOMCATPWD", a)
+    elif o == "--tomcatfwdports":
+      env.addArg("TOMCATFWDPORTS", a)
     elif o == "--with-bdbfs":
       env.addArg("BUILD_BDBFS", "yes")
     elif o == "--bdb-pool-max-size":
@@ -848,6 +865,10 @@ if __name__=="__main__":
     if not env.hasArg("KEYSTORE_PWD"):
       print "--keystorepwd not specified, using tomcatpwd."
       env.addArgInternal("KEYSTORE_PWD", env.getArg("TOMCATPWD"))
+
+  #Verify FWD ports if defined
+  if env.hasArg("TOMCATFWDPORTS"):
+    validate_fwdports(env.getArg("TOMCATFWDPORTS"))
 
   # set defaults for whatever arguments we didn't get from the user
   env.addUniqueArg("PREFIX", "/opt/baltrad")

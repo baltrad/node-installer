@@ -1,0 +1,90 @@
+If you for some reason are using a webserver for redirecting calls to the tomcat server you
+might have to manually setup some things in the webserver (and also use some optional
+parameters for configuring the application context in DEX).
+
+As defined in the overall installation instructions you are expected to define --tomcatport
+and --securetomcatport. These are used for letting the client talk directly with the tomcat
+server.
+_BUT_ in some circumstances you are forwarding calls to other ports, for example when you
+have got a strict firewall rule or similar. The most common way is probably to define
+host:80/BaltradDex -> host:8080/BaltradDex.
+
+If you have these requirements you can add two additional arguments during the installation
+process. Namely --tomcatfwdports=<http>,<https>, for example --tomcatfwdports=80,443.
+
+When this value has been specified, a secondary port-mapping is added to the dex-application context
+in order to also support this mapping.
+
+If you are using the delivered tomcat, the configuration is performed in tomcat as well. If not, you will
+have to add the following:
+    <Connector port="8443" protocol="HTTP/1.1" SSLEnabled="true"
+               maxThreads="150" scheme="https" secure="true"
+               clientAuth="false" sslProtocol="TLS" 
+               keystoreFile="<keystorepth>/keystore.jks" keystorePass="<pwd>" />
+to <tprefix>/tomcat/conf/server.xml.
+
+<pwd> should be the keystore password (and if that has not been specified, the same as is used for tomcat)
+
+<keystorepth> should most likely be .../baltrad/etc/bltnode-keys but if you have specified --keystore=<pth>, then it is pth.
+
+APACHE:
+If you are using apache for proxying calls to the tomcat server, you will have to export some certificates from
+the keystore. Below is what has to be done if you have installed the system in the default location (/opt/baltrad)
+without specifying any different keystore directory.
+
+1) First, create a directory for your apache ssl-certificates or place them at some suitable place, I just placed them
+in the baltrad directory.
+
+%> mkdir /opt/baltrad/etc/ssl.
+
+2) Export the key
+%> cd /opt/baltrad/etc/ssl
+%> keytool -export -alias tomcat -keystore ../bltnode-keys/keystore.jks -file exported-der.crt 
+Enter keystore password:
+-OUTPUT-> Certificate stored in file <exported-der.crt>
+
+3) Export the key to PEM format
+%> openssl x509 -out exported-pem.crt -outform pem -in exported-der.crt -inform der
+
+4) We also need the private key but we have to go through the pks #12 format.
+
+%> keytool -v -importkeystore -srckeystore ../bltnode-keys/keystore.jks -srcalias tomcat -destkeystore p12file.p12 -deststoretype PKCS12
+Enter destination keystore password:  
+Re-enter new password: 
+Enter source keystore password:  
+
+All above questions regarding the password should be the password used for the keystore which either is specified with --keystorepwd
+and if that hasn't been specified is the tomcatpwd.
+
+5) Print the private key in plain text and copy-paste the stuff between ----BEGIN RSA... and ---END RSA... into a file called
+Create catalogue for holding private key
+%> mkdir private
+
+And then we can print the private key in a plain text format. that can be copy-pasted into a file called for example
+private/<nodename>.<countrycode>.key
+
+%> openssl pkcs12 -in p12file.p12 -nocerts -nodesEnter Import Password:
+MAC verified OK
+....
+-----BEGIN RSA PRIVATE KEY-----
+....
+-----END RSA PRIVATE KEY-----
+
+
+
+6) Add these settings into the apache httpd.conf
+
+<VirtualHost ...:443>
+  SSLEngine on
+  SSLCertificateFile /opt/baltrad/etc/ssl/exported-pem.crt
+  SSLCertificateKeyFile /opt/baltrad/etc/ssl/private/nodename.se.key
+  ServerAdmin webadmin@xxx
+  DocumentRoot /var/www/html/
+  ServerName www.nodename.se
+  ErrorLog logs/nodename.se-error_log
+  ProxyPass /BaltradDex ajp://localhost:8009/BaltradDex
+</VirtualHost>
+
+Now you should hopefully be able to restart tomcat and apache and have a system that is configured for portforwarding of http and https calls.
+
+
