@@ -374,6 +374,22 @@ Options:
     Don't use together with --tomcaturl. 
     [Default 8080]
 
+--keystoredn=<dn>
+    The distinguished name used in the keystore cert for the secure communication.
+    If <dn> is yes, then a number of questions will be asked during the creation of the keystore.
+    If <dn> is no, then a predefined dn will be created with the format
+      "CN=Unknown,OU=Unknown,O=Unknown,L=Unknown,ST=Unknown,C=Unknown"
+    Or you can specify your own DN, just keep the above format. Note, that you can not specify a dn with any
+    spaces in it. If you have that format you will have to use 'yes' instead to get the questions
+    [Default yes]
+    
+--keystorepwd=<pwd>
+    Specifies the password that should be used for the key. If this has not been defined, the tomcatpwd will be used.
+
+--tomcatsecureport=<port>
+    Specifies the port on which the tomcat installation should listen on for secure messages.
+    [Default 8443]
+
 --tomcaturl=<url>
     Specifies the tomcat url where the tomcat installation resides. Don't
     use together with --tomcatport. 
@@ -419,7 +435,6 @@ clean_pip() {
   rm -rf pip-$1
 }
 
-# pick the args that are interesting for bootstrapping
 for arg in $*; do
   case $arg in
     --prefix=*)
@@ -471,6 +486,9 @@ for arg in $*; do
       PRINT_INFO_WANTED=yes
       ;;
     --exclude-tomcat) ;;
+    --tomcatsecureport=*) ;;
+    --keystoredn=*) ;;
+    --keystorepwd=*) ;;
     --tomcatport=*) ;;
     --tomcaturl=*) ;;
     --tomcatpwd=*) ;;

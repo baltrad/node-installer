@@ -111,6 +111,31 @@ chmod -R 600 %s
     ocode = subprocess.call(args)
     if ocode != 0:
         raise InstallerException, "keytool command failed"
+  
+  #self._create_keystore(env, keystore_pth)
+  def _create_keystore(self, env, keystore_pth):
+    #$JAVA_HOME/bin/keytool -genkey -alias tomcat -keyalg RSA -validity 3650 -keystore /opt/baltrad/etc/bltnode-keys/keystore.jks
+    keytool = env.expandArgs("$JDKHOME/bin/keytool")
+    
+    kpwd = env.getArg("KEYSTORE_PWD")
+    
+    if not os.path.exists(keytool):
+      raise InstallerException, "Could not locate keytool command"
+    args = [keytool, "-genkey", "-alias", "tomcat", "-keyalg", "RSA", "-validity", "3650", "-keypass", kpwd, "-storepass", kpwd, "-keystore", keystore_pth]
+    if env.hasArg("KEYSTORE_DN"):
+      dn = env.getArg("KEYSTORE_DN")
+      if dn == "yes":
+        dn = None
+      elif dn == "no":
+        dn = "CN=Unknown,OU=Unknown,O=Unknown,L=Unknown,ST=Unknown,C=Unknown"
+      if dn != None:
+        args.extend(["-dname", dn])
+    print `args`
+    ocode = subprocess.call(args)
+    if ocode != 0:
+      raise InstallerException, "keytool command failed for keystore creation"
+    
+    #/usr/bin/keytool -genkey -noprompt -alias tomcat -keyalg RSA -validity 3650 -keypass smurfen -storepass smurfen -dname "CN=Unknown, OU=Unknown, O=Unknown, L=Unknown, ST=Unknown, C=Unknown" -keystore /tmp/slask.jks
     
   ##
   # Performs the actual installation
@@ -149,4 +174,10 @@ chmod -R 600 %s
         "--destination=%s" % nodekey_pub
       )
 
+    if env.hasArg("KEYSTORE_PWD"): # We only create the keystore if we have keystorepwd
+      keystore_pth = env.expandArgs("$KEYSTORE/keystore.jks")
+      if not os.path.exists(keystore_pth):
+        print "creating keystore file", keystore_pth
+        self._create_keystore(env, keystore_pth)
+      
     # Here we maybe should modify permissions of the private key file but for now let it be.

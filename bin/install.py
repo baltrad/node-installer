@@ -140,7 +140,7 @@ _PIP_MODULES=[
     ("NOSE", "1.1.2", "nose", ["PYTHON"]),
     ("PYINOTIFY", "0.9.3", "pyinotify", ["PYTHON"]),
     ("PROGRESSBAR", "2.2", "progressbar", ["PYTHON"]),
-    ("CHERRYPY", "3.2.2", "cherrypy", ["PYTHON"]),
+    ("CHERRYPY", "3.2.4", "cherrypy", ["PYTHON"]),
 ]
 
 _PIP_DEP=[]
@@ -178,7 +178,7 @@ MODULES.extend([
          hdfjavasetupinstaller(package("HDFJAVASETUP", "2.6.1", depends=["TOMCAT", "HDFJAVA"])),
          
          # Time to install baltrad node software
-         keystoreinstaller(package("KEYSTORE", "1.0", nodir())),
+         keystoreinstaller(package("KEYSTORE", "1.1", nodir())),
          
          hlhdfinstaller(node_package("HLHDF", depends=["ZLIB", "HDF5"])),
 
@@ -324,6 +324,11 @@ def print_arguments(env):
     arguments.append(("--jdkhome=", env.getArg("JDKHOME")))
   if env.hasArg("KEYSTORE"):
     arguments.append(("--keystore=", env.getArg("KEYSTORE")))
+  if env.hasArg("KEYSTORE_DN"):
+    arguments.append(("--keystoredn=", env.getArg("KEYSTORE_DN")))
+  if env.hasArg("TOMCATSECUREPORT"):
+    arguments.append(("--tomcatsecureport=", env.getArg("TOMCATSECUREPORT")))
+    
 
   for a in arguments:
     print "{0:25s} {1:35s}".format(a[0], a[1])
@@ -554,11 +559,27 @@ Options:
     it is here for the possibility to use your own tomcat installation if it 
     is necessary.
 
+--keystoredn=<dn>
+    The distinguished name used in the keystore cert for the secure communication.
+    If <dn> is yes, then a number of questions will be asked during the creation of the keystore.
+    If <dn> is no, then a predefined dn will be created with the format
+      "CN=Unknown,OU=Unknown,O=Unknown,L=Unknown,ST=Unknown,C=Unknown"
+    Or you can specify your own DN, just keep the above format. Note, that you can not specify a dn with any
+    spaces in it. If you have that format you will have to use 'yes' instead to get the questions
+    [Default yes]
+    
+--keystorepwd=<pwd>
+    Specifies the password that should be used for the key. If this has not been defined, the tomcatpwd will be used.
+
 --tomcatport=<port>
     Specifies the port on which the tomcat installation should listen on.
     Don't use together with --tomcaturl. 
     [Default 8080]
 
+--tomcatsecureport=<port>
+    Specifies the port on which the tomcat installation should listen on for secure messages.
+    [Default 8443]
+    
 --tomcaturl=<url>
     Specifies the tomcat url where the tomcat installation resides. Don't
     use together with --tomcatport. 
@@ -646,7 +667,6 @@ if __name__=="__main__":
   import getpass
   optlist = []
   args = []
-  
   try:
     optlist, args = getopt.getopt(sys.argv[1:], '', 
                                   ['prefix=','tprefix=','jdkhome=','with-zlib=',
@@ -659,7 +679,8 @@ if __name__=="__main__":
                                    'urlrepo=','gitrepo=','offline',
                                    'print-modules', 'print-config', 'exclude-tomcat', 'recall-last-args',
                                    'experimental','subsystems=',
-                                   'force','tomcatport=','tomcaturl=','tomcatpwd=','help'])
+                                   'force','tomcatport=','tomcaturl=','tomcatpwd=',
+                                   'tomcatsecureport=', 'keystoredn=', 'keystorepwd=','help'])
   except getopt.GetoptError, e:
     usage(True, e.__str__())
     sys.exit(127)
@@ -733,6 +754,12 @@ if __name__=="__main__":
       env.excludeModule("TOMCAT")
     elif o == "--tomcatport":
       env.addArg("TOMCATPORT", a)
+    elif o == "--keystorepwd":
+      env.addArgInternal("KEYSTORE_PWD", a)
+    elif o == "--keystoredn":
+      env.addArg("KEYSTORE_DN", a)
+    elif o == "--tomcatsecureport":
+      env.addArg("TOMCATSECUREPORT", a)
     elif o == "--tomcaturl":
       env.addArg("TOMCATURL", a)
     elif o == "--tomcatpwd":
@@ -817,6 +844,11 @@ if __name__=="__main__":
         print "Passwords not matching"
     env.addArgInternal("TOMCATPWD", pwd)
 
+  if checkpwd:
+    if not env.hasArg("KEYSTORE_PWD"):
+      print "--keystorepwd not specified, using tomcatpwd."
+      env.addArgInternal("KEYSTORE_PWD", env.getArg("TOMCATPWD"))
+
   # set defaults for whatever arguments we didn't get from the user
   env.addUniqueArg("PREFIX", "/opt/baltrad")
   env.addUniqueArg("TPREFIX", env.expandArgs("${PREFIX}/third_party"))
@@ -830,6 +862,7 @@ if __name__=="__main__":
   env.addUniqueArg("BUILD_BDBFS", "no")
   env.addUniqueArg("RUNASUSER", getpass.getuser())
   env.addUniqueArg("KEYSTORE", env.expandArgs("${PREFIX}/etc/bltnode-keys"))
+  env.addUniqueArg("KEYSTORE_DN", "yes")
 
   if not env.hasArg("NODENAME"):
     import socket
@@ -842,6 +875,7 @@ if __name__=="__main__":
   # and that the tomcat arguments always are there.
   #
   handle_tomcat_arguments(env)
+  env.addUniqueArg("TOMCATSECUREPORT", "8443")
   
   env.addUniqueArg("BDB_POOL_MAX_SIZE", "10")
   env.addUniqueArg("BDB_PORT", "8090")

@@ -57,7 +57,7 @@ class tomcatinstaller(installer):
     
     self.write_root_index_file(env.expandArgs("$TPREFIX/tomcat"))
     
-    self.patch_server_xml(dir, env.getArg("TOMCATPORT"), env.expandArgs("$TPREFIX/tomcat"), env.getInstallerPath())
+    self.patch_server_xml(dir, env)
   
   ##
   # Checks if tomcat already is running or not by using ps
@@ -117,7 +117,17 @@ class tomcatinstaller(installer):
   # @param portstr: The port the tomcat server should listen on
   # @param troot: tomcat root directory
   #
-  def patch_server_xml(self, patchdir, portstr, troot, installerroot):
+  #def patch_server_xml(self, patchdir, portstr, troot, installerroot):
+  def patch_server_xml(self, patchdir, env):
+    portstr = env.getArg("TOMCATPORT")
+    secureportstr = env.getArg("TOMCATSECUREPORT")
+    keystorefile = env.expandArgs("$KEYSTORE/keystore.jks")
+    keystorepwd = ""
+    if env.hasArg("KEYSTORE_PWD"):
+      keystorepwd = env.getArg("KEYSTORE_PWD")
+    troot = env.expandArgs("$TPREFIX/tomcat")
+    installerroot = env.getInstallerPath()
+      
     ifp = open("%s/patches/%s/server.xml.in"%(installerroot, patchdir), "r")
     ofp = open("%s/conf/server.xml"%troot, "w")
     inlines = ifp.readlines()
@@ -125,6 +135,23 @@ class tomcatinstaller(installer):
       tl = l
       if tl.find("CFG_TOMCATPORT") >= 0:
         tl = tl.replace("CFG_TOMCATPORT", portstr)
+      if tl.find("<!--WITH_SECURE_COMMUNICATION_BEG") >= 0:
+        idx = tl.find("<!--WITH_SECURE_COMMUNICATION_BEG")
+        tl = " "*idx
+        tl = tl + "<!--WITH_SECURE_COMMUNICATION_BEG-->\n"
+      if tl.find("WITH_SECURE_COMMUNICATION_END-->") >= 0:
+        idx = tl.find("WITH_SECURE_COMMUNICATION_END-->")
+        tl = " "*idx
+        tl = tl + "<!--WITH_SECURE_COMMUNICATION_END-->\n"
+      if tl.find("CFG_TOMCATSECUREPORT") >= 0:
+        tl = tl.replace("CFG_TOMCATSECUREPORT", secureportstr)
+      if tl.find("CFG_KEYSTORE_JKS_FILE") >= 0:
+        tl = tl.replace("CFG_KEYSTORE_JKS_FILE", keystorefile)
+      if tl.find("CFG_KEYSTOREPWD") >= 0:
+        tl = tl.replace("CFG_KEYSTOREPWD", keystorepwd)
+
       ofp.write(tl)
     ifp.close()
     ofp.close()
+
+    

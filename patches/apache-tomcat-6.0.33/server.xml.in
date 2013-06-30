@@ -69,6 +69,16 @@
     <Connector port="CFG_TOMCATPORT" protocol="HTTP/1.1" 
                connectionTimeout="20000" 
                redirectPort="8443" URIEncoding="UTF-8" />
+
+    <!-- DO NOT REMOVE BELOW LINE, USED FOR IDENTIFYING LOCATION OF THE CONNECTOR IN THE INSTALL SCRIPT -->
+    <!--WITH_SECURE_COMMUNICATION_BEG
+    <Connector port="CFG_TOMCATSECUREPORT" protocol="HTTP/1.1" SSLEnabled="true"
+               maxThreads="150" scheme="https" secure="true"
+               clientAuth="false" sslProtocol="TLS" 
+               keystoreFile="CFG_KEYSTORE_JKS_FILE" keystorePass="CFG_KEYSTOREPWD" />
+    WITH_SECURE_COMMUNICATION_END-->
+    <!-- DO NOT REMOVE ABOVE LINE, USED FOR IDENTIFYING LOCATION OF THE CONNECTOR IN THE INSTALL SCRIPT-->
+
     <!-- A "Connector" using the shared thread pool-->
     <!--
     <Connector executor="tomcatThreadPool"
