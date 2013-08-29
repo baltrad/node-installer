@@ -56,20 +56,22 @@ Enter source keystore password:
 All above questions regarding the password should be the password used for the keystore which either is specified with --keystorepwd
 and if that hasn't been specified is the tomcatpwd.
 
-5) Print the private key in plain text and copy-paste the stuff between ----BEGIN RSA... and ---END RSA... into a file called
+5) Create the file with the private key.
+
 Create catalogue for holding private key
+
 %> mkdir private
 
 And then we can print the private key in a plain text format. that can be copy-pasted into a file called for example
 private/<nodename>.<countrycode>.key
 
-%> openssl pkcs12 -in p12file.p12 -nocerts -nodesEnter Import Password:
+%> openssl pkcs12 -in p12file.p12 -nocerts -nodes
+Enter Import Password:
 MAC verified OK
 ....
 -----BEGIN RSA PRIVATE KEY-----
 ....
 -----END RSA PRIVATE KEY-----
-
 
 
 6) Add these settings into the apache httpd.conf

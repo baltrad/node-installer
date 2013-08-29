@@ -233,6 +233,16 @@ class baltrad_post_config(object):
       self._write_property_to_file(fp, properties, "baltrad.bdb.server.log.level", "INFO")
       self._write_property_to_file(fp, properties, "baltrad.bdb.server.backend.sqla.storage.type", "db")
       self._write_property_to_file(fp, properties, "baltrad.bdb.server.auth.providers", "noauth, keyczar")
+
+      fp.write("\n\n")
+      fp.write("# Additional post config scripts.\n")
+      fp.write("# These scripts are called as python scripts with the only additional argument pointing at this\n")
+      fp.write("# property file so you can specify more properties in addition to the ones above.\n")
+      fp.write("# The naming of the post config script properties should be baltrad.post.config.script.<N> \n")
+      fp.write("# where N is a sequential number running from 1, and upward (1,2,3....).\n")
+      fp.write("#baltrad.post.config.script.1=..../xyz.py\n")
+      fp.write("#baltrad.post.config.script.2=..../xyz2.py\n")
+      
     fp.close()
 
   ##
@@ -253,6 +263,16 @@ class baltrad_post_config(object):
       self._upgrade_database(properties)
     if self._password:
       self._update_admin_password(properties)
+    self._run_plugins(properties)
+  
+  def _run_plugins(self, properties):
+    index = 1
+    while properties.has_key("baltrad.post.config.script.%d"%index):
+      script = properties["baltrad.post.config.script.%d"%index]
+      code = subprocess.call(["python", script, self._config])
+      if code != 0:
+        print "Failed to run post script: %s"%script
+      index = index + 1
     
   ##
   # Creates the database tables
