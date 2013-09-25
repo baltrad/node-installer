@@ -37,6 +37,7 @@ from raveinstaller import raveinstaller
 from ravegmapinstaller import ravegmapinstaller
 from bropoinstaller import bropoinstaller
 from beambinstaller import beambinstaller
+from bwrwpinstaller import bwrwpinstaller
 from dbinstaller import dbinstaller, dbupgrader
 from nodescripts import nodescripts
 from deployer import deployer
@@ -197,6 +198,8 @@ MODULES.extend([
          bropoinstaller(node_package("BROPO", depends=["RAVE"])), #Just use rave as dependency, rest of dependencies will trigger rave rebuild
 
          beambinstaller(node_package("BEAMB", depends=["RAVE"])), #Just use rave as dependency, rest of dependencies will trigger rave rebuild
+         
+         bwrwpinstaller(node_package("BWRWP", depends=["RAVE"])), #Just use rave as dependency, rest of dependencies will trigger rave rebuild
 
          docinstaller(package("DOCS", "1.0", nodir(), remembered=False)),
          
@@ -208,7 +211,7 @@ MODULES.extend([
          
          dbupgrader(package("DBUPGRADE", "1.0", nodir(), remembered=False)),
 
-         deployer(package("DEPLOY", "1.0", nodir(), depends=["BALTRAD-DEX"], remembered=False)),
+         #deployer(package("DEPLOY", "1.0", nodir(), depends=["BALTRAD-DEX"], remembered=False)),
 
          scriptinstaller(package("SCRIPT", "1.0", nodir(), remembered=False)),
          
@@ -685,8 +688,9 @@ if __name__=="__main__":
   try:
     optlist, args = getopt.getopt(sys.argv[1:], '', 
                                   ['prefix=','tprefix=','jdkhome=','with-zlib=',
-                                   'with-psql=','with-bufr', 'with-rave','with-rave-gmap','with-bropo','with-beamb',
+                                   'with-psql=','with-bufr', 'with-rave','with-rave-gmap','with-bropo','with-beamb','with-bwrwp',
                                    'with-hdfjava=', 'with-freetype=', 'with-bdbfs','rebuild=',
+                                   'with-blas=', 'with-cblas=', 'with-lapack=', 'with-lapacke=',
                                    'bdb-pool-max-size=', "bdb-port=", "bdb-uri=", "bdb-auth=", "bdb-storage=",
                                    'rave-pgf-port=', "rave-center-id=", "rave-dex-spoe=",
                                    'dbuser=', 'dbpwd=','dbname=','dbhost=','keystore=','nodename=',
@@ -726,6 +730,7 @@ if __name__=="__main__":
   env.excludeModule("BROPO")
   env.excludeModule("BBUFR")
   env.excludeModule("BEAMB")
+  env.excludeModule("BWRWP")
   
   reinstalldb=False
   rebuild = []
@@ -809,6 +814,8 @@ if __name__=="__main__":
       env.addArg("WITH_BROPO", True)
     elif o == "--with-beamb":
       env.addArg("WITH_BEAMB", True)
+    elif o == "--with-bwrwp":
+      env.addArg("WITH_BWRWP", True)
     elif o == "--subsystems":
       subsystems = a.split(",")
     elif o == "--reinstalldb":
@@ -828,6 +835,14 @@ if __name__=="__main__":
       env.addArg("URLREPO", a)
     elif o == "--gitrepo":
       env.addArg("GITREPO", a)
+    elif o == "--with-blas":
+      env.addArg("BLASARG", a)
+    elif o == "--with-cblas":
+      env.addArg("CBLASARG", a)
+    elif o == "--with-lapack":
+      env.addArg("LAPACKARG", a)
+    elif o == "--with-lapacke":
+      env.addArg("LAPACKEARG", a)
     elif o == "--help":
       pass
     elif o == "--print-modules":
@@ -980,6 +995,10 @@ if __name__=="__main__":
     env.removeExclude("RAVE")
     env.removeExclude("BEAMB")
   
+  if env.hasArg("WITH_BWRWP") and env.getArg("WITH_BWRWP") == True:
+    env.removeExclude("RAVE")
+    env.removeExclude("BWRWP")
+  
   # Freetype is not an actual module, it's just an indicator when building
   # PIL
   if env.hasArg("FREETYPE"):
@@ -1054,6 +1073,10 @@ if __name__=="__main__":
     if not env.isExcluded("BROPO"):
       sldpath = "$PREFIX/bropo/lib:%s"%sldpath
       spath = env.expandArgs("$PREFIX/bropo/bin:%s"%spath)
+
+    if not env.isExcluded("BWRWP"):
+      sldpath = "$PREFIX/baltrad-wrwp/lib:%s"%sldpath
+      spath = env.expandArgs("$PREFIX/baltrad-wrwp/bin:%s"%spath)
       
     if not env.isExcluded("RAVE"):
       sldpath = "$PREFIX/rave/lib:%s"%sldpath

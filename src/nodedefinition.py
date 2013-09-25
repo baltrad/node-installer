@@ -52,11 +52,12 @@ _REPOS = {
   "RAVE-GMAP": "$GITREPO/GoogleMapsPlugin.git",
   "BROPO": "$GITREPO/bropo.git",
   "BBUFR": "$GITREPO/bbufr.git",
-  "BEAMB": "$GITREPO/beamb.git"
+  "BEAMB": "$GITREPO/beamb.git",
+  "BWRWP": "$GITREPO/baltrad-wrwp.git"
 }
 
 PACKAGES = [
-  "HLHDF", "BALTRAD-DB", "BEAST", "BALTRAD-DEX", "RAVE", "RAVE-GMAP", "BROPO", "BBUFR", "BEAMB"
+  "HLHDF", "BALTRAD-DB", "BEAST", "BALTRAD-DEX", "RAVE", "RAVE-GMAP", "BROPO", "BBUFR", "BEAMB", "BWRWP"
 ]
 
 NODE_REPOSITORY={}
