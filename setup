@@ -324,6 +324,36 @@ Options:
 --with-beamb
     Install the beam blockage detector beamb. Will also cause rave to be installed.
 
+--with-bwrwp
+    Installs the baltrad weather radar wind profile generator. Will also cause rave to be installed.
+    This is a very special product generator that uses fortran code and requires for example gfortran.
+    This product more or less requires that the following options also are specified: --with-blas=,
+    --with-cblas=, --with-lapack= and --with-lapacke=.
+ 
+--with-blas=<libblas.a directory>
+    Specifies the directory where the libblas.a library resides. Currently only used when installing bwrwp.
+    NOTE that the library objects must have been compiled with -fPIC or similar for shared object capabilities
+    since it will be linked into a shared library.
+
+--with-cblas=<root> or <cblas.h incdir>,<libcblas.a dir>
+    Specifies where the cblas.h include directory and the libcblas.a directory resides. You can also
+    specify cblas root directory that should contain the include and lib directory.
+    Currently only used when installing bwrwp.
+    NOTE that the library objects must have been compiled with -fPIC or similar for shared object capabilities
+    since it will be linked into a shared library.
+
+--with-lapack=<liblapack.a directory>
+    Specifies the directory where the liblapack.a library resides. Currently only used when installing bwrwp.
+    NOTE that the library objects must have been compiled with -fPIC or similar for shared object capabilities
+    since it will be linked into a shared library.
+
+--with-lapacke=<root> or <lapacke.h incdir>,<liblapacke.a dir>
+    Specifies where the cblas.h include directory and the libcblas.a directory resides. You can also
+    specify cblas root directory that should contain the include and lib directory.
+    Currently only used when installing bwrwp.
+    NOTE that the library objects must have been compiled with -fPIC or similar for shared object capabilities
+    since it will be linked into a shared library.
+
 --with-bdbfs
     Will build and install the baltrad db file system driver
 

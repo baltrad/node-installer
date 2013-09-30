@@ -213,3 +213,27 @@ EXPAT                2.0.1                               INSTALLED
 
 First column is the name of the module, second is the version and third if
 it has been installed or not.
+
+
+BALTRAD WEATHER RADAR WIND PROFILES (BWRWP)
+The baltrad wrwp product is very different from the other modules and product generators. It
+depends on fortran code (blas, cblas, lapack and lapacke) and requires a fortran compiler.
+The software has only been used for gfortran but it might work for other variants as well but
+that is currently not supported. However, if you find out a way to get it to build we would be
+very happy to integrate your suggestions into the software.
+
+Since most of the software we are using are used within the rave pgf, that in turn uses python
+shared objects, the blas, cblas, lapack and lapacke libraries must be compiled with support for
+linking into shared libraries. This is on gcc done by adding the -fPIC compiler flag.
+
+If you experience that the building of wrwp fails with some message about recompiling with -fPIC
+or any error messages hinting about objects not beeing built with relocation support you might have
+to rebuild BLAS,CBLAS,LAPACK and LAPACKE. Hopefully, these hints will help you out rebuilding
+those libraries.
+
+Modify BLAS/make.inc: add -fPIC to OPTS and NOOPT and "%> make clean; make"
+
+CBLAS/Makefile.in: add -fPIC to CFLAGS and FFLAGS and "%> make clean; make"
+
+lapack-.../make.inc: add -fPIC to OPTS, NOOPT and CFLAGS and "%> make clean; make; cd lapacke; make"
+
