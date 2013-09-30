@@ -211,7 +211,7 @@ MODULES.extend([
          
          dbupgrader(package("DBUPGRADE", "1.0", nodir(), remembered=False)),
 
-         #deployer(package("DEPLOY", "1.0", nodir(), depends=["BALTRAD-DEX"], remembered=False)),
+         deployer(package("DEPLOY", "1.0", nodir(), depends=["BALTRAD-DEX"], remembered=False)),
 
          scriptinstaller(package("SCRIPT", "1.0", nodir(), remembered=False)),
          
