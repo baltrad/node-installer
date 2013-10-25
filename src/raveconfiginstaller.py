@@ -21,9 +21,11 @@ Node configuration
 
 '''
 
-import os
+import os, subprocess
 import shutil
 import time
+from osenv import osenv
+from InstallerException import InstallerException
 
 from installer import installer
 
@@ -31,8 +33,13 @@ class raveconfiginstaller(installer):
   ##
   # Constructor
   #
-  def __init__(self, package):
-    super(raveconfiginstaller, self).__init__(package, None)
+  def __init__(self, package, oenv = None):
+    if oenv == None:
+      oenv = osenv({"PATH":"$PREFIX/rave/bin:$$PATH",
+                    "LD_LIBRARY_PATH":"$PREFIX/rave/lib:$$LD_LIBRARY_PATH"},
+                    defaultosenv={"LD_LIBRARY_PATH":""})
+    
+    super(raveconfiginstaller, self).__init__(package, oenv)
 
   ##
   # Performs the actual installation
@@ -48,25 +55,36 @@ class raveconfiginstaller(installer):
   # @param env: the build environment
   #
   def _create_quality_registry(self, env):
-    dst = env.expandArgs("$PREFIX/rave/etc/rave_pgf_quality_registry.xml")
-    backup = dst + "%s.bak" % time.strftime("%Y%m%dT%H%M%S")
-    if os.path.exists(dst):
-      shutil.move(dst, backup)
+    self.osenvironment().setEnvironmentVariable(env, "LD_LIBRARY_PATH", "%s:%s"%(env.getLdLibraryPath(),os.environ["LD_LIBRARY_PATH"]))
+    self.osenvironment().setEnvironmentVariable(env, "PATH", "%s:%s"%(env.getPath(),os.environ["PATH"]))
+        
+    env.getNodeScript().stop(rave=True)
     
-    outfile = open(dst, "w")
-    outfile.write("""<?xml version='1.0' encoding='UTF-8'?>
-<rave-pgf-quality-registry>
-  <quality-plugin name="rave-overshooting" module="rave_overshooting_quality_plugin" class="rave_overshooting_quality_plugin"/>""")
-
+    fp = open("tmpreg.py", "w")
+    fp.write(env.expandArgs("""
+from rave_pgf_quality_registry_mgr import rave_pgf_quality_registry_mgr
+a = rave_pgf_quality_registry_mgr("$PREFIX/rave/etc/rave_pgf_quality_registry.xml")
+a.remove_plugin("ropo")
+a.remove_plugin("beamb")
+"""))
     if not env.isExcluded("BROPO"):
-      outfile.write("""
-  <quality-plugin name="ropo" module="ropo_quality_plugin" class="ropo_quality_plugin"/>""")
-      
+      fp.write(env.expandArgs("""
+a.add_plugin("ropo", "ropo_quality_plugin", "ropo_quality_plugin")
+"""))
     if not env.isExcluded("BEAMB"):
-      outfile.write("""
-  <quality-plugin name="beamb" module="beamb_quality_plugin" class="beamb_quality_plugin"/>""")
+      fp.write(env.expandArgs("""
+a.add_plugin("beamb", "beamb_quality_plugin", "beamb_quality_plugin")
+"""))
+    fp.write(env.expandArgs("""
+a.save("$PREFIX/rave/etc/rave_pgf_quality_registry.xml")
+"""))
+    fp.close()
+    try:    
+      ocode = subprocess.call("python tmpreg.py", shell=True)
+      if ocode != 0:
+        raise InstallerException, "Failed to register quality plugins in rave"
+    finally:
+      if os.path.exists("tmpreg.py"):   
+        os.unlink("tmpreg.py")
 
-    outfile.write("""
-</rave-pgf-quality-registry>
-""")
-  
+      
