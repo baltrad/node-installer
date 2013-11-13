@@ -111,7 +111,10 @@ class configinstaller(installer):
       conf.append("baltrad.beast.pgf.nodename=$NODENAME")
       conf.append("baltrad.beast.pgf.url=http://localhost")
       conf.append("baltrad.beast.pgf.key=$KEYSTORE/$NODENAME.priv")
-      
+    
+    if "RAVE" in subsystems:
+      conf.append("# RAVE specific values")
+      conf.append("rave.db.uri=postgresql://$DBUSER:$BDB_ENCODED_DBPWD@$DBHOST/$DBNAME")
 
     conf = [env.expandArgs(c) for c in conf]
     outfile = open(dst, "w")
