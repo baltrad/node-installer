@@ -210,7 +210,7 @@ log4j.appender.console=org.apache.log4j.ConsoleAppender
 log4j.appender.console.layout=org.apache.log4j.PatternLayout
 log4j.appender.console.layout.ConversionPattern=%d{dd MMM yyyy HH:mm:ss} %-5p %c - %m%n
 
-log4j.category.eu.baltrad=DEBUG
+log4j.category.eu.baltrad=INFO
 
 log4j.logger.DEX=INFO, dexappender
 log4j.logger.PGF=INFO, dexappender
