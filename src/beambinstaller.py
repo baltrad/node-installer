@@ -82,6 +82,19 @@ class beambinstaller(installer):
     if ocode != 0:
       raise InstallerException, "Failed to test beamb"      
 
+    cversion = self.package().version()  # This packages version
+    cname = self.package().name()        # Just get the name we use for this package
+    iversion = env.getInstalled(cname)
+
+    if iversion != None and iversion != cversion:
+      ocode = subprocess.call("make clean_cache", shell=True)
+      if ocode != 0:
+        print "Failed to clean beamb cache"
+      
+    #version = self.package().version()
+    #name = self.package().name()
+    #env.getInstalled(name) != version:
+    
     ocode = subprocess.call("make doc > /dev/null 2>&1", shell=True)
     if ocode != 0:
       print "Failed to generate BEAMB documentation"
