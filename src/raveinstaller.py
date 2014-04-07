@@ -44,6 +44,7 @@ class raveinstaller(installer):
                     "HLDIR":"$PREFIX/hlhdf",
                     "PROJ4ROOT":"$TPREFIX",
                     "PGF_PORT":"$RAVE_PGF_PORT",
+                    "LOGPORT":"$RAVE_LOG_PORT",
                     "CENTER_ID":"$RAVE_CENTER_ID",
                     "DEX_SPOE":"$RAVE_DEX_SPOE",
                     "BUFRARG":"",

@@ -302,6 +302,10 @@ Options:
     Set the port rave should run on.
     [default: 8085]
 
+--rave-log-port=<port>
+    Set the port the rave logger should run on.
+    [default: 8089]
+
 --with-bufr
     Install the bufr software. This will also affect rave so that if
     we have specified bufr support rave will be built with bufr support
@@ -495,6 +499,7 @@ for arg in $*; do
     --gitrepo=*) ;;
     --with-rave) ;;
     --rave-pgf-port=*) ;;
+    --rave-log-port=*) ;;
     --with-bufr) ;;
     --rave-center-id=*) ;;
     --rave-dex-spoe=*) ;;

@@ -495,6 +495,10 @@ Options:
     Set the port rave should run on.
     [default: 8085]
 
+--rave-log-port=<port>
+    Set the port the rave logger should run on
+    [default: 8089]
+
 --with-bufr
     Install the bufr software. This will also affect rave so that if
     we have specified bufr support rave will be built with bufr support
@@ -722,7 +726,7 @@ if __name__=="__main__":
                                    'with-hdfjava=', 'with-freetype=', 'with-bdbfs','rebuild=',
                                    'with-blas=', 'with-cblas=', 'with-lapack=', 'with-lapacke=',
                                    'bdb-pool-max-size=', "bdb-port=", "bdb-uri=", "bdb-auth=", "bdb-storage=",
-                                   'rave-pgf-port=', "rave-center-id=", "rave-dex-spoe=",
+                                   'rave-pgf-port=', 'rave-log-port=', "rave-center-id=", "rave-dex-spoe=",
                                    'dbuser=', 'dbpwd=','dbname=','dbhost=','keystore=','nodename=',
                                    'reinstalldb','excludedb', 'runas=','datadir=','warfile=',
                                    'urlrepo=','gitrepo=','offline',
@@ -834,6 +838,8 @@ if __name__=="__main__":
       env.addArg("WITH_RAVE", True)
     elif o == "--rave-pgf-port":
       env.addArg("RAVE_PGF_PORT", a)
+    elif o == "--rave-log-port":
+      env.addArg("RAVE_LOG_PORT", a)
     elif o == "--rave-center-id":
       env.addArg("RAVE_CENTER_ID", a)
     elif o == "--rave-dex-spoe":
@@ -948,6 +954,7 @@ if __name__=="__main__":
   env.addUniqueArg("BDB_AUTH", "keyczar")
   env.addUniqueArg("BDB_STORAGE", "db")
   env.addUniqueArg("RAVE_PGF_PORT", "8085")
+  env.addUniqueArg("RAVE_LOG_PORT", "8089")
   env.addUniqueArg("RAVE_CENTER_ID", "82")
   env.addUniqueArg("RAVE_DEX_SPOE", env.expandArgs("localhost:${TOMCATPORT}"))
 
