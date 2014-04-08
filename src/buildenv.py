@@ -36,6 +36,7 @@ class buildenv:
   _argsinternal={}
   _installed={}
   _excluded={}
+  _currentlyinstalled={}
   _ldlibrarypath=""
   _path=""
   _script = None
@@ -58,6 +59,8 @@ class buildenv:
       self._installed = pickle.load(fp)
     else:
       self._installed = {}
+    for k in self._installed.keys():
+      self._currentlyinstalled[k] = self._installed[k] 
   
   ##
   # Adds an argument
@@ -207,6 +210,16 @@ class buildenv:
   def getInstalled(self, name):
     if self._installed.has_key(name):
       return self._installed[name]
+    return None
+
+  ##
+  # Returns the currently installed package (if any). Otherwise None. In contrast to installed, this
+  # information can not be altered for reinstallation purposes and stuff
+  # @param name the name of the package
+  # @return version of currently installed package or None
+  def getCurrentlyInstalled(self, name):
+    if self._currentlyinstalled.has_key(name):
+      return self._currentlyinstalled[name]
     return None
 
   ##

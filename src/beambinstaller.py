@@ -84,9 +84,9 @@ class beambinstaller(installer):
 
     cversion = self.package().version()  # This packages version
     cname = self.package().name()        # Just get the name we use for this package
-    iversion = env.getInstalled(cname)
-
-    if iversion != None and iversion != cversion:
+    iversion = env.getCurrentlyInstalled(cname)
+    
+    if iversion != cversion:
       ocode = subprocess.call("make clean_cache", shell=True)
       if ocode != 0:
         print "Failed to clean beamb cache"
