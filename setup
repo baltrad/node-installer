@@ -18,7 +18,7 @@
 # along with node-installer.  If not, see <http://www.gnu.org/licenses/>.
 ###########################################################################
 #
-# Performs the installation steps for installing a working baltrad node.
+# Performs the installation steps for installing a working BALTRAD node.
 #
 # @author Anders Henja (Swedish Meteorological and Hydrological Institute, SMHI)
 # @date 2011-09-27
@@ -158,10 +158,10 @@ cat << _EOF_
 NODE INSTALLER
 Usage: setup <options> command, use --help for information
 
-This is the main installation script for installing a baltrad node.
+This is the main installation script for installing a BALTRAD node.
 Most of the installation is handled without any interaction. However
 if you don't want to specify --tomcatpwd on command line you will
-get a question about it. 
+promted for one. 
 
 The script will remember several configuration parameters between
 runs but some of them will not be stored, like passwords and
@@ -198,11 +198,12 @@ Options:
 
 --nodename=<name>
     This attribute should really be specified but there is a default value which
-    is the hostname as shown by the command 'hostname'. The node name is a unique
-    identifier that is used for identifying you within the exchange
+    is the hostname as shown by the command 'hostname'. The node name is a 
+    unique identifier that is used for identifying you within the exchange
     network. The node name should usually explain exactly who you are. A good
-    example is to use the java package naming. For example se.myorg or se.myorg.test or similar. 
-    This node name will also defining what this installations key will be named.
+    example is to use the Java package naming. For example se.myorg or 
+    se.myorg.test or similar. This node name will also defining what this 
+    installations key will be named.
 
 --prefix=<prefix>
     Points out where the system should be installed. 
@@ -243,8 +244,8 @@ Options:
       include and library paths
 
 --with-freetype=<freetypeinc>,<freetypelib>
-    In order to get freetype support built in the PIL imaging library
-    (for use with google maps plugin). You might have to specify this
+    In order to get freetype support built in the Python Imaging Library (PIL,
+    for use with Google maps plugin). You might have to specify this
     library. <freetypeinc> is the path to the freetype include directory
     as shown when executing freetype-config --cflags excluding the -I of course.
     <freetypelib> is the path where libfreetype.so can be found.
@@ -266,7 +267,7 @@ Options:
     [Default 127.0.0.1]
 
 --with-hdfjava=<hdf java root>
-    Specifies the hdf java root installation directory. 
+    Specifies the HDF Java root installation directory. 
     If omitted, the installer will install it's own version of hdf-java.
     
 --reinstalldb
@@ -278,101 +279,111 @@ Options:
     to be set as installed.
     
 --runas=<user>
-    Specifies the runas user for tomcat and other processes. It is not 
-    allowed to use a runas user that is root due to security-issues. 
+    Specifies the runas user for Tomcat and other processes. It is not 
+    allowed to use a runas user that is root due to security issues. 
     [Defaults to user that is installing]
 
 --datadir=<dir>
-    The directory where all the data storage files should be placed for baltrad-db.
+    The directory where all the data storage files should be placed for 
+    BALTRAD-db.
     [Default <prefix>/bdb_storage]
 
 --urlrepo=<url>
-    The url from where the url packages can be fetched.
+    The URL from where the dependency packages can be fetched.
     [Default http://git.baltrad.eu/blt_dependencies]
     
 --gitrepo=<url>
-    The url from where the baltrad node git packages can be fetched.
+    The URL from which the BALTRAD node Git packages can be fetched.
     For example --gitrepo=http://git.baltrad.eu
     [Default git://git.baltrad.eu]
 
 --with-rave
-    Install the rave pgf
+    Install the RAVE PGF
 
 --rave-pgf-port=<port>
-    Set the port rave should run on.
+    Set the port RAVE should run on.
     [default: 8085]
 
 --rave-log-port=<port>
-    Set the port the rave logger should run on.
+    Set the port the RAVE logger should run on.
     [default: 8089]
 
 --with-bufr
-    Install the bufr software. This will also affect rave so that if
-    we have specified bufr support rave will be built with bufr support
-    enabled as well.
+    Install OPERA BUFR software. This will affect RAVE such that readling of
+    polar data in BUFR will be supported.
 
 --rave-center-id=<id>
-    Originating center id to be used by rave as the source of its products.
+    WMO originating center ID to be used by RAVE as the source of its products.
+    Reference: WMO No. 306.
     [default: 82]
 
 --rave-dex-spoe=<spoe>
-    Dex's single point of entry to be used by rave. 
+    DEX's single point of entry to be used by RAVE. 
     [default: localhost:8080]
     
 --with-rave-gmap
-    Install the rave google map plugin. Will also cause rave pgf to be installed.
+    Install the RAVE Google map plugin. Will also cause RAVE PGF to be 
+    installed.
 
 --with-bropo
-    Install the anomaly detector bropo. Will also cause rave to be installed.
+    Install bRopo anomaly detectors. Will also cause RAVE to be installed.
 
 --with-beamb
-    Install the beam blockage detector beamb. Will also cause rave to be installed.
+    Install beam blockage detector package. Will also cause RAVE to be 
+    installed.
 
 --with-bwrwp
-    Installs the baltrad weather radar wind profile generator. Will also cause rave to be installed.
-    This is a very special product generator that uses fortran code and requires for example gfortran.
-    This product more or less requires that the following options also are specified: --with-blas=,
-    --with-cblas=, --with-lapack= and --with-lapacke=.
+    Installs the BALTRAD weather radar wind profile generator. Will also cause 
+    RAVE to be installed. This is a very special product generator that 
+    requires a Fortran compiler to built its dependencies, e.g. gfortran.
+    This product requires that the following options also are specified: 
+    --with-blas=, --with-cblas=, --with-lapack= and --with-lapacke=. 
+    See below on how to use these options.
  
 --with-blas=<libblas.a directory>
-    Specifies the directory where the libblas.a library resides. Currently only used when installing bwrwp.
-    NOTE that the library objects must have been compiled with -fPIC or similar for shared object capabilities
-    since it will be linked into a shared library.
+    Specifies the directory where the libblas.a library resides. Currently only 
+    used when installing bwrwp.
+    NOTE that the library objects must have been compiled with -fPIC or similar 
+    for shared object capabilities since it will be linked into a shared 
+    library.
 
 --with-cblas=<root> or <cblas.h incdir>,<libcblas.a dir>
-    Specifies where the cblas.h include directory and the libcblas.a directory resides. You can also
-    specify cblas root directory that should contain the include and lib directory.
-    Currently only used when installing bwrwp.
-    NOTE that the library objects must have been compiled with -fPIC or similar for shared object capabilities
-    since it will be linked into a shared library.
+    Specifies where the cblas.h include directory and the libcblas.a directory 
+    resides. You can also specify CBLAS root directory that should contain the 
+    include and lib directory. Currently only used when installing bwrwp.
+    NOTE that the library objects must have been compiled with -fPIC or similar 
+    for shared object capabilities since it will be linked into a shared 
+    library.
 
 --with-lapack=<liblapack.a directory>
-    Specifies the directory where the liblapack.a library resides. Currently only used when installing bwrwp.
-    NOTE that the library objects must have been compiled with -fPIC or similar for shared object capabilities
-    since it will be linked into a shared library.
+    Specifies the directory where the liblapack.a library resides. Currently 
+    only used when installing bwrwp. NOTE that the library objects must have 
+    been compiled with -fPIC or similar for shared object capabilities since it 
+    will be linked into a shared library.
 
---with-lapacke=<root> or <lapacke.h incdir>,<liblapacke.a dir>
-    Specifies where the cblas.h include directory and the libcblas.a directory resides. You can also
-    specify cblas root directory that should contain the include and lib directory.
-    Currently only used when installing bwrwp.
-    NOTE that the library objects must have been compiled with -fPIC or similar for shared object capabilities
-    since it will be linked into a shared library.
+--with-lapacke=<lapacke.h incdir>,<liblapacke.a dir>
+    Specifies where the cblas.h include directory and the libcblas.a directory 
+    resides. Currently only used when installing bwrwp.
+    NOTE that the library objects must have been compiled with -fPIC or similar 
+    for shared object capabilities since it will be linked into a shared 
+    library.
 
 --with-bdbfs
-    Will build and install the baltrad db file system driver
+    Will build and install the BALTRAD db file system driver
 
 --bdb-port=8090
     BDB server port
 
 --bdb-uri=<uri>
-    The BDB uri, as default this has no use even when specified. It will only be used
-    if subsystems has been specified so that you can specify a different BDB server. Also,
-    if this is specified, bdb-port will not have any meaning.
+    The BDB URI, as default this has no use even when specified. It will only 
+    be used if subsystems have been specified so that you can specify a 
+    different BDB server. Also, if this is specified, bdb-port will not have 
+    any meaning.
     E.g. --bdb-uri=http://somehost:8090
     [Default: Not used]
 
 --bdb-pool-max-size=<N>
-    Set the pool size for bdb connections to <N>
+    Set the pool size for BDB connections to <N>
     [default: 10]
 
 --bdb-auth=<authtype>
@@ -399,34 +410,38 @@ Options:
     Prints the build configuration
     
 --exclude-tomcat
-    Will exclude installation of tomcat. This is not a recommended procedure but 
-    it is here for the possibility to use your own tomcat installation if it 
-    is necessary.
+    Will exclude installation of Tomcat. This is not a recommended procedure 
+    but it is here for the possibility to use your own Tomcat installation if 
+    necessary.
 
 --tomcatport=<port>
-    Specifies the port on which the tomcat installation should listen on.
+    Specifies the port on which the Tomcat installation should listen.
     Don't use together with --tomcaturl. 
     [Default 8080]
 
 --keystoredn=<dn>
-    The distinguished name used in the keystore cert for the secure communication.
-    If <dn> is yes, then a number of questions will be asked during the creation of the keystore.
-    If <dn> is no, then a predefined dn will be created with the format
+    The distinguished name used in the keystore cert for the secure 
+    communication. If <dn> is yes, then a number of questions will be asked 
+    during the creation of the keystore. If <dn> is no, then a predefined DN 
+    will be created with the format
       "CN=Unknown,OU=Unknown,O=Unknown,L=Unknown,ST=Unknown,C=Unknown"
-    Or you can specify your own DN, just keep the above format. Note, that you can not specify a dn with any
-    spaces in it. If you have that format you will have to use 'yes' instead to get the questions
+    Or you can specify your own DN, just keep the above format. Note, that you 
+    cannot specify a DN with any spaces in it. If you have that format you will 
+    have to use 'yes' instead to get the questions.
     [Default yes]
     
 --keystorepwd=<pwd>
-    Specifies the password that should be used for the key. If this has not been defined, the tomcatpwd will be used.
+    Specifies the password that should be used for the key. If this has not been
+    defined, the tomcatpwd will be used.
 
 --tomcatsecureport=<port>
-    Specifies the port on which the tomcat installation should listen on for secure messages.
+    Specifies the port on which the Tomcat installation should listen on for 
+    secure messages.
     [Default 8443]
 
 --tomcaturl=<url>
-    Specifies the tomcat url where the tomcat installation resides. Don't
-    use together with --tomcatport. 
+    Specifies the URL where the Tomcat installation resides. Don't use together 
+    with --tomcatport. 
     [Default http://localhost:8080]
     
 --tomcatpwd=<pwd>
@@ -437,19 +452,20 @@ Options:
     Unused at the moment
     
 --experimental
-    When running into problems with building, like missing libraries, link problems
-    or other miscellaneous problems. This might be the option to specify. Some modules
-    are currently beeing evaluated if they are stable enough to be used in production
-    and by specifying this option these modules will be built instead.
+    When running into problems with building, like missing libraries, link 
+    problems or other miscellaneous problems, this might be the option to 
+    specify to get through the build. Some modules are currently being 
+    evaluated for stability in a production environment, and by specifying this 
+    option, these modules will be built instead.
     
 --subsystems=(STANDALONE_RAVE, RAVE ,BDB ,DEX)
-    If you are interested in running a standalone installation of RAVE, BDB or DEX. It
-    is possible to do so by specifying which subsystems that should be installed.
-    Since RAVE is depending on the BALTRAD-DB python client API you are able to specify
-    a specific RAVE module called STANDALONE_RAVE which installs RAVE without any
-    BDB-dependencies.    
+    If you are interested in running a standalone installation of RAVE, BDB or 
+    DEX, it is possible to do so by specifying which subsystems that should be 
+    installed. Since RAVE depends on the BALTRAD-DB Python client API, you are 
+    able to specify a specific RAVE module called STANDALONE_RAVE which installs
+    RAVE without any BDB-dependencies.    
 _EOF_
-  
+
 }
 
 install_pip() {
