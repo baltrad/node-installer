@@ -21,7 +21,7 @@ along with node-installer.  If not, see <http://www.gnu.org/licenses/>.
 ###########################################################################
 
 INTRODUCTION
-This installer will setup and deploy the BALTRAD node software. The software
+This installer will set up and deploy the BALTRAD node software. The software
 has been designed for 64-bit (and possibly 32-bit) Linux distributions.
 As a first step, the installation will install a Python interpreter and
 maybe also zlib. After that it will continue with the rest of the installation
@@ -33,7 +33,7 @@ distributed as part of this package.
 
 =========== PREREQUISITES ===========
 *) A postgres database server must be installed (8.3.9 or higher, preferably 
-8.4+), does not need to be installed on the same server as this software,
+8.4+). It does not need to be installed on the same server as this software,
 but it must be accessible.
 
 <optional configuration>
@@ -54,7 +54,7 @@ After this is done, restart the server:
 </optional configuration>
 
 You must create a database and a user in the postgres server before attempting 
-to install the software. This is probably done as user postgres but there are 
+to install the software. This is probably done as user 'postgres' but there are 
 of course other alternatives as well.
 
 The two postgres commands to use are:
@@ -67,14 +67,14 @@ E.g.
 > CREATE USER baltrad with PASSWORD 'baltrad';
 > CREATE DATABASE baltrad with OWNER baltrad;
 
-These parameters will be used when building the software so it is probably a 
-good idea to remember username, password, database name and on what IP-address 
+These parameters will be used when building the software, so it is probably a 
+good idea to remember user name, password, database name and on what IP-address 
 you can reach the database.
 
 You will need the following packages installed before attempting to build
-the system.
+the system:
 
-*) git client (for fetching the software)
+*) Git client (for fetching the software)
 
 *) An installed Java SDK, currently it must be OpenJDK or SUN JDK (> 1.6)
 
@@ -85,37 +85,37 @@ the system.
 *) autoconf (version 2.59 or higher)
 
 *) unicode support (ICU)
-   for redhat, centos, etc.. yum install libicu.x86_64 libicu-devel.x86_64
-   for debian, ubuntu, etc.. sudo apt-get install libicu-dev
+   for Red Hat, CentOS, etc.. yum install libicu.x86_64 libicu-devel.x86_64
+   for Debian, Ubuntu, etc.. sudo apt-get install libicu-dev
 
 *) bzip2 development libraries
-   for redhat, centos, etc.. yum install bzip2-devel.x86_64
-   for debian, ubuntu, etc.. sudo apt-get install libbz2-dev
+   for Red Hat, CentOS, etc.. yum install bzip2-devel.x86_64
+   for Debian, Ubuntu, etc.. sudo apt-get install libbz2-dev
 
 *) Postgres development libraries
-   for redhat, centos, etc.. yum install postgresql-devel.x86_64  (or postgresql84-devel.x86_64)
-   for debian, ubuntu, etc.. sudo apt-get install postgresql-client-8.4 postgresql-client-common libpq-dev
+   for Red Hat, CentOS, etc.. yum install postgresql-devel.x86_64  (or postgresql84-devel.x86_64)
+   for Debian, Ubuntu, etc.. sudo apt-get install postgresql-client-8.4 postgresql-client-common libpq-dev
 
 *) OpenSSL development packages
-   for redhat, centos, etc.. yum install openssl-devel.x86_64 openssl.x86_64
-   for debian, ubuntu, etc.. sudo apt-get install openssl libssl-dev
+   for Red Hat, CentOS, etc.. yum install openssl-devel.x86_64 openssl.x86_64
+   for Debian, Ubuntu, etc.. sudo apt-get install openssl libssl-dev
 
 *) doxygen
-   for redhat, centos, etc.. yum install doxygen.x86_64
-   for debian, ubuntu, etc.. sudo apt-get install doxygen
+   for Red Hat, CentOS, etc.. yum install doxygen.x86_64
+   for Debian, Ubuntu, etc.. sudo apt-get install doxygen
 
 You might also need to install these packages since one or more modules
 depends on these.
 
 *) PNG development libraries (used by e.g. bRopo)
-   for redhat, centos, etc... yum install libpng-devel.x86_64
-   for debian, ubuntu, etc... sudo apt-get install libpng-dev
+   for Red Hat, CentOS, etc... yum install libpng-devel.x86_64
+   for Debian, Ubuntu, etc... sudo apt-get install libpng-dev
 
 *) Freetype2 libraries (Used by e.g. google map plugin)
-   for redhat, centos, etc... yum install freetype.x86_64 freetype-devel.x86_64
-   for debian, ubuntu, etc... sudo apt-get install libfreetype6 libfreetype6-dev
+   for Red Hat, CentOS, etc... yum install freetype.x86_64 freetype-devel.x86_64
+   for Debian, Ubuntu, etc... sudo apt-get install libfreetype6 libfreetype6-dev
 
-On ubuntu 11.10 we have observed that there might be problems related to
+On Ubuntu 11.10 we have observed that there might be problems related to
 hashlib and the encryption algorithms. This can be solved by running: 
    
    sudo apt-get install libssl-dev openssl dpkg-dev
@@ -123,7 +123,7 @@ hashlib and the encryption algorithms. This can be solved by running:
 
 =========== INSTALLATION ===========
 Most of the software is built from scratch (both third-party libraries and
-the baltrad software). During the build all fetched software will be placed
+the BALTRAD software). During the build all fetched software will be placed
 in the directory <node-installer-root>/packages.
 
 It is recommended that you specify --nodename=<name> on installation. This is
@@ -165,8 +165,8 @@ to create the directory /opt/blt with proper permissions before issuing the
 setup call.
 
 Let's get to how an installation can be performed. We want to install the
-software in /opt/blt. The java we are using is located in /opt/jdk1.6.0 and
-we want to use the postgresql APIs on a ubuntu 10.10. We also want RAVE and
+software in /opt/blt. The Java we are using is located in /opt/jdk1.6.0 and
+we want to use the postgresql APIs on a Ubuntu 10.10. We also want RAVE and
 bRopo to be installed.
 
 This can be achieved by executing the following command:
@@ -216,24 +216,33 @@ it has been installed or not.
 
 
 BALTRAD WEATHER RADAR WIND PROFILES (BWRWP)
-The baltrad wrwp product is very different from the other modules and product generators. It
-depends on fortran code (blas, cblas, lapack and lapacke) and requires a fortran compiler.
-The software has only been used for gfortran but it might work for other variants as well but
-that is currently not supported. However, if you find out a way to get it to build we would be
-very happy to integrate your suggestions into the software.
+The BALTRAD wrwp package is very different from the other modules and product 
+generators. It depends on Fortran dependencies (BLAS, CBLAS, LAPACK and LAPACKE)
+and therefore requires a Fortran compiler. The software has only been used with 
+gfortran but it might work for other variants as well which we currently don't 
+support. However, if you find out a way to get it to build with another 
+compiler, we would be very happy to integrate your suggestions into the 
+software.
 
-Since most of the software we are using are used within the rave pgf, that in turn uses python
-shared objects, the blas, cblas, lapack and lapacke libraries must be compiled with support for
-linking into shared libraries. This is on gcc done by adding the -fPIC compiler flag.
+Since most of the software we are using is used within the RAVE PGF, that in 
+turn uses Python shared objects, the BLAS, CBLAS, LAPACK and LAPACKE libraries 
+must be compiled with support for linking into shared libraries. This is done on
+gcc by adding the -fPIC compiler flag.
 
-If you experience that the building of wrwp fails with some message about recompiling with -fPIC
-or any error messages hinting about objects not beeing built with relocation support you might have
-to rebuild BLAS,CBLAS,LAPACK and LAPACKE. Hopefully, these hints will help you out rebuilding
-those libraries.
+If you experience that the building of bwrwp fails with some message about 
+recompiling with -fPIC, or any error messages hinting about objects not being 
+built with relocation support, you might have to rebuild BLAS, CBLAS, LAPACK and
+LAPACKE. Hopefully, these hints will help you out (re)building those libraries.
 
-Modify BLAS/make.inc: add -fPIC to OPTS and NOOPT and "%> make clean; make"
+Modify BLAS/make.inc: add -fPIC to OPTS and NOOPT
+Change the value of BLASLIB to libblas.a
+"%> make clean; make"
 
-CBLAS/Makefile.in: add -fPIC to CFLAGS and FFLAGS and "%> make clean; make"
+CBLAS/Makefile.in: add -fPIC to CFLAGS and FFLAGS
+Change the values of BLLIB to match that in BLAS/make.inc
+Change the value of CBLIB to libcblas.a
+"%> make clean; make"
 
-lapack-.../make.inc: add -fPIC to OPTS, NOOPT and CFLAGS and "%> make clean; make; cd lapacke; make"
-
+lapack-.../make.inc: add -fPIC to OPTS, NOOPT and CFLAGS
+Change the value of BLASLIB to match that in BLAS/make.inc
+"%> make clean; make; cd lapacke; make"
