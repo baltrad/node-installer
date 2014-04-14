@@ -214,6 +214,21 @@ EXPAT                2.0.1                               INSTALLED
 First column is the name of the module, second is the version and third if
 it has been installed or not.
 
+TOMCAT AND LOG FILES
+The application can produce a lot of debug or informative messages in the log files. These files can in turn become very large so it might be a good idea to add a logrotate rule to keep the
+log files in check.
+
+Add a file, /etc/logrotate.d/tomcat or similar and add the following information in the configuration file.
+
+\verbatim
+/opt/baltrad/third_party/tomcat/logs/catalina.out {  
+  copytruncate  
+  daily  
+  rotate 7  
+  compress  
+  missingok  
+  size 5M  
+}
 
 BALTRAD WEATHER RADAR WIND PROFILES (BWRWP)
 The BALTRAD wrwp package is very different from the other modules and product 
