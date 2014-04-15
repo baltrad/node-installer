@@ -12,10 +12,9 @@ root) passwd baltrad
 root) su - postgres
 
 postgres) psql
-postgres) create user baltrad with password '.....';
-postgres) create database baltrad with owner baltrad;
-postgres) \q
-postgres) exit
+postgres=# create user baltrad with password '.....';
+postgres=# create database baltrad with owner baltrad;
+postgres=# \q
 postgres) exit
 
 root) yum install java-1.6.0-openjdk java-1.6.0-openjdk-devel
@@ -39,5 +38,5 @@ root) su - baltrad
 baltrad) cd /opt/software
 baltrad) git clone ​git://git.baltrad.eu/node-installer.git
 baltrad) cd node-installer
-baltrad) ./setup --jdkhome=/usr/lib/jvm/java-1.6.0-openjdk-1.6.0.0 --tomcatpwd=secret --nodename=vbox-cos61  --with-rave-gmap --with-bropo --with-beamb --with-bufr --with-freetype=/usr/include/freetype2,/usr/lib64 install
+baltrad) ./setup --jdkhome=/usr/lib/jvm/java-1.6.0-openjdk-1.6.0.0.x86_64 --tomcatpwd=secret --nodename=vbox-cos61  --with-rave-gmap --with-bropo --with-beamb --with-bufr --with-freetype=/usr/include/freetype2,/usr/lib64 install
 
