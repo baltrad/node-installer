@@ -66,9 +66,6 @@ class scriptinstaller(installer):
     shutil.copyfile(script.get_rave_initd_script_path(), env.expandArgs("$PREFIX/etc/ravepgf.init.d"))
     os.chmod(env.expandArgs("$PREFIX/etc/ravepgf.init.d"), stat.S_IRWXU|stat.S_IRGRP|stat.S_IXGRP|stat.S_IROTH|stat.S_IXOTH)
 
-    shutil.copyfile(script.get_rave_logger_initd_script_path(), env.expandArgs("$PREFIX/etc/ravepgf_logger.init.d"))
-    os.chmod(env.expandArgs("$PREFIX/etc/ravepgf_logger.init.d"), stat.S_IRWXU|stat.S_IRGRP|stat.S_IXGRP|stat.S_IROTH|stat.S_IXOTH)
-    
     shutil.copyfile(script.get_node_source_path(), env.expandArgs("$PREFIX/etc/bltnode.rc"))
     os.chmod(env.expandArgs("$PREFIX/etc/bltnode.rc"), stat.S_IRWXU|stat.S_IRGRP|stat.S_IXGRP|stat.S_IROTH|stat.S_IXOTH)
 
