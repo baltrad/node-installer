@@ -47,6 +47,8 @@ class tomcatinstaller(installer):
     if self.isTomcatRunning(env):
       raise InstallerException, "Tomcat process is running, please stop it first"
 
+    self.patch_catalina_sh(dir, env)
+
     shutil.rmtree(env.expandArgs("$TPREFIX/tomcat.bak"), True)
     if os.path.isdir(env.expandArgs("$TPREFIX/tomcat")):
       shutil.move(env.expandArgs("$TPREFIX/tomcat"), env.expandArgs("$TPREFIX/tomcat.bak"))
@@ -114,8 +116,7 @@ class tomcatinstaller(installer):
   ##
   # Installs a patched version of server.xml
   # @param patchdir: the name of the directory where the patch file resides. Path will be thisdir/../patches/<patchdir>/server.xml.in
-  # @param portstr: The port the tomcat server should listen on
-  # @param troot: tomcat root directory
+  # @param env: the build environment
   #
   #def patch_server_xml(self, patchdir, portstr, troot, installerroot):
   def patch_server_xml(self, patchdir, env):
@@ -154,4 +155,19 @@ class tomcatinstaller(installer):
     ifp.close()
     ofp.close()
 
+  ##
+  # Patches catalina.sh to include options for higher memory options
+  # @param patchdir: the directory of the tomcat that should be patched
+  # @param env: the build environment
+  def patch_catalina_sh(self, patchdir, env):
+    cdir = os.getcwd()
     
+    try:
+      os.chdir(patchdir)
+      code = subprocess.call("patch -p0 < %s/patches/apache-tomcat-6.0.33/catalina-sh_memory_opts.patch"%(env.getInstallerPath()), shell=True)
+      if code != 0:
+        raise InstallerException, "Failed to apply catalina patch apache-tomcat-6.0.33/catalina-sh_memory_opts.patch"
+    finally:
+      os.chdir(cdir)
+
+
