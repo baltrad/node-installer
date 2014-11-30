@@ -75,13 +75,15 @@ class bbufrinstaller(installer):
     subprocess.call("make distclean", shell=True)
 
     cmd = "./configure --prefix=\"$PREFIX/bbufr\""
-    cflags="CFLAGS=-I$TPREFIX/include"
-    ldflags="LDFLAGS=-L$TPREFIX/lib"
+    cflags = "-I$TPREFIX/include"
+    ldflags = "-L$TPREFIX/lib"
     zinc,zlib = self.get_zlib_args(env)
     if zinc != None:
       cflags="%s %s"%(cflags, zinc)
     if zlib != None:
       ldflags="%s %s"%(ldflags, zlib)
+    cflags = "CFLAGS=\"%s\""%cflags
+    ldflags = "LDFLAGS=\"%s\""%ldflags
 
     cmd = "%s %s %s"%(cflags,ldflags,cmd)
     
