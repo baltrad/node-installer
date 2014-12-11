@@ -24,9 +24,10 @@ DEX Installer
 @date 2011-02-11
 '''
 from installer import installer
-import os, subprocess, shutil
+import os, subprocess, shutil, errno
 from osenv import osenv
 from InstallerException import InstallerException
+from socket import errno
 
 ##
 # The dex installer
@@ -46,24 +47,48 @@ class dexinstaller(installer):
     super(dexinstaller, self).__init__(pkg, oenv)
 
   ##
-  # Installs the documentation
+  # Creates the directory including any parent directory
+  # @param path: the directory to be created
+  #
+  def mkdir_recursive(self, path):
+    try:
+      os.makedirs(path)
+    except OSError as exc:
+      if exc.errno == errno.EEXIST and os.path.isdir(path):
+        pass
+      else: 
+        raise
+
+  ##
+  # Installs the javadoc documentation
   # @param env: the build environment
   #
-  def _install_doc(self, env):
-    pth = env.expandArgs("$PREFIX/doc/dex")
-    if os.path.exists("docs"):
-      if os.path.exists(pth):
-        shutil.rmtree(pth, True)
-      shutil.copytree("docs", pth)
+  def _install_javadoc(self, env):
+    pth = env.expandArgs("$PREFIX/doc/dex/doc/javadoc")
+    if os.path.exists("doc/build/javadoc"):
+      self.mkdir_recursive(pth)
+      shutil.rmtree(pth, True)
+      shutil.copytree("doc/build/javadoc", pth)
+
+  ##
+  # Installs the doxygen documentation
+  # @param env: the build environment
+  #
+  def _install_doxygendoc(self, env):
+    pth = env.expandArgs("$PREFIX/doc/dex/doc/doxygen")
+    if os.path.exists("doc/build/doxygen"):
+      self.mkdir_recursive(pth)
+      shutil.rmtree(pth, True)
+      shutil.copytree("doc/build/doxygen", pth)
     
   ##
   # Performs the actual installation
   # @param env: the build environment
   #
   def doinstall(self, env):
-    dir = self.package().fetch(env)
+    cdir = self.package().fetch(env)
     
-    os.chdir(dir)
+    os.chdir(cdir)
 
     self.osenvironment().setEnvironmentVariable(env, "LD_LIBRARY_PATH", env.getLdLibraryPath())
     
@@ -71,11 +96,19 @@ class dexinstaller(installer):
     if ocode != 0:
       raise InstallerException, "Failed to install dex"
 
-    ocode = subprocess.call(env.expandArgs("$TPREFIX/ant/bin/ant -Dinstall.prefix=$PREFIX -Dbaltrad.db.path=$PREFIX/baltrad-db -Dbeast.path=$PREFIX/beast -Djavahdf.path=$HDFJAVAHOME javadocs > /dev/null 2>&1"), shell=True)
+    ocode = subprocess.call(env.expandArgs("$TPREFIX/ant/bin/ant -Dinstall.prefix=$PREFIX -Dbaltrad.db.path=$PREFIX/baltrad-db -Dbeast.path=$PREFIX/beast -Djavahdf.path=$HDFJAVAHOME javadoc-doc > /dev/null 2>&1"), shell=True)
+    if ocode != 0:
+      print "Failed to generate javadoc for DEX"
+    else:
+      print "Installing javadoc"
+      self._install_javadoc(env)
+    
+    ocode = subprocess.call(env.expandArgs("$TPREFIX/ant/bin/ant -Dinstall.prefix=$PREFIX -Dbaltrad.db.path=$PREFIX/baltrad-db -Dbeast.path=$PREFIX/beast -Djavahdf.path=$HDFJAVAHOME doxygen-doc > /dev/null 2>&1"), shell=True)
     if ocode != 0:
       print "Failed to generate DEX documentation"
     else:
-      self._install_doc(env)
+      print "Installing doxygen documentation"
+      self._install_doxygendoc(env)
 
 
     
