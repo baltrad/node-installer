@@ -75,7 +75,8 @@ class docinstaller(installer):
     
     hlhdf_pth = env.expandArgs("$PREFIX/doc/hlhdf")
     beast_pth = env.expandArgs("$PREFIX/doc/beast")
-    dex_pth = env.expandArgs("$PREFIX/doc/dex")
+    dex_javadoc_pth = env.expandArgs("$PREFIX/doc/dex/doc/javadoc")
+    dex_doxygen_pth = env.expandArgs("$PREFIX/doc/dex/doc/doxygen")
     rave_pth = env.expandArgs("$PREFIX/doc/rave")
     bropo_pth = env.expandArgs("$PREFIX/doc/bropo")
     beamb_pth = env.expandArgs("$PREFIX/doc/beamb")
@@ -96,8 +97,10 @@ class docinstaller(installer):
     if not env.isExcluded("BEAST") and os.path.exists(beast_pth):
       select_modules = select_modules + " - <a href=\"beast/doc/doxygen/index.html\">BEAST Overview</a>\n"
       select_modules = select_modules + " - <a href=\"beast/doc/javadoc/index.html\">BEAST Java API</a>\n"
-    if not env.isExcluded("BALTRAD-DEX") and os.path.exists(dex_pth):
-      select_modules = select_modules + " - <a href=\"dex/index.html\">DEX (Data Exchange)</a>\n"
+    if not env.isExcluded("BALTRAD-DEX") and os.path.exists(dex_doxygen_pth):
+      select_modules = select_modules + " - <a href=\"dex/doc/doxygen/html/index.html\">DEX (Data Exchange) User Guide</a>\n"
+    if not env.isExcluded("BALTRAD-DEX") and os.path.exists(dex_javadoc_pth):
+      select_modules = select_modules + " - <a href=\"dex/doc/javadoc/index.html\">DEX (Data Exchange) Java API</a>\n"
     if not env.isExcluded("RAVE") and os.path.exists(rave_pth):
       select_modules = select_modules + " - <a href=\"rave/index.html\">Radar Analysis and Visualization Environment (RAVE)</a>\n"
     if not env.isExcluded("BROPO") and os.path.exists(bropo_pth):

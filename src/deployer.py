@@ -107,9 +107,7 @@ class deployer(installer):
         raise InstallerException, "Could not extract war"
       self._write_dex_fc_properties(env)
       self._write_db_properties(env)
-      #self._write_log4j_properties(env)
       self._copy_dex_properties(env)
-      #self._copy_dex_user_properties(env)
       self._write_bdb_bean_config(env)
       self._update_appcontext_for_secure_comm(env)
       self._insert_help_documentation(env)
