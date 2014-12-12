@@ -368,9 +368,6 @@ Options:
     for shared object capabilities since it will be linked into a shared 
     library.
 
---with-bdbfs
-    Will build and install the BALTRAD db file system driver
-
 --bdb-port=8090
     BDB server port
 
@@ -522,7 +519,6 @@ for arg in $*; do
     --with-rave-gmap) ;;
     --with-bropo) ;;
     --with-beamb) ;;
-    --with-bdbfs) ;;
     --with-bwrwp) ;;
     --bdb-port=*) ;;
     --bdb-uri=*) ;;

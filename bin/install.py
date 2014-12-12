@@ -313,8 +313,6 @@ def print_arguments(env):
     arguments.append(("--tomcatport=", env.getArg("TOMCATPORT")))
   if env.hasArg("TOMCATURL"):
     arguments.append(("--tomcaturl=", env.getArg("TOMCATURL")))
-  if env.hasArg("BUILD_BDBFS") and env.getArg("BUILD_BDBFS") == "yes":
-    arguments.append(("--with-bdbfs", ""))
   if env.hasArg("WITH_RAVE") and env.getArg("WITH_RAVE") == True:
     arguments.append(("--with-rave", ""))
   if env.hasArg("WITH_RAVE_GMAP") and env.getArg("WITH_RAVE_GMAP") == True:
@@ -521,9 +519,6 @@ Options:
 --with-beamb
     Install the beam blockage detector beamb. Will also cause rave to be installed.
 
---with-bdbfs
-    Will build and install the baltrad db file system driver
-
 --with-bwrwp
     Installs the baltrad weather radar wind profile generator. Will also cause rave to be installed.
     This is a very special product generator that uses fortran code and requires for example gfortran.
@@ -723,7 +718,7 @@ if __name__=="__main__":
     optlist, args = getopt.getopt(sys.argv[1:], '', 
                                   ['prefix=','tprefix=','jdkhome=','with-zlib=',
                                    'with-psql=','with-bufr', 'with-rave','with-rave-gmap','with-bropo','with-beamb','with-bwrwp',
-                                   'with-hdfjava=', 'with-freetype=', 'with-bdbfs','rebuild=',
+                                   'with-hdfjava=', 'with-freetype=','rebuild=',
                                    'with-blas=', 'with-cblas=', 'with-lapack=', 'with-lapacke=',
                                    'bdb-pool-max-size=', "bdb-port=", "bdb-uri=", "bdb-auth=", "bdb-storage=",
                                    'rave-pgf-port=', 'rave-log-port=', "rave-center-id=", "rave-dex-spoe=",
@@ -820,8 +815,6 @@ if __name__=="__main__":
       env.addArgInternal("TOMCATPWD", a)
     elif o == "--tomcatfwdports":
       env.addArg("TOMCATFWDPORTS", a)
-    elif o == "--with-bdbfs":
-      env.addArg("BUILD_BDBFS", "yes")
     elif o == "--bdb-pool-max-size":
       env.addArg("BDB_POOL_MAX_SIZE", a)
     elif o == "--bdb-port":
@@ -931,7 +924,6 @@ if __name__=="__main__":
   env.addUniqueArgInternal("DBPWD", "baltrad")
   env.addUniqueArg("DBNAME", "baltrad")
   env.addUniqueArg("DBHOST", "127.0.0.1")
-  env.addUniqueArg("BUILD_BDBFS", "no")
   env.addUniqueArg("RUNASUSER", getpass.getuser())
   env.addUniqueArg("KEYSTORE", env.expandArgs("${PREFIX}/etc/bltnode-keys"))
   env.addUniqueArg("KEYSTORE_DN", "yes")
