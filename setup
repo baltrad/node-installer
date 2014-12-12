@@ -444,6 +444,11 @@ Options:
 --tomcatpwd=<pwd>
     Specifies the password that should be used for the manager in the tomcat
     installation.
+
+--tomcatfwdports=<httpport>,<httpsport>
+    Specifies that port forwarding has to be supported by the node and hence a secondary mapping
+    is added to the dex applicationContext. This attribute is typically used when having the tomcat
+    server behind a firewall and proxying calls through a webserver like apache.
     
 --force
     Unused at the moment
