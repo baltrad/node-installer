@@ -1,0 +1,20 @@
+--- _imagingft.c	2009-11-01 01:44:12.000000000 +0100
++++ _imagingftnew.c	2014-12-16 22:50:25.536820066 +0100
+@@ -32,7 +32,7 @@
+ #include FT_FREETYPE_H
+ #else
+ /* freetype 2.0 */
+-#include <freetype/freetype.h>
++#include <freetype.h>
+ #endif
+ 
+ #if PY_VERSION_HEX < 0x01060000
+@@ -70,7 +70,7 @@
+     const char* message;
+ } ft_errors[] =
+ 
+-#include <freetype/fterrors.h>
++#include <fterrors.h>
+ 
+ /* -------------------------------------------------------------------- */
+ /* font objects */

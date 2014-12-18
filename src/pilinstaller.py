@@ -53,6 +53,34 @@ class pilinstaller(installer):
     super(pilinstaller, self).__init__(package, env)
   
   ##
+  # Tests if the _imagingft file needs to be patched. Some newer distributions
+  # of freetype places the include files in freetype2 instead of freetype which
+  # in turn causes problems when compiling.
+  # @param inc: the include directory that was given to the installer.
+  # @return True if file should be patched, otherwise False
+  # @throws InstallerException if fterrors.h not can be found
+  #
+  def test_must_patch_imagingft(self, inc):
+    if os.path.isfile("%s/fterrors.h"%inc):
+      return True
+    elif os.path.isfile("%s/freetype2/ft2build.h"%inc):
+      return True
+    elif os.path.isfile("%s/freetype/fterrors.h"%inc):
+      return False
+    else:
+      raise InstallerException, "Can not locate fterrors.h for freetype compilation"
+
+  ##
+  # Patches the _imagingft.c file.
+  # @param env: the parameter
+  #  
+  def patch_imagingft(self, env):
+    code = subprocess.call("patch -p0 < %s/patches/Imaging-1.1.7/imaging_1_1_7_freetype.patch"%(env.getInstallerPath()), shell=True)
+    if code != 0:
+      raise InstallerException, "Failed to apply imaging_1_1_7_freetype.patch"
+
+  
+  ##
   # Generates a modified setup script and returns the new script
   # @param env: the build environment
   # @return the name of the generated setup script
@@ -71,7 +99,9 @@ class pilinstaller(installer):
       tokens = env.getArg("FREETYPE").split(",")
       freetypeinc=tokens[0]
       freetypelib=tokens[1]
-    
+      if self.test_must_patch_imagingft(freetypeinc):
+        self.patch_imagingft(env)
+
     if env.hasArg("ZLIBLIB") or env.hasArg("ZLIBINC"):
       zinc=""
       zlib=""
