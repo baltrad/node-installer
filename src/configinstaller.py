@@ -25,6 +25,7 @@ import os
 import shutil
 import time
 import urllib
+import getpass, pwd, stat, sys
 
 from installer import installer
 from InstallerException import InstallerException
@@ -119,7 +120,15 @@ class configinstaller(installer):
     conf = [env.expandArgs(c) for c in conf]
     outfile = open(dst, "w")
     outfile.write("\n".join(conf))
-
+    outfile.close()
+    
+    currentuser = getpass.getuser()
+    runasuser = env.getArg("RUNASUSER")
+    if currentuser != runasuser and currentuser == "root":
+      obj = pwd.getpwnam(runasuser)
+      os.chown(dst, obj.pw_uid, obj.pw_gid)
+    os.chmod(dst, stat.S_IRUSR | stat.S_IWUSR)
+    
     # We also want to reuse the generated property file for beast
     if "DEX" in subsystems:
       beastpgffile = env.expandArgs("$PREFIX/beast/etc/xmlrpcserver.properties")
