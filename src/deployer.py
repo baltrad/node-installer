@@ -102,7 +102,7 @@ class deployer(installer):
     cdir = os.getcwd()
     os.chdir(tmppath)
     try:
-      ocode = subprocess.call(env.expandArgs("$JDKHOME/bin/jar -xvf %s"%warFile), shell=True)
+      ocode = subprocess.call(env.expandArgs("$JDKHOME/bin/jar -xvf %s  > /dev/null 2>&1"%warFile), shell=True)
       if ocode != 0:
         raise InstallerException, "Could not extract war"
       self._write_dex_fc_properties(env)
