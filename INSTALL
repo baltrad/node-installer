@@ -43,15 +43,18 @@ should read:
 # TYPE  DATABASE    USER        CIDR-ADDRESS          METHOD
 
 # "local" is for Unix domain socket connections only
-local   all         all                               trust
+local   all         all                               md5
 # IPv4 local connections:
-host    all         all         127.0.0.1/32          trust
+host    all         all         127.0.0.1/32          md5
 # IPv6 local connections:
-host    all         all         ::1/128               trust
+host    all         all         ::1/128               md5
 
 After this is done, restart the server:
 # service postgresql restart
 </optional configuration>
+
+If you don't see the security for the database as a major problem you can for example
+change the method to read "trust" instead of "md5" for the local connections.
 
 You must create a database and a user in the postgres server before attempting 
 to install the software. This is probably done as user 'postgres' but there are 
@@ -115,7 +118,7 @@ depends on these.
    for Red Hat, CentOS, etc... yum install freetype.x86_64 freetype-devel.x86_64
    for Debian, Ubuntu, etc... sudo apt-get install libfreetype6 libfreetype6-dev
 
-On Ubuntu 11.10 we have observed that there might be problems related to
+On Ubuntu 11.10 and onwards we have observed that there might be problems related to
 hashlib and the encryption algorithms. This can be solved by running: 
    
    sudo apt-get install libssl-dev openssl dpkg-dev
