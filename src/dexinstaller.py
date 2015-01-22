@@ -27,7 +27,6 @@ from installer import installer
 import os, subprocess, shutil, errno
 from osenv import osenv
 from InstallerException import InstallerException
-from socket import errno
 
 ##
 # The dex installer

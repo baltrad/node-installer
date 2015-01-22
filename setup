@@ -603,7 +603,7 @@ if [ -z $TPREFIX ]; then
   TPREFIX=$PREFIX/third_party
 fi
 
-if [ -n $EXPERIMENTAL ]; then
+if [ -n "$EXPERIMENTAL" ]; then
   PYTHON_VERSION=2.7.2
 fi
 
