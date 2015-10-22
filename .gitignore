@@ -6,4 +6,7 @@ etc/version
 doxygen/baltrad.dox
 doxygen/doxygen
 *.swp
+.ruby-version
+.project
+.pydevproject
 

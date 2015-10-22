@@ -87,9 +87,13 @@ class tomcatinstaller(installer):
     fp.write(env.expandArgs("""<?xml version='1.0' encoding='utf-8'?>
 <tomcat-users>
   <role rolename="manager"/>
+  <role rolename="manager-gui"/>
+  <role rolename="manager-script"/>
+  <role rolename="manager-jmx"/>
+  <role rolename="manager-status"/>
   <role rolename="tomcat"/>
   <role rolename="admin"/>
-  <user username="admin" password="${TOMCATPWD}" roles="admin,tomcat,manager"/>
+  <user username="admin" password="${TOMCATPWD}" roles="admin,tomcat,manager,manager-gui, manager-jmx, manager-status, manager-script"/>
 </tomcat-users>
     """))
     fp.close()
@@ -164,9 +168,9 @@ class tomcatinstaller(installer):
     
     try:
       os.chdir(patchdir)
-      code = subprocess.call("patch -p0 < %s/patches/apache-tomcat-6.0.33/catalina-sh_memory_opts.patch"%(env.getInstallerPath()), shell=True)
+      code = subprocess.call("patch -p0 < %s/patches/%s/catalina-sh_memory_opts.patch"%(env.getInstallerPath(), patchdir), shell=True)
       if code != 0:
-        raise InstallerException, "Failed to apply catalina patch apache-tomcat-6.0.33/catalina-sh_memory_opts.patch"
+        raise InstallerException, "Failed to apply catalina patch %s/catalina-sh_memory_opts.patch"%patchdir
     finally:
       os.chdir(cdir)
 

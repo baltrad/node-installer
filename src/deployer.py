@@ -79,8 +79,12 @@ class deployer(installer):
   def doinstall(self, env):
     script = env.getNodeScript()
     
-    if not os.path.exists(env.expandArgs("$TPREFIX/ant/lib/catalina-ant.jar")):
-      shutil.copyfile(env.expandArgs("$TPREFIX/tomcat/lib/catalina-ant.jar"), env.expandArgs("$TPREFIX/ant/lib/catalina-ant.jar"))
+    #if not os.path.exists(env.expandArgs("$TPREFIX/ant/lib/catalina-ant.jar")):
+    shutil.copyfile(env.expandArgs("$TPREFIX/tomcat/lib/catalina-ant.jar"), env.expandArgs("$TPREFIX/ant/lib/catalina-ant.jar"))
+    # New files to copy
+    shutil.copyfile(env.expandArgs("$TPREFIX/tomcat/lib/tomcat-coyote.jar"), env.expandArgs("$TPREFIX/ant/lib/tomcat-coyote.jar"))
+    shutil.copyfile(env.expandArgs("$TPREFIX/tomcat/lib/tomcat-util.jar"), env.expandArgs("$TPREFIX/ant/lib/tomcat-util.jar"))
+    shutil.copyfile(env.expandArgs("$TPREFIX/tomcat/bin/tomcat-juli.jar"), env.expandArgs("$TPREFIX/ant/lib/tomcat-juli.jar"))
     
     self._setup_permissions(env)
 
@@ -283,7 +287,7 @@ software.version=%s
       '<beans xmlns="http://www.springframework.org/schema/beans"',
       '       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"',
       '       xsi:schemaLocation="http://www.springframework.org/schema/beans',
-      '       http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">',
+      '       http://www.springframework.org/schema/beans/spring-beans-4.2.xsd">',
     ]
 
     auth = env.getArg("BDB_AUTH")
@@ -430,7 +434,7 @@ software.version=%s
   ##
   # Deploys the war
   def _deploywar(self, env, warpath):
-    args = "-Dmgr.url=$TOMCATURL/manager -Dmgr.path=/BaltradDex -Dmgr.username=admin -Dmgr.password=$TOMCATPWD"
+    args = "-Dmgr.url=$TOMCATURL/manager/text -Dmgr.path=/BaltradDex -Dmgr.username=admin -Dmgr.password=$TOMCATPWD"
     args = "%s -Dwarfile=%s"%(args, warpath)
     buildfile = "%s/etc/war-deployer.xml"%env.getInstallerPath()
     
@@ -442,7 +446,7 @@ software.version=%s
     ocode = subprocess.call(env.expandArgs("$TPREFIX/ant/bin/ant -f %s %s deploy"%(buildfile, args)), shell=True)
     if ocode != 0:
       raise InstallerException, "Failed to deploy system"   
-  
+
   ##
   # 
   def _unlink_keystore(self, env):

@@ -18,7 +18,7 @@ You should have received a copy of the GNU Lesser General Public License
 along with the baltrad-node.  If not, see http://www.gnu.org/licenses.
 -->
 <project name="baltrad-node-war" basedir=".">
-  <property name="mgr.url" value="http://localhost:8080/manager"/>
+  <property name="mgr.url" value="http://localhost:8080/manager/text"/>
   <property name="mgr.username" value="admin"/>
   <property name="mgr.update" value="true"/>
   <!-- these three always has to be specified
@@ -39,19 +39,36 @@ along with the baltrad-node.  If not, see http://www.gnu.org/licenses.
   <taskdef name="list"      classname="org.apache.catalina.ant.ListTask"/>
   <taskdef name="reload"    classname="org.apache.catalina.ant.ReloadTask"/>
   <taskdef name="resources" classname="org.apache.catalina.ant.ResourcesTask"/>
-  <taskdef name="roles"     classname="org.apache.catalina.ant.RolesTask"/>
   <taskdef name="start"     classname="org.apache.catalina.ant.StartTask"/>
   <taskdef name="stop"      classname="org.apache.catalina.ant.StopTask"/>
   <taskdef name="undeploy"  classname="org.apache.catalina.ant.UndeployTask"/>
-
+	
+	
   <target name="deploy" depends="context.status" if="context.deployable">
     <echo message="Deploying ${mgr.path} to ${mgr.url}"/>
+    <stop url="${mgr.url}"
+          username="${mgr.username}"
+          password="${mgr.password}"
+          path="${mgr.path}"
+          failonerror="false"/>
+
+  	<undeploy url="${mgr.url}"
+          username="${mgr.username}"
+          password="${mgr.password}"
+          path="${mgr.path}"
+          failonerror="false"/>
+
     <deploy url="${mgr.url}"
             username="${mgr.username}"
             password="${mgr.password}"
             path="${mgr.path}"
             update="${mgr.update}"
-            war="${warfile}"/>  	
+            war="${warfile}"/>
+
+    <start url="${mgr.url}"
+          username="${mgr.username}"
+          password="${mgr.password}"
+          path="${mgr.path}" />
    </target>
 	
   <!-- From apache-tomcats user manual for using the ant-manager task -->
@@ -97,7 +114,4 @@ along with the baltrad-node.  If not, see http://www.gnu.org/licenses.
       </or>
     </condition>
   </target>
-
-
-
 </project>
