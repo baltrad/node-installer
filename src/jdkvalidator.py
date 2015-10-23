@@ -72,6 +72,9 @@ class jdkvalidator:
 
     g = re.search("(java version \")([0-9._\-]+)(\")", verstr)
     if g == None:
+      g = re.search("(openjdk version \")([0-9._\-a-z]+)(\")", verstr)
+
+    if g == None:
       raise ValidatorException, "Could not determine version for java"
     
     ver = g.group(2)
