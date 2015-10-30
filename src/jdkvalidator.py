@@ -83,6 +83,8 @@ class jdkvalidator:
     
     if int(values[0]) <= 1 and int(values[1]) < 6:
       raise ValidatorException, "Java must be SUN or OpenJDK with version >= 1.6"
+    
+    env.addArg("JAVA_VERSION", ver)
   
     return ver
   

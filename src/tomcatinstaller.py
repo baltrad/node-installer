@@ -164,11 +164,21 @@ class tomcatinstaller(installer):
   # @param patchdir: the directory of the tomcat that should be patched
   # @param env: the build environment
   def patch_catalina_sh(self, patchdir, env):
+    version_18 = False
     cdir = os.getcwd()
-    
+    try:
+      vstrs = env.getArg("JAVA_VERSION").split(".")
+      if int(vstrs[0]) >= 1 and int(vstrs[1]) >= 8:
+        version_18 = True  
+    except:
+      pass
+      
     try:
       os.chdir(patchdir)
-      code = subprocess.call("patch -p0 < %s/patches/%s/catalina-sh_memory_opts.patch"%(env.getInstallerPath(), patchdir), shell=True)
+      if version_18:
+        code = subprocess.call("patch -p0 < %s/patches/%s/catalina-sh_jdk18_memory_opts.patch"%(env.getInstallerPath(), patchdir), shell=True)
+      else:
+        code = subprocess.call("patch -p0 < %s/patches/%s/catalina-sh_memory_opts.patch"%(env.getInstallerPath(), patchdir), shell=True)
       if code != 0:
         raise InstallerException, "Failed to apply catalina patch %s/catalina-sh_memory_opts.patch"%patchdir
     finally:
