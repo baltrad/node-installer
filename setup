@@ -33,7 +33,7 @@ URLREPO=http://git.baltrad.eu/blt_dependencies
 
 ZLIB_VERSION=1.2.4
 PYTHON_VERSION=2.6.4
-PIP_VERSION=1.0.2
+PIP_VERSION=7.1.2
 DISTRIBUTE_VERSION=0.6.9
 
 ZLIBINC=
@@ -681,6 +681,11 @@ fi
 PIP_EXECUTABLE=$TPREFIX/bin/pip
 if [ ! -f $PIP_EXECUTABLE ]; then
   install_pip $PYTHON_EXECUTABLE $PIP_VERSION
+else
+  V=`$PIP_EXECUTABLE --version | cut -d ' ' -f2`
+  if [ "$V" != "$PIP_VERSION" ]; then
+    install_pip $PYTHON_EXECUTABLE $PIP_VERSION
+  fi
 fi
 
 if [ "$CMD" = "clean" -o "$CMD" = "dist" ]; then
