@@ -67,9 +67,16 @@ class jdkvalidator:
   def _validate_java_version(self, env):
     javacmd = env.expandArgs("$JDKHOME/bin/java")
     result = subprocess.Popen([javacmd, '-version'], stdout=subprocess.PIPE, stderr=subprocess.STDOUT).communicate()[0]
-  
-    verstr = result.split("\n")[0]
 
+    lines = result.split("\n")
+    verstr = None
+    for l in lines:
+      if l.startswith("java version") or l.startswith("openjdk version"):
+        verstr = l
+        break
+    if verstr == None:
+      raise ValidatorException, "Could not identify any type of version for java"
+      
     g = re.search("(java version \")([0-9._\-]+)(\")", verstr)
     if g == None:
       g = re.search("(openjdk version \")([0-9._\-a-z]+)(\")", verstr)
