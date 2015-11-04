@@ -117,8 +117,8 @@ MODULES=[prepareinstaller(package("PREPARE", "1.0", nodir(), remembered=False)),
                 "--prefix=\"$TPREFIX\"", False, True)
          ),
               
-         shinstaller(package("PYCURL", "7.19.0",
-                             untar(urlfetcher("pycurl-7.19.0.tar.gz"), "pycurl-7.19.0", True),
+         shinstaller(package("PYCURL", "7.19.5.3",
+                             untar(urlfetcher("pycurl-7.19.5.3.tar.gz"), "pycurl-7.19.5.3", True),
                              depends=["PYTHON","CURL"]),
                      "\"$TPREFIX/bin/python\" setup.py install",
                      osenv({"LD_LIBRARY_PATH":"$TPREFIX/lib", "PATH":"$TPREFIX/bin:$$PATH"})),
