@@ -149,7 +149,7 @@ start() {
   if [ $$? -eq 0 ]; then
     echo " already running..."
   else
-    "$${CATALINA_HOME}/bin/startup.sh" -Dbaltrad.node.startup.indicator=\\"$${CATALINA_HOME}\\"
+    "$${CATALINA_HOME}/bin/startup.sh" -Dbaltrad.node.startup.indicator=\\\\\\"$${CATALINA_HOME}\\\\\\"
   fi
 }
 
