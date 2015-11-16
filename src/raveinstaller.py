@@ -101,3 +101,25 @@ class raveinstaller(installer):
     ocode = subprocess.call("make install", shell=True)
     if ocode != 0:
       raise InstallerException, "Failed to install"
+    
+    self._update_pgf_registry(env)
+
+  def _update_pgf_registry(self, env):
+    if os.path.exists("tmpreg.py"):
+      os.unlink("tmpreg.py")
+    fp = open("tmpreg.py", "w")
+    fp.write(env.expandArgs("""
+from rave_pgf_registry import PGF_Registry
+a=PGF_Registry(filename="$PREFIX/rave/etc/rave_pgf_registry.xml")
+a.deregister('eu.baltrad.beast.generatesite2d')
+a.register('eu.baltrad.beast.generatesite2d', 'rave_pgf_site2D_plugin', 'generate', 'Generate Site2D plugin', 'area,quantity,method,date,time,anomaly-qc,prodpar,applygra,ignore-malfunc,ctfilter,pcsid', '', 'height,range,zrA,zrb,xscale,yscale')
+"""))
+    fp.close()
+
+    try:    
+      ocode = subprocess.call("python tmpreg.py", shell=True)
+      if ocode != 0:
+        raise InstallerException, "Failed to register google maps plugin in rave"
+    finally:
+      if os.path.exists("tmpreg.py"):   
+        os.unlink("tmpreg.py")    
