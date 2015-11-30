@@ -1,0 +1,242 @@
+#!/bin/sh
+
+# BDB
+PG_DUMP_FILTERS="-t \"bdb_filters\" -t \"bdb_filters_id_seq\" -t \"bdb_source_kvs\" -t \"bdb_sources\" -t \"bdb_sources_id_seq\" -t \"bdb_what_source_kvs\" -t \"bdb_what_source_kvs_id_seq\""
+
+# BEAST
+PG_DUMP_FILTERS="$PG_DUMP_FILTERS -t beast_*"
+
+# DEX
+PG_DUMP_FILTERS="$PG_DUMP_FILTERS -t dex_data_* -t dex_keys* -t dex_product_* -t dex_radars* -t dex_status* -t dex_subscription* -t dex_users*"
+
+# RAVE KOEFFICIENTS
+PG_DUMP_FILTERS="$PG_DUMP_FILTERS -t rave_gra_coefficient -t rave_grapoint -t rave_wmo_station"
+
+# This is for taking backup of the rave database, this will grab all synop
+RAVE_DUMP_SYNOP_FILTER="-t rave_observation"
+
+CMD="pg_dump baltrad -U baltrad $PG_DUMP_FILTERS"
+
+#$CMD > baltrad_dump.sql
+
+PREFIX="/opt/baltrad"
+DBUSER=
+DBPWD=
+DBHOST=
+DBNAME=
+
+usage_brief()
+{
+  echo "Usage: config_backup [options] [backup | --filename=<filename> restore]"
+  echo "Options:"
+  echo "--prefix=<install root>. Default: /opt/baltrad"
+  echo "--dbuser=<name of db user>."
+  echo "--dbhost=<hostname of db>."
+  echo "--dbname=<name of the database>."
+  echo "--dbpwd=<db user password>."
+  echo "--filename=<backup file to be restored>"
+  echo ""
+  echo "If dbuser,dbhost,dbname and dbpwd is not provided. The database uri is extracted from bltnode.properties in <install root>/etc."
+  
+}
+    
+exit_with_failure()
+{
+  echo "$1" 1>&2
+  exit 127
+}
+
+backup_database() 
+{
+  DUMP_NAME="$2/database_backup.pgdump"
+  pg_dump --dbname="$1" $PG_DUMP_FILTERS -Fc > $DUMP_NAME 
+}
+
+copy_baltrad_etc_directory()
+{
+  cp -R "$1" "$2"
+}
+
+copy_baltrad_rave_config()
+{
+  cp "$1/Lib/rave_defines.py" "$2/"
+  cp -R "$1/config" "$2/"
+  cp -R "$1/etc" "$2/"
+}
+
+copy_baltrad_tomcat_config()
+{
+  mkdir "$2/BaltradDex" || exit_with_failure "Could not create directory $2/BaltradDex"
+  mkdir "$2/BaltradDex/WEB-INF" || exit_with_failure "Could not create directory $2/BaltradDex/WEB-INF"
+  mkdir -p "$2/BaltradDex/WEB-INF/classes/resources" || exit_with_failure "Could not create directory $2/BaltradDex/WEB-INF/classes/resources"
+  
+  cp "$1/webapps/BaltradDex/"*.properties "$2/BaltradDex/"
+  cp "$1/webapps/BaltradDex/WEB-INF/"*.xml "$2/BaltradDex/WEB-INF/"
+  cp "$1/webapps/BaltradDex/WEB-INF/classes/resources/"*.properties "$2/BaltradDex/WEB-INF/classes/resources/"
+}
+
+create_tarball()
+{
+  THISDIR="$PWD"
+  TSTAMP=`date "+%Y%m%d%H%M%S"`
+  FILENAME="$PWD/baltrad-cfg-backup-$TSTAMP.tgz"
+  cd $1
+  tar -cvzf $FILENAME baltrad_backup > /dev/null 2>&1
+  if [ $? -ne 0 ]; then
+    exit_with_failure "Failed to compress backup"
+  fi
+  echo ""
+  echo "Created backup $FILENAME"
+  cd "$THISDIR"
+}
+
+create_baltrad_backup()
+{
+  DBURI="$1"
+
+  TEMPORARY_DIR=`mktemp -d`
+  if [ $? -ne 0 ]; then
+    echo "Could not create temporary directory"
+    exit 127
+  fi
+
+  BACKUP_DIR="$TEMPORARY_DIR/baltrad_backup"
+  mkdir $BACKUP_DIR || exit_with_failure "Could not create backup directory $BACKUP_DIR"
+
+  BALTRAD_ETC_DIR="$BACKUP_DIR/baltrad_etc"
+  mkdir $BALTRAD_ETC_DIR || exit_with_failure "Could not create directory $BALTRAD_ETC_DIR"
+
+  BALTRAD_RAVE_DIR="$BACKUP_DIR/baltrad_rave"
+  mkdir $BALTRAD_RAVE_DIR || exit_with_failure "Could not create directory $BALTRAD_RAVE_DIR"
+
+  if [ "$DBURI" != "" ]; then
+    backup_database $DBURI $BACKUP_DIR
+  else
+    echo "Ignoring database backup"
+  fi
+
+  copy_baltrad_etc_directory "$PREFIX/etc" "$BALTRAD_ETC_DIR"
+
+  copy_baltrad_rave_config "$PREFIX/rave" "$BALTRAD_RAVE_DIR"
+
+  if [ -d "$PREFIX/third_party/tomcat" ]; then
+    BALTRAD_TOMCAT_DIR="$BACKUP_DIR/baltrad_tomcat"
+    mkdir $BALTRAD_TOMCAT_DIR || exit_with_failure "Could not create directory $BALTRAD_TOMCAT_DIR"
+    copy_baltrad_tomcat_config  "$PREFIX/third_party/tomcat" "$BALTRAD_TOMCAT_DIR"
+  fi
+
+  create_tarball "$TEMPORARY_DIR"
+
+  rm -fr "$TEMPORARY_DIR"
+}
+
+restore_baltrad_backup()
+{
+  if [ ! -d "$PREFIX" ]; then
+    exit_with_failure "No directory called $PREFIX"
+  fi
+  if [ ! -f "$PREFIX/etc/bltnode.properties" ]; then
+    exit_with_failure "No baltrad-properties file exist in $PREFIX/etc/bltnode.properties"
+  fi
+  
+  TEMPORARY_DIR=`mktemp -d`
+  (cd "$TEMPORARY_DIR"; tar -xzf -) < "$1"
+
+  cp -r "$TEMPORARY_DIR/baltrad_backup/baltrad_etc/etc" "$PREFIX/"
+  
+  if [ -f "$TEMPORARY_DIR/baltrad_backup/database_backup.pgdump" ]; then
+    DBURI=`cat "$PREFIX/etc/bltnode.properties" | grep "baltrad.bdb.server.backend.sqla.uri" | sed -e "s/baltrad.bdb.server.backend.sqla.uri[ \t]*=[ \t]*//g"`
+    echo "You might get some errors related to duplicate data and/or constraints. This is normal if data already exists."
+    echo "If you want, there is always the possibility to clean affected tables and execute a refresh again."
+    read -p "Do you want to restore the database backup into: $DBURI? (yes/no): " answer
+    if [ "$answer" = "yes" ]; then
+      pg_restore --dbname="$DBURI" --clean "$TEMPORARY_DIR/baltrad_backup/database_backup.pgdump"
+    fi
+  fi 
+  
+  if [ -d "$PREFIX/rave" ]; then
+    if [ -f "$TEMPORARY_DIR/baltrad_backup/baltrad_rave/rave/rave_defines.py" ]; then
+      cp -r "$TEMPORARY_DIR/baltrad_backup/baltrad_rave/config" "$PREFIX/rave/"
+      cp -r "$TEMPORARY_DIR/baltrad_backup/baltrad_rave/etc" "$PREFIX/rave/"
+      cp "$TEMPORARY_DIR/baltrad_backup/baltrad_rave/rave/rave_defines.py" "$PREFIX/rave/Lib/rave_defines.py"
+    fi
+  fi
+
+  if [ -d "$PREFIX/third_party/tomcat" ]; then
+    if [ -d "$TEMPORARY_DIR/baltrad_backup/baltrad_tomcat/BaltradDex" ]; then
+      cp -r "$TEMPORARY_DIR/baltrad_backup/baltrad_tomcat/BaltradDex" "$PREFIX/third_party/tomcat/webapps/" 
+    fi
+  fi
+
+  \rm -fr "$TEMPORARY_DIR"
+}
+
+DOBACKUP=
+DORESTORE=
+FILENAME=
+
+for i in "$@"; do
+  case $i in
+    --prefix=*)
+      PREFIX="${i#*=}"
+      shift
+      ;;
+    --dbuser=*)
+      DBUSER="${i#*=}"
+      shift
+      ;;
+    --dbhost=*)
+      DBHOST="${i#*=}"
+      shift
+      ;;
+    --dbname=*)
+      DBNAME="${i#*=}"
+      shift
+      ;;
+    --dbpwd=*)
+      DBPWD="${i#*=}"
+      shift
+      ;;
+    --filename=*)
+      FILENAME="${i#*=}"
+      shift
+      ;;
+    backup)
+      DOBACKUP="true"
+      shift
+      ;;
+    restore)
+      DORESTORE="true"
+      shift
+      ;;
+    *)
+      echo "Unknown option or command: $arg"
+      usage_brief
+      exit 127
+      ;;
+  esac
+done
+
+#if [ "$DBUSER" != "" -a "$DBHOST" != "" -a "$DBNAME" != "" -a "$DBPWD" != "" ]; then
+#  DBURI="postgresql://$DBUSER:$DBPWD@$DBHOST/$DBNAME"
+#elif [ -f "$PREFIX/etc/bltnode.properties" ]; then
+#  DBURI=`cat "$PREFIX/etc/bltnode.properties" | grep "baltrad.bdb.server.backend.sqla.uri" | sed -e "s/baltrad.bdb.server.backend.sqla.uri[ \t]*=[ \t]*//g"`
+#fi
+
+if [ "$DOBACKUP" = "true" ]; then
+  if [ "$DBUSER" != "" -a "$DBHOST" != "" -a "$DBNAME" != "" -a "$DBPWD" != "" ]; then
+    DBURI="postgresql://$DBUSER:$DBPWD@$DBHOST/$DBNAME"
+  elif [ -f "$PREFIX/etc/bltnode.properties" ]; then
+    DBURI=`cat "$PREFIX/etc/bltnode.properties" | grep "baltrad.bdb.server.backend.sqla.uri" | sed -e "s/baltrad.bdb.server.backend.sqla.uri[ \t]*=[ \t]*//g"`
+  fi
+  create_baltrad_backup "$DBURI"
+elif [ "$DORESTORE" = "true" ]; then
+  if [ "$FILENAME" = "" ]; then
+    echo "Must specify filename when restoring"
+    usage_brief
+    exit 127
+  fi
+  restore_baltrad_backup "$FILENAME"
+else
+  echo "Unknown option"
+fi
