@@ -353,6 +353,10 @@ class baltrad_post_config(object):
       fp.write("baltrad.beast.pgf.nodename = %s\n"%nodename)
       fp.write("baltrad.beast.pgf.url = http://localhost\n")
       fp.write("baltrad.beast.pgf.key = %s/%s.priv\n"%(keyczar_root,nodename))
+      
+      fp.write("\n# RAVE PGF Specific values\n")
+      fp.write("rave.db.uri=postgresql://%s:%s@%s/%s\n"%(dbusername,dbpassword,dbhostname,dbname))
+
     fp.close()
 
   ##
