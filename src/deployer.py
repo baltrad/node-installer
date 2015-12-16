@@ -183,6 +183,12 @@ database.uri=http://localhost:$BDB_PORT
 # File catalog data storage directory
 data.storage.folder=${DATADIR}
 """))
+    fp.write(env.expandArgs("""
+# Keyczar key to communicate with node
+database.keyczar.key=$KEYSTORE/$NODENAME.priv
+# Name of the node
+database.keyczar.name=$NODENAME
+"""))
     fp.close()    
 
   ##
@@ -294,8 +300,8 @@ software.version=%s
     if auth == "keyczar":
       conf.extend([
         '  <bean id="bdb_auth" class="eu.baltrad.bdb.db.rest.KeyczarAuthenticator">',
-        '    <constructor-arg index="0" value="$KEYSTORE/$NODENAME.priv" />',
-        '    <constructor-arg index="1" value="$NODENAME" />',
+        '    <constructor-arg index="0" value="$${database.keyczar.key}" />',
+        '    <constructor-arg index="1" value="$${database.keyczar.name}" />',
         '  </bean>',
       ])
     elif auth == "noauth":
@@ -309,6 +315,7 @@ software.version=%s
       '  <bean id="bdb_db" class="eu.baltrad.bdb.db.rest.RestfulDatabase" >',
       '    <constructor-arg value="$${database.uri}" />',
       '    <constructor-arg ref="bdb_auth" />',
+      '    <constructor-arg value="20" />',  
       '  </bean>',
     ])
 
