@@ -103,7 +103,8 @@ class raveinstaller(installer):
       raise InstallerException, "Failed to install"
     
     self._update_pgf_registry(env)
-
+    self._update_pgf_quality_registry(env)
+    
   def _update_pgf_registry(self, env):
     if os.path.exists("tmpreg.py"):
       os.unlink("tmpreg.py")
@@ -123,3 +124,27 @@ a.register('eu.baltrad.beast.generatesite2d', 'rave_pgf_site2D_plugin', 'generat
     finally:
       if os.path.exists("tmpreg.py"):   
         os.unlink("tmpreg.py")    
+
+  def _update_pgf_quality_registry(self, env):
+    print "RUNNING UPDATE PGF_QUALITY_REGISTRY"
+    if os.path.exists("tmpreg.py"):
+      os.unlink("tmpreg.py")
+    fp = open("tmpreg.py", "w")
+    fp.write(env.expandArgs("""
+from rave_pgf_quality_registry_mgr import rave_pgf_quality_registry_mgr
+a = rave_pgf_quality_registry_mgr("$PREFIX/rave/etc/rave_pgf_quality_registry.xml")
+"""))
+    fp.write(env.expandArgs("""
+if not a.has_plugin("scansun"):
+  a.add_plugin("scansun", "rave_scansun_quality_plugin", "scansun_quality_plugin")
+  a.save("$PREFIX/rave/etc/rave_pgf_quality_registry.xml")  
+"""))
+    fp.close()
+    
+    try:    
+      ocode = subprocess.call("python tmpreg.py", shell=True)
+      if ocode != 0:
+        raise InstallerException, "Failed to register quality plugins in rave"
+    finally:
+      if os.path.exists("tmpreg.py"):   
+        os.unlink("tmpreg.py")
