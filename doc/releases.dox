@@ -1,8 +1,8 @@
 /** \page releases BALTRAD releases
-\date 30 December 2014
-\version 2.1
+\date 30 December 2015
+\version 2.2
 \par Copyright 
-&copy; 2014 Swedish Meteorological and Hydrological Institute (SMHI), Norrk&ouml;ping, Sweden
+&copy; 2015 Swedish Meteorological and Hydrological Institute (SMHI), Norrk&ouml;ping, Sweden
 
 \par Legals
 BALTRAD is free software: you can redistribute it and/or modify
@@ -27,14 +27,14 @@ with the following terms and conditions:
 
 Currently, the latest official release is 
 
-\b 2.1
+\b 2.2
 
 \verbatim
   %> git clone git://git.baltrad.eu/node-installer.git
-  %> git checkout 2.1
+  %> git checkout 2.2
 \endverbatim
 
-Or you can download the node-installer as a tar ball <a href="node-installer-2.1.tar.gz"> node-installer-2.1.tar.gz </a>.
+Or you can download the node-installer as a tar ball <a href="node-installer-2.2.tar.gz"> node-installer-2.2.tar.gz </a>.
 
 <b> NOTE! </b> You will have to have <b>git</b> installed even if you download the node installer tar ball since all software
 is fetched during the installation process.
@@ -43,7 +43,7 @@ is fetched during the installation process.
 
 You can also download previous releases (or fetch them from git).
 
-<a href="node-installer-2.1.0.tar.gz"> node-installer-2.1.0.tar.gz </a>
+<a href="node-installer-2.1-ec1.tar.gz"> node-installer-2.1-ec1.tar.gz </a>
 
 
 \section releases_fetching Fetching software
@@ -55,12 +55,12 @@ The absolutely latest release can always be obtained from the git repository fou
 \endverbatim
 
 These releases might and might not be stable so use them with care. The latest official
-release is currently \b 2.1.
+release is currently \b 2.2.
 
 If you want to ensure that you get access to the correct release, you can always checkout
 the proper release
 \verbatim
-  %> git checkout 2.1
+  %> git checkout 2.2
 \endverbatim
 
 If you want to update the software to a later release or similar, you will have to execute
