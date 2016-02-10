@@ -76,7 +76,7 @@
     <!--WITH_SECURE_COMMUNICATION_BEG
     <Connector port="CFG_TOMCATSECUREPORT" protocol="org.apache.coyote.http11.Http11Protocol" SSLEnabled="true"
                maxThreads="150" scheme="https" secure="true"
-               clientAuth="false" sslProtocol="TLS" 
+               clientAuth="false" sslProtocol="TLS" sslEnabledProtocols="TLSv1,TLSv1.1,TLSv1.2,SSLv2Hello"
                keystoreFile="CFG_KEYSTORE_JKS_FILE" keystorePass="CFG_KEYSTOREPWD" />
     WITH_SECURE_COMMUNICATION_END-->
     <!-- DO NOT REMOVE ABOVE LINE, USED FOR IDENTIFYING LOCATION OF THE CONNECTOR IN THE INSTALL SCRIPT-->
