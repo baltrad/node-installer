@@ -113,9 +113,16 @@ class raveinstaller(installer):
 from rave_pgf_registry import PGF_Registry
 a=PGF_Registry(filename="$PREFIX/rave/etc/rave_pgf_registry.xml")
 a.deregister('eu.baltrad.beast.generatesite2d')
-a.register('eu.baltrad.beast.generatesite2d', 'rave_pgf_site2D_plugin', 'generate', 'Generate Site2D plugin', 'area,quantity,method,date,time,anomaly-qc,prodpar,applygra,ignore-malfunc,ctfilter,pcsid', '', 'height,range,zrA,zrb,xscale,yscale')
+a.register('eu.baltrad.beast.generatesite2d', 'rave_pgf_site2D_plugin', 'generate', 'Generate Site2D plugin', 'area,quantity,method,date,time,anomaly-qc,prodpar,applygra,ignore-malfunc,ctfilter,pcsid,algorithm_id', '', 'height,range,zrA,zrb,xscale,yscale')
+a.deregister('eu.baltrad.beast.generatecomposite')
+a.register('eu.baltrad.beast.generatecomposite', 'rave_pgf_composite_plugin', 'generate', 'Generate composite plugin', 'area,quantity,method,date,time,selection,anomaly-qc,prodpar,applygra,ignore-malfunc,ctfilter,qitotal_field,algorithm_id,merge', '', 'height,range,zrA,zrb')
+a.deregister('eu.baltrad.beast.generatevolume')
+a.register('eu.baltrad.beast.generatevolume', 'rave_pgf_volume_plugin', 'generate', 'Polar volume generation from individual scans', 'source,date,time,anomaly-qc,algorithm_id,merge', '', 'height,range,zrA,zrb')
+a.deregister('se.smhi.rave.creategmapimage')
+a.register('se.smhi.rave.creategmapimage', 'googlemap_pgf_plugin', 'generate', 'Google Map Plugin', 'outfile,date,time,algorithm_id', '', '')
 """))
     fp.close()
+
 
     try:    
       ocode = subprocess.call("python tmpreg.py", shell=True)
@@ -126,7 +133,6 @@ a.register('eu.baltrad.beast.generatesite2d', 'rave_pgf_site2D_plugin', 'generat
         os.unlink("tmpreg.py")    
 
   def _update_pgf_quality_registry(self, env):
-    print "RUNNING UPDATE PGF_QUALITY_REGISTRY"
     if os.path.exists("tmpreg.py"):
       os.unlink("tmpreg.py")
     fp = open("tmpreg.py", "w")
