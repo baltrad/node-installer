@@ -326,7 +326,7 @@ software.version=%s
         '        class="eu.baltrad.bdb.storage.CacheDirStorage"',
         '        init-method="init">',
         '    <constructor-arg index="0" value="$${data.storage.folder}" />',
-        '    <constructor-arg index="1" value="1000" /> <!-- cache size -->',
+        '    <constructor-arg index="1" value="5000" /> <!-- cache size -->',
         '  </bean>',
       ])
     elif storage == "fs":
