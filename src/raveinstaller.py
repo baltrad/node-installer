@@ -121,7 +121,7 @@ a.register('eu.baltrad.beast.generatevolume', 'rave_pgf_volume_plugin', 'generat
 a.deregister('se.smhi.rave.creategmapimage')
 a.register('se.smhi.rave.creategmapimage', 'googlemap_pgf_plugin', 'generate', 'Google Map Plugin', 'outfile,date,time,algorithm_id', '', '')
 a.deregister('eu.baltrad.beast.eu.baltrad.beast.applyqc')
-a.register('eu.baltrad.beast.applyqc', 'rave_pgf_apply_qc_plugin', 'generate', 'Apply quality controls on a polar volume', 'source,date,time,anomaly-qc,algorithm_id,merge', '', '')
+a.register('eu.baltrad.beast.applyqc', 'rave_pgf_apply_qc_plugin', 'generate', 'Apply quality controls on a polar volume', 'date,time,anomaly-qc,algorithm_id', '', '')
 """))
     fp.close()
 
