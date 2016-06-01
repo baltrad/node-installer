@@ -680,6 +680,15 @@ fi
 EASYINSTALL_EXECUTABLE=$TPREFIX/bin/easy_install
 if [ ! -f $EASYINSTALL_EXECUTABLE ]; then
   install_distribute $PYTHON_EXECUTABLE $DISTRIBUTE_VERSION
+else
+  EIEVERSION=`$EASYINSTALL_EXECUTABLE --version 2>&1 | cut -d' ' -f 2`
+  #echo "VERSION: $EIEVERSION"
+  if [ $? -eq 0 ]; then
+    if [ "$EIEVERSION" = "0.6.9" -o "$EIEVERSION" = "0.6.10" ]; then
+      echo "Upgrading easy_install: $EASYINSTALL_EXECUTABLE --upgrade"
+      $EASYINSTALL_EXECUTABLE --upgrade distribute
+    fi
+  fi
 fi
 
 PIP_EXECUTABLE=$TPREFIX/bin/pip

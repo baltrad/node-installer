@@ -66,6 +66,17 @@ class bdbinstaller(installer):
     if ocode != 0:
       raise InstallerException, "Failed to create virtual environment"
 
+    easyinstallstr = env.expandArgs("${PREFIX}/baltrad-db/bin/easy_install")
+    if os.path.exists(easyinstallstr):
+      # We always ends upp with a 0.6.24 version since the virtual env vill make sure of it. Upgrade it to later version
+      ocode = subprocess.Popen(["%s --upgrade distribute"%easyinstallstr], stdout=subprocess.PIPE, stderr=subprocess.STDOUT,shell=True).communicate()[0]
+      #print "OCODE: %s"%ocode
+      #ocode = subprocess.Popen(["%s --version"%easyinstallstr], stdout=subprocess.PIPE, stderr=subprocess.STDOUT,shell=True).communicate()[0]
+      #print "VERSION: %s"%ocode
+    #print "OCODE=%s"%ocode
+    #import sys
+    #sys.exit(0)
+
     # First we remove old sins
     spth = subprocess.Popen(["%s -c %s"%(bdbpython, '"from distutils.sysconfig import get_python_lib; print(get_python_lib())"')], stdout=subprocess.PIPE, stderr=subprocess.STDOUT,shell=True).communicate()[0]
     spth = spth.strip()
