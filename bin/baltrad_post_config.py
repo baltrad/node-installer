@@ -367,6 +367,9 @@ class baltrad_post_config(object):
     iroot = properties["baltrad.install.3p_root"]
     nodename=properties["baltrad.node.name"]
     keyczar_root=properties["baltrad.keyczar.root"]
+    nodeaddress = None
+    if "baltrad.node.address" in properties:
+      nodeaddress=properties["baltrad.node.address"]
 
     with open("%s/tomcat/webapps/BaltradDex/dex.properties"%iroot) as fp:
       lines = fp.readlines()
@@ -377,7 +380,9 @@ class baltrad_post_config(object):
       modline = l
       modline = re.sub("^\s*key.alias\s*=\s*.*","key.alias=%s"%nodename,modline)
       modline = re.sub("^\s*node.name\s*=\s*.*","node.name=%s"%nodename,modline)
-      modline = re.sub("^\s*keystore.directory\s*=\s*.*","keystore.directory=%s"%keyczar_root,modline)      
+      modline = re.sub("^\s*keystore.directory\s*=\s*.*","keystore.directory=%s"%keyczar_root,modline)
+      if nodeaddress:
+        modline = re.sub("^\s*node.address\s*=\s*.*","node.address=%s"%nodeaddress,modline)
       fp.write("%s"%modline)
     fp.close()
 
