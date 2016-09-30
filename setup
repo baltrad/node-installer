@@ -39,6 +39,8 @@ PIP_VERSION=1.0.2
 PIP_VERSION_PY27=7.1.2
 DISTRIBUTE_VERSION=0.6.9
 
+SETUPTOOLS_VERSION=24.0.2
+
 ZLIBINC=
 ZLIBLIB=
 BUILDZLIB=yes
@@ -144,6 +146,18 @@ install_distribute() {
 clean_distribute() {
   cd $PACKAGEPATH || exit 127
   rm -rf distribute-$1
+}
+
+install_setuptools() {
+  PYBIN=$1
+  cd "$SCRIPTPATH"
+  SV=`$PYBIN -c "import setuptools; print setuptools.__version__"`
+  if [ $? -ne 0 -o "$SV" != "$SETUPTOOLS_VERSION" ]; then
+    $PYBIN etc/ez_setup.py --version $SETUPTOOLS_VERSION
+    if [ $? -ne 0 ]; then
+      echo "Failed to install setuptools"
+    fi
+  fi
 }
 
 usage_brief() {
@@ -677,6 +691,7 @@ export LD_LIBRARY_PATH=$TPREFIX/lib
 if [ "$ZLIBLIB" != "" ]; then
   export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:$ZLIBLIB"
 fi
+
 EASYINSTALL_EXECUTABLE=$TPREFIX/bin/easy_install
 if [ ! -f $EASYINSTALL_EXECUTABLE ]; then
   install_distribute $PYTHON_EXECUTABLE $DISTRIBUTE_VERSION
@@ -690,6 +705,8 @@ else
     fi
   fi
 fi
+
+install_setuptools "$PYTHON_EXECUTABLE"
 
 PIP_EXECUTABLE=$TPREFIX/bin/pip
 if [ ! -f $PIP_EXECUTABLE ]; then

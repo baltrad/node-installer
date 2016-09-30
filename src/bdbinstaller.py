@@ -53,47 +53,38 @@ class bdbinstaller(installer):
 
     os.chdir(dir)
 
+    # create a virtual python environment
     python = env.expandArgs("$TPREFIX/bin/python")
     bdbpython = env.expandArgs("${PREFIX}/baltrad-db/bin/python")
 
-    # create a virtual python environment
+    # First we remove old sins but we first need to check if we even have installed something before in the virtual env.
+    if os.path.exists(bdbpython):
+      spth = subprocess.Popen(["%s -c %s"%(bdbpython, '"from distutils.sysconfig import get_python_lib; print(get_python_lib())"')], stdout=subprocess.PIPE, stderr=subprocess.STDOUT,shell=True).communicate()[0]
+      spth = spth.strip()
+      gstr = "%s/*.egg" % spth
+      eggs = glob.glob(gstr)
+      for egg in eggs:
+        bname = os.path.basename(egg)
+        if bname.startswith("baltrad.bdbcommon-"):
+          shutil.rmtree("%s/%s"%(spth, bname))
+        elif bname.startswith("baltrad.bdbclient-"):
+          shutil.rmtree("%s/%s"%(spth, bname))
+    
+    # Dont really understand why, but I need to install bdbcommon before creating the virtual env.
+    #
+    self._install_and_test_python_package(
+        "baltrad.bdbcommon",
+        path=os.path.join(dir, "common"),
+        python=python,
+    )
+
+    os.chdir(dir)
     ocode = subprocess.call([
         python, "./misc/virtualenv/virtualenv.py",
          "--system-site-packages", "--distribute",
          env.expandArgs("${PREFIX}/baltrad-db")
     ])
     
-    if ocode != 0:
-      raise InstallerException, "Failed to create virtual environment"
-
-    easyinstallstr = env.expandArgs("${PREFIX}/baltrad-db/bin/easy_install")
-    if os.path.exists(easyinstallstr):
-      # We always ends upp with a 0.6.24 version since the virtual env vill make sure of it. Upgrade it to later version
-      ocode = subprocess.Popen(["%s --upgrade distribute"%easyinstallstr], stdout=subprocess.PIPE, stderr=subprocess.STDOUT,shell=True).communicate()[0]
-      #print "OCODE: %s"%ocode
-      #ocode = subprocess.Popen(["%s --version"%easyinstallstr], stdout=subprocess.PIPE, stderr=subprocess.STDOUT,shell=True).communicate()[0]
-      #print "VERSION: %s"%ocode
-    #print "OCODE=%s"%ocode
-    #import sys
-    #sys.exit(0)
-
-    # First we remove old sins
-    spth = subprocess.Popen(["%s -c %s"%(bdbpython, '"from distutils.sysconfig import get_python_lib; print(get_python_lib())"')], stdout=subprocess.PIPE, stderr=subprocess.STDOUT,shell=True).communicate()[0]
-    spth = spth.strip()
-    gstr = "%s/*.egg" % spth
-    eggs = glob.glob(gstr)
-    for egg in eggs:
-      bname = os.path.basename(egg)
-      if bname.startswith("baltrad.bdbcommon-"):
-        shutil.rmtree("%s/%s"%(spth, bname))
-      elif bname.startswith("baltrad.bdbclient-"):
-        shutil.rmtree("%s/%s"%(spth, bname))
-    
-    self._install_and_test_python_package(
-        "baltrad.bdbcommon",
-        path=os.path.join(dir, "common"),
-        python=python,
-    )
 
     onlyclient=False
     if env.hasArg("SUBSYSTEMS") and len(env.getArg("SUBSYSTEMS")) > 0:

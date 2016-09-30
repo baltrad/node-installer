@@ -51,6 +51,8 @@ from pipfetcher import pipfetcher
 from prepareinstaller import prepareinstaller
 from keystoreinstaller import keystoreinstaller
 from docinstaller import docinstaller
+from nullinstaller import nullinstaller
+
 
 from node_package import node_package
 
@@ -160,6 +162,10 @@ for (name, version, pypi_name, deps) in _PIP_MODULES:
     )
   )
   _PIP_DEP.append(name)
+
+MODULES.append(experimental(pipinstaller(package("ARGPARSE", "1.2.1", fetcher=pipfetcher(), extra_attrs={"pypi_name": "argparse"})),
+                            nullinstaller(package("ARGPARSE", "1.2.1", fetcher=pipfetcher(), extra_attrs={"pypi_name": "argparse"})))
+               )
 
 MODULES.extend([
          tomcatinstaller(package("TOMCAT", "7.0.64-1",
