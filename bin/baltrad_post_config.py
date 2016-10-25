@@ -442,6 +442,10 @@ class baltrad_post_config(object):
     keyczar_root=properties["baltrad.keyczar.root"]
     dex_post_uri=properties["baltrad.dex.uri"]
     dex_uri=dex_post_uri.replace("/post_file.htm","")
+    
+    ct_path = None
+    if "rave.ctpath" in properties:
+      ct_path=properties["rave.ctpath"]
 
     fd = open("%s/rave/Lib/rave_defines.py"%iroot)
     rows = fd.readlines()
@@ -456,6 +460,8 @@ class baltrad_post_config(object):
         row = "DEX_PRIVATEKEY = \"%s/%s.priv\"\n"%(keyczar_root,nodename)
       elif row.startswith("BDB_CONFIG_FILE"):
         row = "BDB_CONFIG_FILE = \"%s/etc/bltnode.properties\"\n"%iroot
+      elif row.startswith("CTPATH") and ct_path:
+        row = "CTPATH = \"%s\"\n"%ct_path
       nrows.append(row)
     fp = open("%s/rave/Lib/rave_defines.py"%iroot, "w")
     for row in nrows:
