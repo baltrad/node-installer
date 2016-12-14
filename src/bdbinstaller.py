@@ -44,6 +44,20 @@ class bdbinstaller(installer):
                     defaultosenv={"LD_LIBRARY_PATH":""})
     super(bdbinstaller, self).__init__(pkg, oenv)
   
+  def _remove_bdbclient_and_common(self, python):
+    if os.path.exists(python):
+      spth = subprocess.Popen(["%s -c %s"%(python, '"from distutils.sysconfig import get_python_lib; print(get_python_lib())"')], stdout=subprocess.PIPE, stderr=subprocess.STDOUT,shell=True).communicate()[0]
+      spth = spth.strip()
+      gstr = "%s/*.egg" % spth
+      eggs = glob.glob(gstr)
+      for egg in eggs:
+        bname = os.path.basename(egg)
+        if bname.startswith("baltrad.bdbcommon-") or bname.startswith("baltrad.bdbclient-"):
+          if os.path.isdir("%s/%s"%(spth, bname)):
+            shutil.rmtree("%s/%s"%(spth, bname))
+          elif os.path.isfile("%s/%s"%(spth, bname)):
+            os.remove("%s/%s"%(spth, bname))
+  
   ##
   # Performs the actual installation
   # @param env: the build environment
@@ -57,18 +71,8 @@ class bdbinstaller(installer):
     python = env.expandArgs("$TPREFIX/bin/python")
     bdbpython = env.expandArgs("${PREFIX}/baltrad-db/bin/python")
 
-    # First we remove old sins but we first need to check if we even have installed something before in the virtual env.
-    if os.path.exists(bdbpython):
-      spth = subprocess.Popen(["%s -c %s"%(bdbpython, '"from distutils.sysconfig import get_python_lib; print(get_python_lib())"')], stdout=subprocess.PIPE, stderr=subprocess.STDOUT,shell=True).communicate()[0]
-      spth = spth.strip()
-      gstr = "%s/*.egg" % spth
-      eggs = glob.glob(gstr)
-      for egg in eggs:
-        bname = os.path.basename(egg)
-        if bname.startswith("baltrad.bdbcommon-"):
-          shutil.rmtree("%s/%s"%(spth, bname))
-        elif bname.startswith("baltrad.bdbclient-"):
-          shutil.rmtree("%s/%s"%(spth, bname))
+    self._remove_bdbclient_and_common(python)
+    self._remove_bdbclient_and_common(bdbpython)
     
     # Dont really understand why, but I need to install bdbcommon before creating the virtual env.
     #
@@ -122,7 +126,7 @@ class bdbinstaller(installer):
   def _install_and_test_python_package(self, name, path, python):
     os.chdir(path)
 
-    ocode = subprocess.call([python, "setup.py", "install"])
+    ocode = subprocess.call([python, "setup.py", "install", "--force"])
     if ocode != 0:
         raise InstallerException, "Failed to install %s" % name
     
