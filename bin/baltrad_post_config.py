@@ -446,6 +446,14 @@ class baltrad_post_config(object):
     ct_path = None
     if "rave.ctpath" in properties:
       ct_path=properties["rave.ctpath"]
+      
+    pgfs = None
+    if "rave.pgfs" in properties:
+      pgfs=properties["rave.pgfs"]
+      
+    loglevel = None
+    if "rave.loglevel" in properties:
+      loglevel=properties["rave.loglevel"]
 
     fd = open("%s/rave/Lib/rave_defines.py"%iroot)
     rows = fd.readlines()
@@ -462,6 +470,10 @@ class baltrad_post_config(object):
         row = "BDB_CONFIG_FILE = \"%s/etc/bltnode.properties\"\n"%iroot
       elif row.startswith("CTPATH") and ct_path:
         row = "CTPATH = \"%s\"\n"%ct_path
+      elif row.startswith("PGFs") and pgfs:
+        row = "PGFs = %s\n"%pgfs
+      elif row.startswith("LOGLEVEL") and loglevel:
+        row = "LOGLEVEL = \"%s\"\n"%loglevel
       nrows.append(row)
     fp = open("%s/rave/Lib/rave_defines.py"%iroot, "w")
     for row in nrows:

@@ -580,6 +580,11 @@ Options:
       * db - store files in the database with a cache in $DATADIR
       * fs - store files in $DATADIR
     [default: db]
+    
+--bdb-cache-size=<no_of_files> 
+    The size (in number of files) of the file cache for database. Is only valid 
+    if 'bdb-storage=db'.
+    [default: 5000]
 
 --rebuild=<module1>,<module2>,...
     Will force a rebuild and installation of the specified modules. To get a 
@@ -726,7 +731,7 @@ if __name__=="__main__":
                                    'with-psql=','with-bufr', 'with-rave','with-rave-gmap','with-bropo','with-beamb','with-bwrwp',
                                    'with-hdfjava=', 'with-freetype=','rebuild=',
                                    'with-blas=', 'with-cblas=', 'with-lapack=', 'with-lapacke=',
-                                   'bdb-pool-max-size=', "bdb-port=", "bdb-uri=", "bdb-auth=", "bdb-storage=",
+                                   'bdb-pool-max-size=', "bdb-port=", "bdb-uri=", "bdb-auth=", "bdb-storage=", "bdb-cache-size=",
                                    'rave-pgf-port=', 'rave-log-port=', "rave-center-id=", "rave-dex-spoe=",
                                    'dbuser=', 'dbpwd=','dbname=','dbhost=','keystore=','nodename=',
                                    'reinstalldb','excludedb', 'runas=','datadir=','warfile=',
@@ -831,6 +836,8 @@ if __name__=="__main__":
       env.addArg("BDB_AUTH", a)
     elif o == "--bdb-storage":
       env.addArg("BDB_STORAGE", a)
+    elif o == "--bdb-cache-size":
+      env.addArg("BDB_CACHE_SIZE", a)
     elif o == "--with-bufr":
       env.addArg("WITH_BBUFR", True)
     elif o == "--with-rave":
@@ -951,6 +958,7 @@ if __name__=="__main__":
   env.addUniqueArg("BDB_PORT", "8090")
   env.addUniqueArg("BDB_AUTH", "keyczar")
   env.addUniqueArg("BDB_STORAGE", "db")
+  env.addUniqueArg("BDB_CACHE_SIZE", "5000")
   env.addUniqueArg("RAVE_PGF_PORT", "8085")
   env.addUniqueArg("RAVE_LOG_PORT", "8089")
   env.addUniqueArg("RAVE_CENTER_ID", "82")

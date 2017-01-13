@@ -411,7 +411,12 @@ Options:
       * db - store files in the database with a cache in $DATADIR
       * fs - store files in $DATADIR
     [default: db]
-
+    
+--bdb-cache-size=<no_of_files> 
+    The size (in number of files) of the file cache for database. Is only valid 
+    if 'bdb-storage=db'.
+    [default: 5000]
+    
 --rebuild=<module1>,<module2>,...
     Will force a rebuild and installation of the specified modules. To get a 
     list of available modules and their versions. See option --print-modules.
@@ -547,6 +552,7 @@ for arg in $*; do
     --bdb-pool-max-size=*) ;;
     --bdb-auth=*) ;;
     --bdb-storage=*) ;;
+    --bdb-cache-size=*) ;;
     --rebuild=*) ;;
     --subsystems=*) ;;
     --with-blas=*) ;;
