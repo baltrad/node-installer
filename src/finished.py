@@ -60,7 +60,7 @@ class finished(installer):
     print ""
 
     # Dont start rave if we are in standalone mode
-    if not "RAVE_STANDALONE" in subsystems:
+    if not "RAVE_STANDALONE" in subsystems and _do_autostart(env):
       ocode = subprocess.call(env.expandArgs("$PREFIX/bin/bltnode --all start"), shell=True)
       if ocode != 0:
         raise InstallerException, "Could not start node"
@@ -94,10 +94,20 @@ class finished(installer):
       print "Once you are satisified with what the importer will do, omit the"
       print "'--dry-run' switch and let it work on the actual database."
       print ""
+      
+    if not _do_autostart(env):
+      print "Setup was run with the '--no-autostart' switch. Therefore, the "  
+      print "application has not been started. To start all subsystems, run "
+      print "the following command:" 
+      print env.expandArgs("$PREFIX/bin/bltnode --all start")
+      print ""
 
     print "If you are planning to use any specific binary from a subsystem you"
     print "might have to setup your environment so that it is properly"
     print "configured. An easy way to setup the environment is to source"     
     print env.expandArgs("$PREFIX/etc/bltnode.rc")
     print ""
-    
+
+def _do_autostart(env):
+  return not env.hasArg("NO_AUTOSTART") or (env.getArg("NO_AUTOSTART") != True)
+

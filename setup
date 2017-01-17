@@ -482,6 +482,10 @@ Options:
     evaluated for stability in a production environment, and by specifying this 
     option, these modules will be built instead.
     
+--no-autostart
+    Baltrad will not start automatically after the setup is finished, 
+    if this argument is used.
+    
 --subsystems=(STANDALONE_RAVE, RAVE ,BDB ,DEX)
     If you are interested in running a standalone installation of RAVE, BDB or 
     DEX, it is possible to do so by specifying which subsystems that should be 
@@ -575,6 +579,7 @@ for arg in $*; do
     --tomcatfwdports=*) ;;
     --force) ;;
     --experimental) ;;
+    --no-autostart) ;;
     --urlrepo=*)
       URLREPO=`echo $arg | sed 's/[-a-zA-Z0-9]*=//'`
       ;;

@@ -646,6 +646,10 @@ Options:
     are currently beeing evaluated if they are stable enough to be used in production
     and by specifying this option these modules will be built instead.
     
+--no-autostart
+    Baltrad will not start automatically after the setup is finished, 
+    if this argument is used.
+    
 --subsystems=(STANDALONE_RAVE, RAVE ,BDB ,DEX)
     If you are interested in running a standalone installation of RAVE, BDB or DEX. It
     is possible to do so by specifying which subsystems that should be installed.
@@ -737,7 +741,7 @@ if __name__=="__main__":
                                    'reinstalldb','excludedb', 'runas=','datadir=','warfile=',
                                    'urlrepo=','gitrepo=','offline',
                                    'print-modules', 'print-config', 'exclude-tomcat', 'recall-last-args',
-                                   'experimental','subsystems=',
+                                   'experimental','no-autostart','subsystems=',
                                    'force','tomcatport=','tomcaturl=','tomcatpwd=',
                                    'tomcatsecureport=', 'keystoredn=', 'keystorepwd=', 'tomcatfwdports=', 'help'])
   except getopt.GetoptError, e:
@@ -885,6 +889,8 @@ if __name__=="__main__":
       env.addArg("LAPACKARG", a)
     elif o == "--with-lapacke":
       env.addArg("LAPACKEARG", a)
+    elif o == "--no-autostart":
+      env.addArgInternal("NO_AUTOSTART", True)
     elif o == "--help":
       pass
     elif o == "--print-modules":
