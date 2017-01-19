@@ -66,8 +66,6 @@ from rave_pgf_quality_registry_mgr import rave_pgf_quality_registry_mgr
 a = rave_pgf_quality_registry_mgr("$PREFIX/rave/etc/rave_pgf_quality_registry.xml")
 a.remove_plugin("ropo")
 a.remove_plugin("beamb")
-a.remove_plugin("radar-index")
-a.add_plugin("radar-index","rave_radarindex_quality_plugin","rave_radarindex_quality_plugin")
 """))
     if not env.isExcluded("BROPO"):
       fp.write(env.expandArgs("""

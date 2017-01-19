@@ -113,14 +113,14 @@ class raveinstaller(installer):
 from rave_pgf_registry import PGF_Registry
 a=PGF_Registry(filename="$PREFIX/rave/etc/rave_pgf_registry.xml")
 a.deregister('eu.baltrad.beast.generatesite2d')
-a.register('eu.baltrad.beast.generatesite2d', 'rave_pgf_site2D_plugin', 'generate', 'Generate Site2D plugin', 'area,quantity,method,date,time,anomaly-qc,prodpar,applygra,ignore-malfunc,ctfilter,pcsid,algorithm_id', '', 'height,range,zrA,zrb,xscale,yscale')
+a.register('eu.baltrad.beast.generatesite2d', 'rave_pgf_site2D_plugin', 'generate', 'Generate Site2D plugin', 'area,quantity,method,date,time,anomaly-qc,qc-mode,prodpar,applygra,ignore-malfunc,ctfilter,pcsid,algorithm_id', '', 'height,range,zrA,zrb,xscale,yscale')
 a.deregister('eu.baltrad.beast.generatecomposite')
-a.register('eu.baltrad.beast.generatecomposite', 'rave_pgf_composite_plugin', 'generate', 'Generate composite plugin', 'area,quantity,method,date,time,selection,anomaly-qc,prodpar,applygra,ignore-malfunc,ctfilter,qitotal_field,algorithm_id,merge', '', 'height,range,zrA,zrb')
+a.register('eu.baltrad.beast.generatecomposite', 'rave_pgf_composite_plugin', 'generate', 'Generate composite plugin', 'area,quantity,method,date,time,selection,anomaly-qc,qc-mode,prodpar,applygra,ignore-malfunc,ctfilter,qitotal_field,algorithm_id,merge', '', 'height,range,zrA,zrb')
 a.deregister('eu.baltrad.beast.generatevolume')
-a.register('eu.baltrad.beast.generatevolume', 'rave_pgf_volume_plugin', 'generate', 'Polar volume generation from individual scans', 'source,date,time,anomaly-qc,algorithm_id,merge', '', 'height,range,zrA,zrb')
+a.register('eu.baltrad.beast.generatevolume', 'rave_pgf_volume_plugin', 'generate', 'Polar volume generation from individual scans', 'source,date,time,anomaly-qc,qc-mode,algorithm_id,merge', '', 'height,range,zrA,zrb')
 a.deregister('se.smhi.rave.creategmapimage')
 a.register('se.smhi.rave.creategmapimage', 'googlemap_pgf_plugin', 'generate', 'Google Map Plugin', 'outfile,date,time,algorithm_id', '', '')
-a.deregister('eu.baltrad.beast.eu.baltrad.beast.applyqc')
+a.deregister('eu.baltrad.beast.applyqc')
 a.register('eu.baltrad.beast.applyqc', 'rave_pgf_apply_qc_plugin', 'generate', 'Apply quality controls on a polar volume', 'date,time,anomaly-qc,algorithm_id', '', '')
 """))
     fp.close()
@@ -142,6 +142,10 @@ a.register('eu.baltrad.beast.applyqc', 'rave_pgf_apply_qc_plugin', 'generate', '
 from rave_pgf_quality_registry_mgr import rave_pgf_quality_registry_mgr
 a = rave_pgf_quality_registry_mgr("$PREFIX/rave/etc/rave_pgf_quality_registry.xml")
 """))
+    fp.write("""
+if not a.has_plugin("radar-index"):
+  a.add_plugin("radar-index","rave_radarindex_quality_plugin","rave_radarindex_quality_plugin")
+""")
     fp.write(env.expandArgs("""
 if not a.has_plugin("scansun"):
   a.add_plugin("scansun", "rave_scansun_quality_plugin", "scansun_quality_plugin")
