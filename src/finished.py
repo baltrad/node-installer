@@ -67,9 +67,21 @@ class finished(installer):
 
     print ""
     print "===== SUCCESS ======"
-    if len(subsystems) == 0 or "NODE" in subsystems:
-      print "System has sucessfully been installed and started"
+    if len(subsystems) == 0 or "NODE" in subsystems and _do_autostart(env):
+      print "System has sucessfully been installed and started."
       print "You should be able to access the system by navigating a browser to:"
+      print env.expandArgs("$TOMCATURL/BaltradDex")
+      print ""
+      print ""
+    elif not _do_autostart(env):
+      print "System has sucessfully been installed."
+      print "Since setup was run with the '--no-autostart' switch, the "  
+      print "application has not been started. To start all subsystems, run "
+      print "the following command:" 
+      print env.expandArgs("$PREFIX/bin/bltnode --all start")
+      print ""
+      print "When started, you should be able to access the system by navigating "
+      print "a browser to:"
       print env.expandArgs("$TOMCATURL/BaltradDex")
       print ""
       print ""
@@ -93,13 +105,6 @@ class finished(installer):
       print "You can omit some changes by adding '--ignore=src' to the command."  
       print "Once you are satisified with what the importer will do, omit the"
       print "'--dry-run' switch and let it work on the actual database."
-      print ""
-      
-    if not _do_autostart(env):
-      print "Setup was run with the '--no-autostart' switch. Therefore, the "  
-      print "application has not been started. To start all subsystems, run "
-      print "the following command:" 
-      print env.expandArgs("$PREFIX/bin/bltnode --all start")
       print ""
 
     print "If you are planning to use any specific binary from a subsystem you"

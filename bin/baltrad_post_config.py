@@ -344,6 +344,8 @@ class baltrad_post_config(object):
       self._write_property_to_file(fp, properties, "baltrad.bdb.server.backend.sqla.pool_size", "10")
       self._write_property_to_file(fp, properties, "baltrad.bdb.server.log.level", "INFO")
       self._write_property_to_file(fp, properties, "baltrad.bdb.server.backend.sqla.storage.type", "db")
+      self._write_property_to_file(fp, properties, "baltrad.bdb.server.backend.sqla.storage.fs.path", iroot + "/bdb_storage")
+      self._write_property_to_file(fp, properties, "baltrad.bdb.server.backend.sqla.storage.fs.layers", "3")
       self._write_property_to_file(fp, properties, "baltrad.bdb.server.auth.providers", "noauth, keyczar")
       fp.write("baltrad.bdb.server.auth.keyczar.keystore_root = %s\n"%keyczar_root)
       fp.write("baltrad.bdb.server.auth.keyczar.keys.%s = %s.pub\n"%(nodename,nodename))
