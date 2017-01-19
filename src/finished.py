@@ -60,16 +60,28 @@ class finished(installer):
     print ""
 
     # Dont start rave if we are in standalone mode
-    if not "RAVE_STANDALONE" in subsystems:
+    if not "RAVE_STANDALONE" in subsystems and _do_autostart(env):
       ocode = subprocess.call(env.expandArgs("$PREFIX/bin/bltnode --all start"), shell=True)
       if ocode != 0:
         raise InstallerException, "Could not start node"
 
     print ""
     print "===== SUCCESS ======"
-    if len(subsystems) == 0 or "NODE" in subsystems:
-      print "System has sucessfully been installed and started"
+    if len(subsystems) == 0 or "NODE" in subsystems and _do_autostart(env):
+      print "System has sucessfully been installed and started."
       print "You should be able to access the system by navigating a browser to:"
+      print env.expandArgs("$TOMCATURL/BaltradDex")
+      print ""
+      print ""
+    elif not _do_autostart(env):
+      print "System has sucessfully been installed."
+      print "Since setup was run with the '--no-autostart' switch, the "  
+      print "application has not been started. To start all subsystems, run "
+      print "the following command:" 
+      print env.expandArgs("$PREFIX/bin/bltnode --all start")
+      print ""
+      print "When started, you should be able to access the system by navigating "
+      print "a browser to:"
       print env.expandArgs("$TOMCATURL/BaltradDex")
       print ""
       print ""
@@ -100,4 +112,7 @@ class finished(installer):
     print "configured. An easy way to setup the environment is to source"     
     print env.expandArgs("$PREFIX/etc/bltnode.rc")
     print ""
-    
+
+def _do_autostart(env):
+  return not env.hasArg("NO_AUTOSTART") or (env.getArg("NO_AUTOSTART") != True)
+
