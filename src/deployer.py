@@ -316,6 +316,7 @@ software.version=%s
       '    <constructor-arg value="$${database.uri}" />',
       '    <constructor-arg ref="bdb_auth" />',
       '    <constructor-arg value="20" />',  
+      '    <constructor-arg value="$BDB_FILEENTRY_CACHE_SIZE" /> <!-- file entry cache size -->',
       '  </bean>',
     ])
 

@@ -417,6 +417,14 @@ Options:
     if 'bdb-storage=db'.
     [default: 5000]
     
+--bdb-fileentry-cache-size=<no_of_files> 
+    The size (in number of files) of the file-entry cache between the database 
+    and the Baltrad application. A file's meta-data is placed in this cache 
+    when added to the database, or when the file is queried in the database. 
+    When performing queries on a file in the database, this cache is first 
+    checked, thus lowering the load on the database.
+    [default: 500]
+    
 --rebuild=<module1>,<module2>,...
     Will force a rebuild and installation of the specified modules. To get a 
     list of available modules and their versions. See option --print-modules.
@@ -557,6 +565,7 @@ for arg in $*; do
     --bdb-auth=*) ;;
     --bdb-storage=*) ;;
     --bdb-cache-size=*) ;;
+    --bdb-fileentry-cache-size=*) ;;
     --rebuild=*) ;;
     --subsystems=*) ;;
     --with-blas=*) ;;

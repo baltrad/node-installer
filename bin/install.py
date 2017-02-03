@@ -585,6 +585,14 @@ Options:
     The size (in number of files) of the file cache for database. Is only valid 
     if 'bdb-storage=db'.
     [default: 5000]
+    
+--bdb-fileentry-cache-size=<no_of_files> 
+    The size (in number of files) of the file-entry cache between the database 
+    and the Baltrad application. A file's meta-data is placed in this cache 
+    when added to the database, or when the file is queried in the database. 
+    When performing queries on a file in the database, this cache is first 
+    checked, thus lowering the load on the database.
+    [default: 500]
 
 --rebuild=<module1>,<module2>,...
     Will force a rebuild and installation of the specified modules. To get a 
@@ -735,7 +743,8 @@ if __name__=="__main__":
                                    'with-psql=','with-bufr', 'with-rave','with-rave-gmap','with-bropo','with-beamb','with-bwrwp',
                                    'with-hdfjava=', 'with-freetype=','rebuild=',
                                    'with-blas=', 'with-cblas=', 'with-lapack=', 'with-lapacke=',
-                                   'bdb-pool-max-size=', "bdb-port=", "bdb-uri=", "bdb-auth=", "bdb-storage=", "bdb-cache-size=",
+                                   'bdb-pool-max-size=', "bdb-port=", "bdb-uri=", "bdb-auth=", "bdb-storage=", 
+                                   "bdb-cache-size=", "bdb-fileentry-cache-size=",
                                    'rave-pgf-port=', 'rave-log-port=', "rave-center-id=", "rave-dex-spoe=",
                                    'dbuser=', 'dbpwd=','dbname=','dbhost=','keystore=','nodename=',
                                    'reinstalldb','excludedb', 'runas=','datadir=','warfile=',
@@ -842,6 +851,8 @@ if __name__=="__main__":
       env.addArg("BDB_STORAGE", a)
     elif o == "--bdb-cache-size":
       env.addArg("BDB_CACHE_SIZE", a)
+    elif o == "--bdb-fileentry-cache-size":
+      env.addArg("BDB_FILEENTRY_CACHE_SIZE", a)
     elif o == "--with-bufr":
       env.addArg("WITH_BBUFR", True)
     elif o == "--with-rave":
@@ -965,6 +976,7 @@ if __name__=="__main__":
   env.addUniqueArg("BDB_AUTH", "keyczar")
   env.addUniqueArg("BDB_STORAGE", "db")
   env.addUniqueArg("BDB_CACHE_SIZE", "5000")
+  env.addUniqueArg("BDB_FILEENTRY_CACHE_SIZE", "500")
   env.addUniqueArg("RAVE_PGF_PORT", "8085")
   env.addUniqueArg("RAVE_LOG_PORT", "8089")
   env.addUniqueArg("RAVE_CENTER_ID", "82")
