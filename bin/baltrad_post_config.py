@@ -345,6 +345,8 @@ class baltrad_post_config(object):
       fp.write("baltrad.bdb.server.backend.sqla.uri = postgresql://%s:%s@%s/%s\n"%(dbusername,dbpassword,dbhostname,dbname))
       self._write_property_to_file(fp, properties, "baltrad.bdb.server.backend.sqla.pool_size", "10")
       self._write_property_to_file(fp, properties, "baltrad.bdb.server.log.level", "INFO")
+      self._write_property_to_file(fp, properties, "baltrad.bdb.server.log.type", "logfile")
+      self._write_property_to_file(fp, properties, "baltrad.bdb.server.log.id", "baltrad-bdb-server")
       self._write_property_to_file(fp, properties, "baltrad.bdb.server.backend.sqla.storage.type", "db")
       self._write_property_to_file(fp, properties, "baltrad.bdb.server.backend.sqla.storage.fs.path", iroot + "/bdb_storage")
       self._write_property_to_file(fp, properties, "baltrad.bdb.server.backend.sqla.storage.fs.layers", "3")
