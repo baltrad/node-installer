@@ -75,7 +75,9 @@ class configinstaller(installer):
                    "baltrad.bdb.server.backend.type = sqla",
                    "baltrad.bdb.server.backend.sqla.uri = postgresql://$DBUSER:$BDB_ENCODED_DBPWD@$DBHOST/$DBNAME",
                    "baltrad.bdb.server.backend.sqla.pool_size = $BDB_POOL_MAX_SIZE",
-                   "baltrad.bdb.server.log.level = INFO"])
+                   "baltrad.bdb.server.log.level = INFO",
+                   "baltrad.bdb.server.log.type = logfile",
+                   "baltrad.bdb.server.log.id = baltrad-bdb-server"])
     elif "RAVE" in subsystems or "DEX" in subsystems:
       conf.append("baltrad.bdb.server.uri = $BDB_URI")
     else:

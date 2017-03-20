@@ -231,6 +231,8 @@ class baltrad_post_config(object):
       self._write_property_to_file(fp, properties, "baltrad.bdb.server.backend.type", "sqla")
       self._write_property_to_file(fp, properties, "baltrad.bdb.server.backend.sqla.pool_size", "10")
       self._write_property_to_file(fp, properties, "baltrad.bdb.server.log.level", "INFO")
+      self._write_property_to_file(fp, properties, "baltrad.bdb.server.log.type", "logfile")
+      self._write_property_to_file(fp, properties, "baltrad.bdb.server.log.id", "baltrad-bdb-server")
       self._write_property_to_file(fp, properties, "baltrad.bdb.server.backend.sqla.storage.type", "db")
       self._write_property_to_file(fp, properties, "baltrad.bdb.server.auth.providers", "noauth, keyczar")
 
