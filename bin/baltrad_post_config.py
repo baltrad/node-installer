@@ -376,6 +376,16 @@ class baltrad_post_config(object):
     nodeaddress = None
     if "baltrad.node.address" in properties:
       nodeaddress=properties["baltrad.node.address"]
+      
+    framepublisher_min_poolsize = None
+    framepublisher_max_poolsize = None
+    framepublisher_queuesize = None
+    if "baltrad.framepublisher.min_poolsize" in properties:
+      framepublisher_min_poolsize=properties["baltrad.framepublisher.min_poolsize"]
+    if "baltrad.framepublisher.max_poolsize" in properties:
+      framepublisher_max_poolsize=properties["baltrad.framepublisher.max_poolsize"]
+    if "baltrad.framepublisher.queuesize" in properties:
+      framepublisher_queuesize=properties["baltrad.framepublisher.queuesize"]
 
     with open("%s/tomcat/webapps/BaltradDex/dex.properties"%iroot) as fp:
       lines = fp.readlines()
@@ -389,6 +399,14 @@ class baltrad_post_config(object):
       modline = re.sub("^\s*keystore.directory\s*=\s*.*","keystore.directory=%s"%keyczar_root,modline)
       if nodeaddress:
         modline = re.sub("^\s*node.address\s*=\s*.*","node.address=%s"%nodeaddress,modline)
+        
+      if framepublisher_min_poolsize:
+        modline = re.sub("^\s*framepublisher.min_poolsize\s*=\s*.*","framepublisher.min_poolsize=%s"%framepublisher_min_poolsize,modline)
+      if framepublisher_max_poolsize:
+        modline = re.sub("^\s*framepublisher.max_poolsize\s*=\s*.*","framepublisher.max_poolsize=%s"%framepublisher_max_poolsize,modline)
+      if framepublisher_queuesize:
+        modline = re.sub("^\s*framepublisher.queuesize\s*=\s*.*","framepublisher.queuesize=%s"%framepublisher_queuesize,modline)
+        
       fp.write("%s"%modline)
     fp.close()
 
