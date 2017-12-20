@@ -27,20 +27,20 @@ SCRIPTPATH=$(dirname $(readlink -f $0))
 PACKAGEPATH=$SCRIPTPATH/packages
 
 PREFIX=/opt/baltrad
-EXPERIMENTAL=
+EXPERIMENTAL=yes
 ZLIBARG=
 URLREPO=http://git.baltrad.eu/blt_dependencies
 
-ZLIB_VERSION=1.2.4
-PYTHON_VERSION=2.6.4
-# PIP version used for python 2.6
-PIP_VERSION=1.0.2 
+ZLIB_VERSION=1.2.11
+PYTHON_VERSION=2.7.2
+PIP_VERSION=7.1.2
 # PIP version used for python 2.7
 PIP_VERSION_PY27=7.1.2
 DISTRIBUTE_VERSION=0.6.9
 
 SETUPTOOLS_VERSION=24.0.2
 
+ZLIB_REBUILT=no
 ZLIBINC=
 ZLIBLIB=
 BUILDZLIB=yes
@@ -107,6 +107,8 @@ bootstrap_python() {
   tar -xvpzf $python_src > /dev/null || exit 127
   
   cd Python-$python_version || exit 127
+  
+  make distclean > /dev/null
   
   echo "configuring Python $python_version"
 
@@ -559,6 +561,7 @@ for arg in $*; do
     --with-bropo) ;;
     --with-beamb) ;;
     --with-bwrwp) ;;
+    --with-netcdf=*) ;;
     --bdb-port=*) ;;
     --bdb-uri=*) ;;
     --bdb-pool-max-size=*) ;;
@@ -640,10 +643,8 @@ if [ -z $TPREFIX ]; then
   TPREFIX=$PREFIX/third_party
 fi
 
-if [ -n "$EXPERIMENTAL" ]; then
-  PYTHON_VERSION=2.7.2
-  PIP_VERSION=$PIP_VERSION_PY27
-fi
+PYTHON_VERSION=2.7.2
+PIP_VERSION=$PIP_VERSION_PY27
 
 if [ -n "$ZLIBARG" ]; then
   # We have some options here.
@@ -689,14 +690,15 @@ fi
 if [ "$BUILDZLIB" = "yes" ]; then
   ZLIBINC=$TPREFIX/include
   ZLIBLIB=$TPREFIX/lib
-  if [ -f "$ZLIBINC/zlib.h" -a -f "$ZLIBLIB/libz.so" ]; then
+  if [ -f "$ZLIBINC/zlib.h" -a -f "$ZLIBLIB/libz.so" -a -f "$ZLIBLIB/libz.so.1.2.11" ]; then
     echo "ZLIB already installed"
   else
     bootstrap_zlib $TPREFIX $ZLIB_VERSION
+    ZLIB_REBUILT=yes
   fi
 fi
 
-if [ -f $PYTHON_EXECUTABLE ]; then
+if [ -f $PYTHON_EXECUTABLE -a "$ZLIB_REBUILT" = "no" ]; then
   echo "PYTHON already installed at $TPREFIX/bin/python"
 else
   bootstrap_python $TPREFIX $PYTHON_VERSION

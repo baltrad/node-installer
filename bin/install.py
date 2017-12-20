@@ -71,12 +71,12 @@ from experimental import experimental
 # so that HDF5 is rebuilt each time ZLIB is rebuilt.
 ##
 MODULES=[prepareinstaller(package("PREPARE", "1.0", nodir(), remembered=False)),
-         shinstaller(package("ZLIB", "1.2.4", nodir()),":"),
+         shinstaller(package("ZLIB", "1.2.11", nodir()),":"),
 
-         cmmi(package("HDF5", "1.8.5-patch1",
-                      untar(urlfetcher("hdf5-1.8.5-patch1.tar.gz"), "hdf5-1.8.5-patch1", True),
+         cmmi(package("HDF5", "1.10.1",
+                      untar(urlfetcher("hdf5-1.10.1.tar.gz"), "hdf5-1.10.1", True),
                       depends=["ZLIB"]),
-              "--prefix=\"$TPREFIX\" --with-pthread=yes --enable-threadsafe", False, True,
+              "--prefix=\"$TPREFIX\" --with-pthread=yes --enable-threadsafe --enable-unsupported", False, True,  # unsupported for MT + HL library
               foptionalarg=hdf5_optional_zlib_arg),
               
          cmmi(package("EXPAT", "2.0.1",
@@ -124,6 +124,7 @@ MODULES=[prepareinstaller(package("PREPARE", "1.0", nodir(), remembered=False)),
                              depends=["PYTHON","CURL"]),
                      "\"$TPREFIX/bin/python\" setup.py install",
                      osenv({"LD_LIBRARY_PATH":"$TPREFIX/lib", "PATH":"$TPREFIX/bin:$$PATH"})),
+         
 ]
 
 _PIP_MODULES=[
@@ -732,7 +733,26 @@ def parse_buildpsql_argument(arg):
     raise InstallerException, "Provided path (%s) does not seem to be be used as an lib path."%psqllib
   
   return psqlinc, psqllib
+
+def parse_netcdf_argument(arg):
+  tokens = arg.split(",")
+  if len(tokens) == 2:
+    netcdflinc = tokens[0]
+    netcdflib = tokens[1]
+  elif len(tokens) == 1:
+    netcdfinc = "%s/include"%tokens[0]
+    netcdflib = "%s/lib"%tokens[0]
+  else:
+    raise InstallerException, "--with-netcdf= should either be <inc>,<lib> or <root>"
   
+  if not os.path.isdir(netcdfinc):
+    raise InstallerException, "Provided path (%s) does not seem to be be used as an include path."%netcdfinc
+  if not os.path.isdir(netcdflib):
+    raise InstallerException, "Provided path (%s) does not seem to be be used as an lib path."%netcdflib
+  
+  return netcdfinc, netcdflib
+  
+
 if __name__=="__main__":
   import getpass
   optlist = []
@@ -748,7 +768,7 @@ if __name__=="__main__":
                                    'rave-pgf-port=', 'rave-log-port=', "rave-center-id=", "rave-dex-spoe=",
                                    'dbuser=', 'dbpwd=','dbname=','dbhost=','keystore=','nodename=',
                                    'reinstalldb','excludedb', 'runas=','datadir=','warfile=',
-                                   'urlrepo=','gitrepo=','offline',
+                                   'urlrepo=','gitrepo=','offline','with-netcdf=',
                                    'print-modules', 'print-config', 'exclude-tomcat', 'recall-last-args',
                                    'experimental','no-autostart','subsystems=',
                                    'force','tomcatport=','tomcaturl=','tomcatpwd=',
@@ -821,6 +841,8 @@ if __name__=="__main__":
         sys.exit(127)
       else:
         env.addArg("HDFJAVAHOME", a)
+    elif o == "--with-netcdf":
+      env.addArg("NETCDFARG", a)        
     elif o == "--with-freetype":
       env.addArg("FREETYPE", a)
     elif o == "--exclude-tomcat":
@@ -981,7 +1003,7 @@ if __name__=="__main__":
   env.addUniqueArg("RAVE_LOG_PORT", "8089")
   env.addUniqueArg("RAVE_CENTER_ID", "82")
   env.addUniqueArg("RAVE_DEX_SPOE", env.expandArgs("localhost:${TOMCATPORT}"))
-
+  
   modules = MODULES
   
   #
@@ -1076,6 +1098,11 @@ if __name__=="__main__":
     psqlinc, psqllib = parse_buildpsql_argument(env.getArg("PSQLARG"))
     env.addArgInternal("PSQLINC", psqlinc)
     env.addArgInternal("PSQLLIB", psqllib)
+
+  if env.hasArg("NETCDFARG"):
+    netcdfinc, netcdflib = parse_netcdf_argument(env.getArg("NETCDFARG"))
+    env.addArgInternal("NETCDFINC", netcdfinc)
+    env.addArgInternal("NETCDFLIB", netcdflib)
 
   validators = []
   if "BDB" in subsystems or "DEX" in subsystems:

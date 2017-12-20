@@ -48,6 +48,7 @@ class raveinstaller(installer):
                     "CENTER_ID":"$RAVE_CENTER_ID",
                     "DEX_SPOE":"$RAVE_DEX_SPOE",
                     "BUFRARG":"",
+                    "NETCDFARG":"",
                     "DEX_PRIVATEKEY":"$PREFIX/etc/bltnode-keys/$NODENAME.priv",
                     "BDB_CONFIG_FILE":"$PREFIX/etc/bltnode.properties",
                     "DEX_NODENAME":"$NODENAME",
@@ -76,6 +77,9 @@ class raveinstaller(installer):
     
     if not env.isExcluded("BBUFR"):
       self.osenvironment().setEnvironmentVariable(env, "BUFRARG", "$PREFIX/bbufr")
+    
+    if env.hasArg("NETCDFINC") and env.hasArg("NETCDFLIB"):
+      self.osenvironment().setEnvironmentVariable(env, "NETCDFARG", "%s,%s"%(env.getArg("NETCDFINC"),env.getArg("NETCDFLIB")))
     
     self.osenvironment().setEnvironmentVariable(env, "LD_LIBRARY_PATH", "%s:%s"%(env.getLdLibraryPath(),self.osenvironment().getSnapshotVariable("LD_LIBRARY_PATH")))
     self.osenvironment().setEnvironmentVariable(env, "PATH", "%s:%s"%(env.getPath(),self.osenvironment().getSnapshotVariable("PATH")))
