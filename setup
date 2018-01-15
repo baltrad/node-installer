@@ -262,6 +262,12 @@ Options:
     - <psqlinc>,<psqllib> can be used to point out the specific 
       include and library paths
 
+--enable-netcdf
+    Specifies if netcdf should be built. It can for example be used for exporting
+    CF compliant products from rave. Unfortunately it's not possible to specify an
+    external variant of netcdf since netcdf is based on hdf5 and that is also built
+    by this installer. Default is not to enable netcdf support.
+
 --with-freetype=<freetypeinc>,<freetypelib>
     In order to get freetype support built in the Python Imaging Library (PIL,
     for use with Google maps plugin). You might have to specify this
@@ -561,7 +567,7 @@ for arg in $*; do
     --with-bropo) ;;
     --with-beamb) ;;
     --with-bwrwp) ;;
-    --with-netcdf=*) ;;
+    --enable-netcdf) ;;
     --bdb-port=*) ;;
     --bdb-uri=*) ;;
     --bdb-pool-max-size=*) ;;

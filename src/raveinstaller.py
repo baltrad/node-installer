@@ -78,8 +78,10 @@ class raveinstaller(installer):
     if not env.isExcluded("BBUFR"):
       self.osenvironment().setEnvironmentVariable(env, "BUFRARG", "$PREFIX/bbufr")
     
-    if env.hasArg("NETCDFINC") and env.hasArg("NETCDFLIB"):
-      self.osenvironment().setEnvironmentVariable(env, "NETCDFARG", "%s,%s"%(env.getArg("NETCDFINC"),env.getArg("NETCDFLIB")))
+    if env.hasArg("ENABLE_NETCDF") and env.getArg("ENABLE_NETCDF") == True:
+      netcdfinc = env.expandArgs("$TPREFIX/include")
+      netcdflib = env.expandArgs("$TPREFIX/lib")
+      self.osenvironment().setEnvironmentVariable(env, "NETCDFARG", "%s,%s"%(netcdfinc,netcdflib))
     
     self.osenvironment().setEnvironmentVariable(env, "LD_LIBRARY_PATH", "%s:%s"%(env.getLdLibraryPath(),self.osenvironment().getSnapshotVariable("LD_LIBRARY_PATH")))
     self.osenvironment().setEnvironmentVariable(env, "PATH", "%s:%s"%(env.getPath(),self.osenvironment().getSnapshotVariable("PATH")))

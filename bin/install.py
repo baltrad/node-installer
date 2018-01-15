@@ -52,7 +52,7 @@ from prepareinstaller import prepareinstaller
 from keystoreinstaller import keystoreinstaller
 from docinstaller import docinstaller
 from nullinstaller import nullinstaller
-
+from netcdfinstaller import netcdfinstaller
 
 from node_package import node_package
 
@@ -78,7 +78,11 @@ MODULES=[prepareinstaller(package("PREPARE", "1.0", nodir(), remembered=False)),
                       depends=["ZLIB"]),
               "--prefix=\"$TPREFIX\" --with-pthread=yes --enable-threadsafe --enable-unsupported", False, True,  # unsupported for MT + HL library
               foptionalarg=hdf5_optional_zlib_arg),
-              
+        
+         netcdfinstaller(package("NETCDF", "4.5.0",
+                      untar(urlfetcher("netcdf-c-4.5.0.tar.gz"), "netcdf-c-4.5.0", True),
+                      depends=["ZLIB", "HDF5"])),
+         
          cmmi(package("EXPAT", "2.0.1",
                       untar(urlfetcher("expat-2.0.1.tar.gz"), "expat-2.0.1", True)),
               "--prefix=\"$TPREFIX\"", False, True),
@@ -198,7 +202,7 @@ MODULES.extend([
          
          dexinstaller(node_package("BALTRAD-DEX", depends=["HDFJAVA", "TOMCAT", "BALTRAD-DB", "BEAST"])),
          
-         raveinstaller(node_package("RAVE", depends=["EXPAT", "PROJ.4", "PYTHON", "NUMPY", "PYSETUPTOOLS", "PYCURL", "HLHDF", "BBUFR", "BALTRAD-DB"])),
+         raveinstaller(node_package("RAVE", depends=["EXPAT", "PROJ.4", "PYTHON", "NUMPY", "PYSETUPTOOLS", "PYCURL", "HLHDF", "NETCDF", "BBUFR", "BALTRAD-DB"])),
          
          ravegmapinstaller(node_package("RAVE-GMAP", depends=["RAVE"])), #Just use rave as dependency, rest of dependencies will trigger rave rebuild
 
@@ -440,6 +444,12 @@ Options:
     - <psqlinc>,<psqllib> can be used to point out the specific 
       include and library paths
 
+--enable-netcdf
+    Specifies if netcdf should be built. It can for example be used for exporting
+    CF compliant products from rave. Unfortunately it's not possible to specify an
+    external variant of netcdf since netcdf is based on hdf5 and that is also built
+    by this installer. Default is not to enable netcdf support.
+    
 --with-freetype=<freetypeinc>,<freetypelib>
     In order to get freetype support built in the PIL imaging library
     (for use with google maps plugin). You might have to specify this
@@ -734,25 +744,6 @@ def parse_buildpsql_argument(arg):
   
   return psqlinc, psqllib
 
-def parse_netcdf_argument(arg):
-  tokens = arg.split(",")
-  if len(tokens) == 2:
-    netcdflinc = tokens[0]
-    netcdflib = tokens[1]
-  elif len(tokens) == 1:
-    netcdfinc = "%s/include"%tokens[0]
-    netcdflib = "%s/lib"%tokens[0]
-  else:
-    raise InstallerException, "--with-netcdf= should either be <inc>,<lib> or <root>"
-  
-  if not os.path.isdir(netcdfinc):
-    raise InstallerException, "Provided path (%s) does not seem to be be used as an include path."%netcdfinc
-  if not os.path.isdir(netcdflib):
-    raise InstallerException, "Provided path (%s) does not seem to be be used as an lib path."%netcdflib
-  
-  return netcdfinc, netcdflib
-  
-
 if __name__=="__main__":
   import getpass
   optlist = []
@@ -768,7 +759,7 @@ if __name__=="__main__":
                                    'rave-pgf-port=', 'rave-log-port=', "rave-center-id=", "rave-dex-spoe=",
                                    'dbuser=', 'dbpwd=','dbname=','dbhost=','keystore=','nodename=',
                                    'reinstalldb','excludedb', 'runas=','datadir=','warfile=',
-                                   'urlrepo=','gitrepo=','offline','with-netcdf=',
+                                   'urlrepo=','gitrepo=','offline','enable-netcdf',
                                    'print-modules', 'print-config', 'exclude-tomcat', 'recall-last-args',
                                    'experimental','no-autostart','subsystems=',
                                    'force','tomcatport=','tomcaturl=','tomcatpwd=',
@@ -841,8 +832,8 @@ if __name__=="__main__":
         sys.exit(127)
       else:
         env.addArg("HDFJAVAHOME", a)
-    elif o == "--with-netcdf":
-      env.addArg("NETCDFARG", a)        
+    elif o == "--enable-netcdf":
+      env.addArg("ENABLE_NETCDF", True)        
     elif o == "--with-freetype":
       env.addArg("FREETYPE", a)
     elif o == "--exclude-tomcat":
@@ -979,6 +970,7 @@ if __name__=="__main__":
   env.addUniqueArg("RUNASUSER", getpass.getuser())
   env.addUniqueArg("KEYSTORE", env.expandArgs("${PREFIX}/etc/bltnode-keys"))
   env.addUniqueArg("KEYSTORE_DN", "yes")
+  env.addUniqueArg("ENABLE_NETCDF", False)
 
   if not env.hasArg("NODENAME"):
     import socket
@@ -1060,6 +1052,9 @@ if __name__=="__main__":
     usage(True, "Unknown command %s"%`args[0]`)
     sys.exit(127)
 
+  if env.getArg("ENABLE_NETCDF") == False:
+    env.excludeModule("NETCDF")
+
   if env.hasArg("WITH_BBUFR") and env.getArg("WITH_BBUFR") == True:
     env.removeExclude("BBUFR")
 
@@ -1098,11 +1093,6 @@ if __name__=="__main__":
     psqlinc, psqllib = parse_buildpsql_argument(env.getArg("PSQLARG"))
     env.addArgInternal("PSQLINC", psqlinc)
     env.addArgInternal("PSQLLIB", psqllib)
-
-  if env.hasArg("NETCDFARG"):
-    netcdfinc, netcdflib = parse_netcdf_argument(env.getArg("NETCDFARG"))
-    env.addArgInternal("NETCDFINC", netcdfinc)
-    env.addArgInternal("NETCDFLIB", netcdflib)
 
   validators = []
   if "BDB" in subsystems or "DEX" in subsystems:
