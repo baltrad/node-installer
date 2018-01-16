@@ -73,7 +73,7 @@ class configinstaller(installer):
     if "BDB" in subsystems:
       conf.extend(["baltrad.bdb.server.uri = http://localhost:$BDB_PORT",
                    "baltrad.bdb.server.backend.type = sqla",
-                   "baltrad.bdb.server.backend.sqla.uri = postgresql://$DBUSER:$BDB_ENCODED_DBPWD@$DBHOST/$DBNAME",
+                   "baltrad.bdb.server.backend.sqla.uri = postgresql://$DBUSER:$BDB_ENCODED_DBPWD@$DBHOST:$DBPORT/$DBNAME",
                    "baltrad.bdb.server.backend.sqla.pool_size = $BDB_POOL_MAX_SIZE",
                    "baltrad.bdb.server.log.level = INFO",
                    "baltrad.bdb.server.log.type = logfile",
@@ -117,7 +117,7 @@ class configinstaller(installer):
     
     if "RAVE" in subsystems:
       conf.append("# RAVE specific values")
-      conf.append("rave.db.uri=postgresql://$DBUSER:$BDB_ENCODED_DBPWD@$DBHOST/$DBNAME")
+      conf.append("rave.db.uri=postgresql://$DBUSER:$BDB_ENCODED_DBPWD@$DBHOST:$DBPORT/$DBNAME")
 
     conf = [env.expandArgs(c) for c in conf]
     outfile = open(dst, "w")

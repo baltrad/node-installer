@@ -53,7 +53,7 @@ class dbinstaller(installer):
     if env.hasArg("EXCLUDEDB") and env.getArg("EXCLUDEDB") == True:
       print "Excluded: Database table installation"
       return
-    dbargs = "-Ddb.user=$DBUSER -Ddb.pwd=$DBPWD -Ddb.host=$DBHOST -Ddb.name=$DBNAME"
+    dbargs = "-Ddb.user=$DBUSER -Ddb.pwd=$DBPWD -Ddb.host=$DBHOST -Ddb.port=$DBPORT -Ddb.name=$DBNAME"
     args = "%s -Dbaltrad.beast.path=$PREFIX/beast -Dbaltrad.dex.path=$PREFIX/BaltradDex" % dbargs
     
     if not os.path.isdir(env.expandArgs("$DATADIR")):
@@ -108,10 +108,10 @@ class dbupgrader(dbinstaller):
   # @param env: the build environment
   #
   def doinstall(self, env):
-    dbargs = "-Ddb.user=$DBUSER -Ddb.pwd=$DBPWD -Ddb.host=$DBHOST -Ddb.name=$DBNAME"
+    dbargs = "-Ddb.user=$DBUSER -Ddb.pwd=$DBPWD -Ddb.host=$DBHOST -Ddb.port=$DBPORT -Ddb.name=$DBNAME"
     args = "%s -Dbaltrad.db.path=$PREFIX/baltrad-db -Dbaltrad.beast.path=$PREFIX/beast -Dbaltrad.dex.path=$PREFIX/BaltradDex" % dbargs
     
-    args = "%s -Ddb.jar=%s/etc/postgresql/postgresql-8.4-701.jdbc4.jar"%(args, env.getInstallerPath())
+    args = "%s -Ddb.jar=%s/etc/postgresql/postgresql-42.1.4.jre6.jar"%(args, env.getInstallerPath())
     
     buildfile = "%s/etc/install_db.xml"%env.getInstallerPath()
     ocode = subprocess.call(env.expandArgs("$TPREFIX/ant/bin/ant -f %s %s upgrade-db"%(buildfile,args)), shell=True)

@@ -291,6 +291,10 @@ Options:
     Specified the database host to use. 
     [Default 127.0.0.1]
 
+--dbport=<port>
+    Specified the database port number to use. 
+    [Default 5432]
+
 --with-hdfjava=<hdf java root>
     Specifies the HDF Java root installation directory. 
     If omitted, the installer will install it's own version of hdf-java.
@@ -550,6 +554,7 @@ for arg in $*; do
     --dbpwd=*) ;;
     --dbname=*) ;;
     --dbhost=*) ;;
+    --dbport=*) ;;
     --with-hdfjava=*) ;;
     --reinstalldb) ;;
     --excludedb) ;;

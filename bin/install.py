@@ -308,6 +308,7 @@ def print_arguments(env):
                ("--dbuser=", env.getArg("DBUSER")),
                ("--dbname=", env.getArg("DBNAME")),
                ("--dbhost=", env.getArg("DBHOST")),
+               ("--dbport=", env.getArg("DBPORT")),
                ("--runas=", env.getArg("RUNASUSER")),
                ("--with-hdfjava=", env.getArg("HDFJAVAHOME")),
                ("--nodename=", env.getArg("NODENAME"))]
@@ -472,6 +473,10 @@ Options:
 --dbhost=<host>
     Specified the database host to use. 
     [Default 127.0.0.1]
+
+--dbport=<port>
+    Specified the database port number to use. 
+    [Default 5432]
 
 --with-hdfjava=<hdf java root>
     Specifies the hdf java root installation directory. 
@@ -757,7 +762,7 @@ if __name__=="__main__":
                                    'bdb-pool-max-size=', "bdb-port=", "bdb-uri=", "bdb-auth=", "bdb-storage=", 
                                    "bdb-cache-size=", "bdb-fileentry-cache-size=",
                                    'rave-pgf-port=', 'rave-log-port=', "rave-center-id=", "rave-dex-spoe=",
-                                   'dbuser=', 'dbpwd=','dbname=','dbhost=','keystore=','nodename=',
+                                   'dbuser=', 'dbpwd=','dbname=','dbhost=','dbport=','keystore=','nodename=',
                                    'reinstalldb','excludedb', 'runas=','datadir=','warfile=',
                                    'urlrepo=','gitrepo=','offline','enable-netcdf',
                                    'print-modules', 'print-config', 'exclude-tomcat', 'recall-last-args',
@@ -816,6 +821,8 @@ if __name__=="__main__":
       env.addArg("DBNAME", a)
     elif o == "--dbhost":
       env.addArg("DBHOST", a)
+    elif o == "--dbport":
+      env.addArg("DBPORT", a)
     elif o == "--nodename":
       env.addArg("NODENAME", a)
     elif o == "--keystore":
@@ -967,6 +974,7 @@ if __name__=="__main__":
   env.addUniqueArgInternal("DBPWD", "baltrad")
   env.addUniqueArg("DBNAME", "baltrad")
   env.addUniqueArg("DBHOST", "127.0.0.1")
+  env.addUniqueArg("DBPORT", "5432")
   env.addUniqueArg("RUNASUSER", getpass.getuser())
   env.addUniqueArg("KEYSTORE", env.expandArgs("${PREFIX}/etc/bltnode-keys"))
   env.addUniqueArg("KEYSTORE_DN", "yes")

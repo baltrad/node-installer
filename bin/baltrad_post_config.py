@@ -141,7 +141,13 @@ class baltrad_database(object):
   # @param id: The id to be used in the error messages
   def _run_sql_script(self, scriptname, id):
     sql = open(scriptname, 'r').read()
-    connection = psycopg2.connect("host=%s dbname=%s user=%s password=%s"%(self._hostname,self._dbname,self._username,self._password))
+    hostname=self._hostname
+    portnr="5432"
+    if self._hostname.find(":") > 0:
+      hostname = self._hostname[0:self._hostname.find(":")]
+      portnr = self._hostname[self._hostname.find(":")+1:]
+      
+    connection = psycopg2.connect("host=%s port=%s dbname=%s user=%s password=%s"%(hostname,portnr,self._dbname,self._username,self._password))
     try:
       dbcursor = connection.cursor()
       dbcursor.execute(sql)

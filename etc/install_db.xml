@@ -18,9 +18,9 @@ You should have received a copy of the GNU Lesser General Public License
 along with the baltrad-node.  If not, see http://www.gnu.org/licenses.
 -->
 <project name="baltrad-node-db" basedir=".">
-  <property name="db.jar" value="libs/postgresql/postgresql-8.4-701.jdbc4.jar" />
+  <property name="db.jar" value="libs/postgresql/postgresql-42.1.4.jre6.jar" />
   <property name="db.driver" value="org.postgresql.Driver" />
-  <property name="db.url" value="jdbc:postgresql://${db.host}/${db.name}" />
+  <property name="db.url" value="jdbc:postgresql://${db.host}:${db.port}/${db.name}" />
 
   <property name="baltrad.beast.path" value="/opt/baltrad/beast" />
   <property name="baltrad.dex.path" value="/opt/baltrad/BaltradDex" />
@@ -28,6 +28,7 @@ along with the baltrad-node.  If not, see http://www.gnu.org/licenses.
   <fail unless="db.user" message="You must specify -Ddb.user=user" /> 
   <fail unless="db.pwd" message="You must specify -Ddb.pwd=password" /> 
   <fail unless="db.host" message="You must specify -Ddb.host=db host address" /> 
+  <fail unless="db.port" message="You must specify -Ddb.port=db port number" /> 
   <fail unless="db.name" message="You must specify -Ddb.name=db name" /> 
 
   <available file="${baltrad.beast.path}/sql/create_db.sql" property="baltrad.beast.create.available" />
