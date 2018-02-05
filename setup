@@ -32,13 +32,11 @@ ZLIBARG=
 URLREPO=http://git.baltrad.eu/blt_dependencies
 
 ZLIB_VERSION=1.2.11
-PYTHON_VERSION=2.7.2
+PYTHON_VERSION=2.7.14
 PIP_VERSION=7.1.2
 # PIP version used for python 2.7
-PIP_VERSION_PY27=7.1.2
 DISTRIBUTE_VERSION=0.6.9
-
-SETUPTOOLS_VERSION=24.0.2
+SETUPTOOLS_VERSION=38.5.0
 
 ZLIB_REBUILT=no
 ZLIBINC=
@@ -654,9 +652,6 @@ if [ -z $TPREFIX ]; then
   TPREFIX=$PREFIX/third_party
 fi
 
-PYTHON_VERSION=2.7.2
-PIP_VERSION=$PIP_VERSION_PY27
-
 if [ -n "$ZLIBARG" ]; then
   # We have some options here.
   #  no|false   => don't build zlib, hope it works
@@ -684,7 +679,7 @@ if [ -n "$ZLIBARG" ]; then
   fi
 fi
 
-PYTHON_EXECUTABLE=$TPREFIX/bin/python
+PYTHON_EXECUTABLE=$TPREFIX/bin/python2.7
 
 if [ "$PRINT_INFO_WANTED" = "yes" ]; then
   if [ ! -f "$PYTHON_EXECUTABLE" ]; then
@@ -710,7 +705,13 @@ if [ "$BUILDZLIB" = "yes" ]; then
 fi
 
 if [ -f $PYTHON_EXECUTABLE -a "$ZLIB_REBUILT" = "no" ]; then
-  echo "PYTHON already installed at $TPREFIX/bin/python"
+  pver=`LD_LIBRARY_PATH="$TPREFIX/lib:$LD_LIBRARY_PATH" "$PYTHON_EXECUTABLE" --version 2>&1 | cut -d' ' -f2`
+  #echo "$PYTHON_EXECUTABLE => $pver"
+  if [ "$pver" != $PYTHON_VERSION ]; then
+    bootstrap_python $TPREFIX $PYTHON_VERSION
+  else
+    echo "PYTHON already installed at $TPREFIX/bin/python"
+  fi
 else
   bootstrap_python $TPREFIX $PYTHON_VERSION
 fi
@@ -725,18 +726,17 @@ if [ "$ZLIBLIB" != "" ]; then
   export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:$ZLIBLIB"
 fi
 
-EASYINSTALL_EXECUTABLE=$TPREFIX/bin/easy_install
-if [ ! -f $EASYINSTALL_EXECUTABLE ]; then
-  install_distribute $PYTHON_EXECUTABLE $DISTRIBUTE_VERSION
-else
-  EIEVERSION=`$EASYINSTALL_EXECUTABLE --version 2>&1 | cut -d' ' -f 2`
-  #echo "VERSION: $EIEVERSION"
-  if [ $? -eq 0 ]; then
-    if [ "$EIEVERSION" = "0.6.9" -o "$EIEVERSION" = "0.6.10" ]; then
-      echo "Upgrading easy_install: $EASYINSTALL_EXECUTABLE --upgrade"
-      $EASYINSTALL_EXECUTABLE --upgrade distribute
-    fi
-  fi
+# There are some odd side-effects from the distribute-0.6 packages that we used initially.. So we should not even try to keep them
+# around any longer. Remove them with brute force and then ez_setup and let it upgrade automatically..
+if [ -f "$TPREFIX/lib/python2.7/site-packages/easy-install.pth" ]; then
+  cat "$TPREFIX/lib/python2.7/site-packages/easy-install.pth" | grep -v distribute-0.6 > "$TPREFIX/lib/python2.7/site-packages/easy-install.blt_bak"
+  mv "$TPREFIX/lib/python2.7/site-packages/easy-install.blt_bak" "$TPREFIX/lib/python2.7/site-packages/easy-install.pth"
+  \rm -fr "$TPREFIX/lib/python2.7/site-packages"/distribute-0.6*
+fi
+
+OLDSETUPFILES=`ls -1 "$TPREFIX/lib/python2.7/site-packages/" | grep setuptools-0.6 | grep egg-info`
+if [ "$OLDSETUPFILES" != "" ]; then
+  \rm -f "$TPREFIX/lib/python2.7/site-packages/"setuptools-0.6*egg-info
 fi
 
 install_setuptools "$PYTHON_EXECUTABLE"
