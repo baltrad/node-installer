@@ -24,9 +24,13 @@ Baltrad DB Installer
 @date 2011-02-09
 '''
 from installer import installer
-import os, subprocess, glob, shutil
+import os, subprocess, glob, shutil, re
 from osenv import osenv
 from InstallerException import InstallerException
+
+SETUPTOOLS_PATTERN = re.compile("setuptools-([0-9.]+).*")
+
+DISTRIBUTE_PATTERN = re.compile("distribute-([0-9.]+).*")
 
 ##
 # The Baltrad DB installer
@@ -44,6 +48,10 @@ class bdbinstaller(installer):
                     defaultosenv={"LD_LIBRARY_PATH":""})
     super(bdbinstaller, self).__init__(pkg, oenv)
   
+  ##
+  # Removes the old bdbclient and bdbcommon packages
+  # @param[in] python - the python binary to use
+  #
   def _remove_bdbclient_and_common(self, python):
     if os.path.exists(python):
       spth = subprocess.Popen(["%s -c %s"%(python, '"from distutils.sysconfig import get_python_lib; print(get_python_lib())"')], stdout=subprocess.PIPE, stderr=subprocess.STDOUT,shell=True).communicate()[0]
@@ -59,12 +67,62 @@ class bdbinstaller(installer):
             os.remove("%s/%s"%(spth, bname))
   
   ##
+  # Removes the old virtual environment from the bdb installation
+  # @param[in] prefix - the prefix where baltrad-db has been installed.
+  #
+  def _remove_old_virtualenv(self, prefix):
+    import shutil
+    if os.path.exists("%s/baltrad-db/bin"%prefix):
+      shutil.rmtree("%s/baltrad-db/bin"%prefix)
+    if os.path.exists("%s/baltrad-db/lib"%prefix):
+      shutil.rmtree("%s/baltrad-db/lib"%prefix)
+    if os.path.exists("%s/baltrad-db/include"%prefix):
+      shutil.rmtree("%s/baltrad-db/include"%prefix)
+
+  ##
+  # Checks the version of the currently installed setuptools so that it is at least
+  # specified version by looking at currently installed package names and not
+  # the __version__ when installing setuptools. This is due to a bug in the
+  # setuptools / distribute versioning causing returned versions to be 0.6.. when
+  # distribute has previously been installed.
+  #
+  def check_setuptools_version(self, pth, minimum_setuptools_version=(38,5,0)):
+    glist = glob.glob("%s/lib/python*"%pth)
+    if len(glist) > 0:
+      spkg = "%s/site-packages/setuptools*"%glist[0]
+      spkgs = glob.glob(spkg)
+      for s in spkgs:
+        m = SETUPTOOLS_PATTERN.match(os.path.basename(s))
+        if m:
+          vers = m.group(1).split(".")
+          major = int(vers[0])
+          minor = int(vers[1])
+          patch = 0
+          if len(vers)>2:
+            patch = int(vers[2])
+          if minimum_setuptools_version[0] <= major and minimum_setuptools_version[1] <= minor and minimum_setuptools_version[2] <= patch:
+            return True
+    return False
+  
+  ##
+  # Checks the current setuptools so that it doesn't have any existance of distribute
+  # that can mess stuff up for us
+  #
+  def check_distribute_package(self, pth):
+    glist = glob.glob("%s/lib/python*"%pth)
+    if len(glist) > 0:
+      spkg = "%s/site-packages/distribute-*"%glist[0]
+      spkgs = glob.glob(spkg)
+      if len(spkgs) > 0:
+        return True
+    return False
+    
+  ##
   # Performs the actual installation
   # @param env: the build environment
   #
   def doinstall(self, env):
     dir = os.path.abspath(self.package().fetch(env))
-
     os.chdir(dir)
 
     # create a virtual python environment
@@ -74,6 +132,9 @@ class bdbinstaller(installer):
     self._remove_bdbclient_and_common(python)
     self._remove_bdbclient_and_common(bdbpython)
     
+    if not self.check_setuptools_version(env.expandArgs("${PREFIX}/baltrad-db"), (38,5,0)) or self.check_distribute_package(env.expandArgs("${PREFIX}/baltrad-db")):
+      self._remove_old_virtualenv(env.expandArgs("${PREFIX}"))
+
     # Dont really understand why, but I need to install bdbcommon before creating the virtual env.
     #
     self._install_and_test_python_package(
@@ -81,19 +142,19 @@ class bdbinstaller(installer):
         path=os.path.join(dir, "common"),
         python=python,
     )
-
+    
     os.chdir(dir)
     ocode = subprocess.call([
         python, "./misc/virtualenv/virtualenv.py",
-         "--system-site-packages", "--distribute",
+         "--system-site-packages",
          env.expandArgs("${PREFIX}/baltrad-db")
     ])
     
-
     onlyclient=False
     if env.hasArg("SUBSYSTEMS") and len(env.getArg("SUBSYSTEMS")) > 0:
       if "RAVE" in env.getArg("SUBSYSTEMS") and "BDB" not in env.getArg("SUBSYSTEMS"):
         onlyclient = True
+ 
  
     # Install bdbserver in the virtual environment
     if onlyclient == False:
@@ -102,6 +163,7 @@ class bdbinstaller(installer):
                                             path=os.path.join(dir, "server"),
                                             python=bdbpython,
                                             )
+    
     
     self._install_and_test_python_package(
         "baltrad.bdbclient",
