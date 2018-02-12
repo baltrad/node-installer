@@ -33,6 +33,7 @@ URLREPO=http://git.baltrad.eu/blt_dependencies
 
 ZLIB_VERSION=1.2.11
 PYTHON_VERSION=2.7.14
+PYTHON_MM_VERSION=python2.7
 PIP_VERSION=7.1.2
 # PIP version used for python 2.7
 DISTRIBUTE_VERSION=0.6.9
@@ -141,11 +142,6 @@ install_distribute() {
   cd `basename $distribute_src .tar.gz` || exit 127
 
   $python setup.py install || exit 127
-}
-
-clean_distribute() {
-  cd $PACKAGEPATH || exit 127
-  rm -rf distribute-$1
 }
 
 install_setuptools() {
@@ -726,17 +722,32 @@ if [ "$ZLIBLIB" != "" ]; then
   export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:$ZLIBLIB"
 fi
 
+HAS_DISTR=false
+if [ -f "$TPREFIX/lib/$PYTHON_MM_VERSION/site-packages/easy-install.pth" ]; then
+  XX=`cat "$TPREFIX/lib/$PYTHON_MM_VERSION/site-packages/easy-install.pth" | grep distribute-0.6`
+  if [ "$XX" = "" ]; then
+    XX=`cat "$TPREFIX/lib/$PYTHON_MM_VERSION/site-packages/easy-install.pth" | grep distribute-0.7`
+  fi
+  if [ "$XX" != "" ]; then
+    HAS_DISTR=true
+  fi
+fi
+  
+
 # There are some odd side-effects from the distribute-0.6 packages that we used initially.. So we should not even try to keep them
 # around any longer. Remove them with brute force and then ez_setup and let it upgrade automatically..
-if [ -f "$TPREFIX/lib/python2.7/site-packages/easy-install.pth" ]; then
-  cat "$TPREFIX/lib/python2.7/site-packages/easy-install.pth" | grep -v distribute-0.6 > "$TPREFIX/lib/python2.7/site-packages/easy-install.blt_bak"
-  mv "$TPREFIX/lib/python2.7/site-packages/easy-install.blt_bak" "$TPREFIX/lib/python2.7/site-packages/easy-install.pth"
-  \rm -fr "$TPREFIX/lib/python2.7/site-packages"/distribute-0.6*
+if [ -f "$TPREFIX/lib/$PYTHON_MM_VERSION/site-packages/easy-install.pth" -a "$HAS_DISTR" = "true" ]; then
+  cat "$TPREFIX/lib/$PYTHON_MM_VERSION/site-packages/easy-install.pth" | grep -v distribute-0.6 > "$TPREFIX/lib/$PYTHON_MM_VERSION/site-packages/easy-install.blt_bak"
+  mv "$TPREFIX/lib/$PYTHON_MM_VERSION/site-packages/easy-install.blt_bak" "$TPREFIX/lib/$PYTHON_MM_VERSION/site-packages/easy-install.pth"
+  cat "$TPREFIX/lib/$PYTHON_MM_VERSION/site-packages/easy-install.pth" | grep -v distribute-0.7 > "$TPREFIX/lib/$PYTHON_MM_VERSION/site-packages/easy-install.blt_bak"
+  mv "$TPREFIX/lib/$PYTHON_MM_VERSION/site-packages/easy-install.blt_bak" "$TPREFIX/lib/$PYTHON_MM_VERSION/site-packages/easy-install.pth"
+  \rm -fr "$TPREFIX/lib/$PYTHON_MM_VERSION/site-packages"/distribute-0.6*
+  \rm -fr "$TPREFIX/lib/$PYTHON_MM_VERSION/site-packages"/distribute-0.7*
 fi
 
-OLDSETUPFILES=`ls -1 "$TPREFIX/lib/python2.7/site-packages/" | grep setuptools-0.6 | grep egg-info`
+OLDSETUPFILES=`ls -1 "$TPREFIX/lib/$PYTHON_MM_VERSION/site-packages/" | grep setuptools-0.6 | grep egg-info`
 if [ "$OLDSETUPFILES" != "" ]; then
-  \rm -f "$TPREFIX/lib/python2.7/site-packages/"setuptools-0.6*egg-info
+  \rm -f "$TPREFIX/lib/$PYTHON_MM_VERSION/site-packages/"setuptools-0.6*egg-info
 fi
 
 install_setuptools "$PYTHON_EXECUTABLE"
@@ -755,7 +766,6 @@ if [ "$CMD" = "clean" -o "$CMD" = "dist" ]; then
   echo "CLEANING ZLIB"
   clean_zlib $ZLIB_VERSION
   clean_python $PYTHON_VERSION
-  clean_distribute $DISTRIBUTE_VERSION
   clean_pip $PIP_VERSION
 fi
 
