@@ -59,7 +59,7 @@ class dbinstaller(installer):
     if not os.path.isdir(env.expandArgs("$DATADIR")):
       os.mkdir(env.expandArgs("$DATADIR"))
     
-    args = "%s -Ddb.jar=%s/etc/postgresql/postgresql-8.4-701.jdbc4.jar"%(args, env.getInstallerPath())
+    args = "%s -Ddb.jar=%s/etc/postgresql/postgresql-42.1.4.jre6.jar"%(args, env.getInstallerPath())
     buildfile = "%s/etc/install_db.xml"%env.getInstallerPath()
     
     if env.hasArg("REINSTALLDB") and env.getArg("REINSTALLDB") == True:
