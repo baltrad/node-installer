@@ -26,7 +26,7 @@ The overall installer that performs the installation, dependency checking et al.
 import os
 import subprocess
 import tempfile
-import version
+import bltversion
 
 class node_installer:
   _installers = []
@@ -82,8 +82,8 @@ class node_installer:
   #
   def create_offline_tarball(self, benv):
     self.fetch_offline_content(benv)
-    version.set_offline_node_version()
-    node_version = version.get_node_version()
+    bltversion.set_offline_node_version()
+    node_version = bltversion.get_node_version()
     target = os.path.join(
         tempfile.gettempdir(),
         "node-installer-%s.tar.gz" % node_version

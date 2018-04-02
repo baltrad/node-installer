@@ -23,7 +23,7 @@ Deployer
 @author Anders Henja (Swedish Meteorological and Hydrological Institute, SMHI)
 @date 2011-02-15
 '''
-import version
+import bltversion
 from installer import installer
 from InstallerException import InstallerException
 import subprocess
@@ -70,7 +70,7 @@ class deployer(installer):
 
     super(deployer, self).__init__(package, oenv)
 
-    self.node_version = version.get_node_version()
+    self.node_version = bltversion.get_node_version()
   
   ##
   # Performs the actual installation
