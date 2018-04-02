@@ -75,7 +75,7 @@ class osenv:
     if self._foptionalenv != None:
       variables = self._foptionalenv(benv, self._env)
     for key in self._env.keys():
-      if not variables.has_key(key):
+      if key not in variables:
         variables[key] = self._env[key]
     return variables
      
@@ -87,7 +87,7 @@ class osenv:
     self._variables = self._buildvariabledict(benv)
     self._snapshot = {}
     for key in self._variables.keys():
-      if os.environ.has_key(key):
+      if key in os.environ:
         self._snapshot[key] = os.environ[key]
       else:
         self._snapshot[key] = None
@@ -120,7 +120,7 @@ class osenv:
   #
   def _deleteKeysFromOsEnvironment(self, oskeys):
     for k in oskeys:
-      if os.environ.has_key(k):
+      if k in os.environ:
         del os.environ[k]
 
   ##
@@ -156,7 +156,7 @@ class osenv:
       if self._snapshot[key] != None:
         os.environ[key] = self._snapshot[key]
       else:
-        if os.environ.has_key(key):
+        if key in os.environ:
           os.environ.pop(key)
 
   ##
@@ -174,4 +174,4 @@ class osenv:
       v = benv.expandArgs(value)
       os.environ[name] = self.expandEnvironment(v)
     else:
-      raise Exception,"Environment variable %s has not been snapshotted"%name
+      raise Exception("Environment variable %s has not been snapshotted"%name)

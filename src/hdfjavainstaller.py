@@ -56,7 +56,7 @@ class hdfjavainstaller(installer):
     
     shutil.rmtree(env.expandArgs("$TPREFIX/hdf-java"), True)
     
-    os.path.walk(dir, _recursive_chmod, stat.S_IRWXU|stat.S_IRGRP|stat.S_IXGRP|stat.S_IROTH|stat.S_IXOTH)
+    os.walk(dir, _recursive_chmod, stat.S_IRWXU|stat.S_IRGRP|stat.S_IXGRP|stat.S_IROTH|stat.S_IXOTH)
     
     shutil.move(dir, env.expandArgs("$TPREFIX/hdf-java"))
 

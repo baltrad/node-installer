@@ -74,9 +74,9 @@ class installer(object):
           env.addInstalled(name, version)
         installed = True
       else:
-        print "Package %s - %s already installed skipping."%(name, version)
+        print("Package %s - %s already installed skipping."%(name, version))
     else:
-      print "Package %s - %s excluded from build."%(name, version)
+      print("Package %s - %s excluded from build."%(name, version))
     return installed
   
   ##
@@ -84,7 +84,7 @@ class installer(object):
   # @param env: the build environment
   #
   def doinstall(self, env):
-    raise InstallerException, "Installer does not implement doinstall"
+    raise InstallerException("Installer does not implement doinstall")
   
   ##
   # Returns the package that this installer will install

@@ -101,36 +101,36 @@ class bwrwpinstaller(installer):
     #exit(255)
     ocode = subprocess.call(newcmd, shell=True)
     if ocode != 0:
-      raise InstallerException, "Failed to configure baltrad-wrwp"
+      raise InstallerException("Failed to configure baltrad-wrwp")
 
     ocode = subprocess.call("make", shell=True)
     if ocode != 0:
-      raise InstallerException, "Failed to build baltrad-wrwp"
+      raise InstallerException("Failed to build baltrad-wrwp")
 
     ocode = subprocess.call("make test", shell=True)
     if ocode != 0:
-      raise InstallerException, "Failed to test baltrad-wrwp"      
+      raise InstallerException("Failed to test baltrad-wrwp")      
 
     ocode = subprocess.call("make doc > /dev/null 2>&1", shell=True)
     if ocode != 0:
-      print "Failed to generate baltrad-wrwp documentation"
+      print("Failed to generate baltrad-wrwp documentation")
     else:
       self._install_doc(env)
 
     ocode = subprocess.call("make install", shell=True)
     if ocode != 0:
-      raise InstallerException, "Failed to install baltrad-wrwp"
+      raise InstallerException("Failed to install baltrad-wrwp")
     
-    cmd = "python -c \"import sys;import os;print os.sep.join([sys.prefix, 'lib', 'python'+sys.version[:3],'site-packages'])\""
+    cmd = "python -c \"import sys;import os;print(os.sep.join([sys.prefix, 'lib', 'python'+sys.version[:3],'site-packages']))\""
     plc = subprocess.Popen(cmd, stdout=subprocess.PIPE, shell=True).communicate()[0]
-    foutname = "%s/baltrad-wrwp.pth"%string.strip(plc)
+    foutname = "%s/baltrad-wrwp.pth"%plc.decode('utf-8').strip()
 
     try:
       fp = open(foutname, "w")
       fp.write(env.expandArgs("$PREFIX/baltrad-wrwp/share/wrwp/pywrwp"))
       fp.close()
-    except Exception, e:
-      raise InstallerException, "Failed to generate baltrad-wrwp.pth in python site-packages, %s"%`e.__str__()`
+    except Exception as e:
+      raise InstallerException("Failed to generate baltrad-wrwp.pth in python site-packages, %s"%str(e.__str__()))
 
     self._configure_rave_plugin(env)
   
@@ -153,7 +153,7 @@ a.register('se.smhi.baltrad-wrwp.generatewrwp', 'baltrad_wrwp_pgf_plugin', 'gene
     try:    
       ocode = subprocess.call("python tmpreg.py", shell=True)
       if ocode != 0:
-        raise InstallerException, "Failed to register google maps plugin in rave"
+        raise InstallerException("Failed to register google maps plugin in rave")
     finally:
       if os.path.exists("tmpreg.py"):   
         os.unlink("tmpreg.py")

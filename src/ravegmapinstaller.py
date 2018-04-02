@@ -58,7 +58,7 @@ class ravegmapinstaller(installer):
 
     ocode = subprocess.call(env.expandArgs("python setup.py install --prefix=\"$PREFIX\""), shell=True)
     if ocode != 0:
-      raise InstallerException, "Failed to install"
+      raise InstallerException("Failed to install")
     
     env.getNodeScript().stop(rave=True)
     
@@ -78,7 +78,7 @@ a.register('eu.baltrad.beast.creategmap', 'googlemap_pgf_plugin', 'generate', 'G
     try:    
       ocode = subprocess.call("python tmpreg.py", shell=True)
       if ocode != 0:
-        raise InstallerException, "Failed to register google maps plugin in rave"
+        raise InstallerException("Failed to register google maps plugin in rave")
     finally:
       if os.path.exists("tmpreg.py"):   
         os.unlink("tmpreg.py")

@@ -55,7 +55,7 @@ class buildenv:
   # 
   def __init__(self):
     if os.path.exists(self.FILENAME_INSTALLED_MODULES):
-      fp = open(self.FILENAME_INSTALLED_MODULES, 'r')
+      fp = open(self.FILENAME_INSTALLED_MODULES, 'rb')
       self._installed = pickle.load(fp)
     else:
       self._installed = {}
@@ -110,7 +110,7 @@ class buildenv:
   # @return: the value
   #
   def getArg(self, name):
-    if self._argsinternal.has_key(name):
+    if name in self._argsinternal:
       return self._argsinternal[name]
     else:
       return self._args[name]
@@ -120,24 +120,24 @@ class buildenv:
   # @param name: the argument name
   # @return if it exists or not
   def hasArg(self, name):
-    if self._argsinternal.has_key(name):
+    if name in self._argsinternal:
       return True
     else:
-      return self._args.has_key(name)
+      return name in self._args
 
   ##
   # Restore the configuration
   #
   def restore(self):
     if os.path.exists(self.FILENAME_SAVED_ARGUMENTS):
-      fp = open(self.FILENAME_SAVED_ARGUMENTS, 'r')
+      fp = open(self.FILENAME_SAVED_ARGUMENTS, 'rb')
       self._args = pickle.load(fp)
   
   ##
   # Remembers the configuration
   #
   def remember(self):
-    fp = open(self.FILENAME_SAVED_ARGUMENTS, 'w')
+    fp = open(self.FILENAME_SAVED_ARGUMENTS, 'wb')
     pickle.dump(self._args, fp)
     fp.close()
     
@@ -153,7 +153,7 @@ class buildenv:
   # @param name: the name of the package
   #
   def isExcluded(self, name):
-    if self._excluded.has_key(name):
+    if name in self._excluded:
       return self._excluded[name]
     return False
 
@@ -162,7 +162,7 @@ class buildenv:
   # @param name: the module that should be removed from the exclusion list
   #
   def removeExclude(self, name):
-    if self._excluded.has_key(name):
+    if name in self._excluded:
       self._excluded.pop(name)
 
   ##
@@ -187,7 +187,7 @@ class buildenv:
   #
   def addInstalled(self, name, version):
     self._installed[name] = version;
-    fp = open(self.FILENAME_INSTALLED_MODULES, 'w')
+    fp = open(self.FILENAME_INSTALLED_MODULES, 'wb')
     pickle.dump(self._installed, fp)
 
   ##
@@ -196,9 +196,9 @@ class buildenv:
   # @param name: the name of the package
   #
   def removeInstalled(self, name):
-    if self._installed.has_key(name):
+    if name in self._installed:
       self._installed.pop(name);
-    fp = open(self.FILENAME_INSTALLED_MODULES, 'w')
+    fp = open(self.FILENAME_INSTALLED_MODULES, 'wb')
     pickle.dump(self._installed, fp)
   
   ##
@@ -208,7 +208,7 @@ class buildenv:
   # @return: version of package or None if it hasn't been installed
   #
   def getInstalled(self, name):
-    if self._installed.has_key(name):
+    if name in self._installed:
       return self._installed[name]
     return None
 
@@ -218,7 +218,7 @@ class buildenv:
   # @param name the name of the package
   # @return version of currently installed package or None
   def getCurrentlyInstalled(self, name):
-    if self._currentlyinstalled.has_key(name):
+    if name in self._currentlyinstalled:
       return self._currentlyinstalled[name]
     return None
 

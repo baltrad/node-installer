@@ -120,7 +120,7 @@ class docinstaller(installer):
 
     ocode = subprocess.call("doxygen doxygen.cfg > /dev/null 2>&1", shell=True)
     if ocode != 0:
-      print "Failed to generate installation documentation"
+      print("Failed to generate installation documentation")
       return
 
     pth = env.expandArgs("$PREFIX/doc")

@@ -72,15 +72,15 @@ class beambinstaller(installer):
     
     ocode = subprocess.call(newcmd, shell=True)
     if ocode != 0:
-      raise InstallerException, "Failed to configure beamb"
+      raise InstallerException("Failed to configure beamb")
 
     ocode = subprocess.call("make", shell=True)
     if ocode != 0:
-      raise InstallerException, "Failed to build beamb"
+      raise InstallerException("Failed to build beamb")
 
     ocode = subprocess.call("make test", shell=True)
     if ocode != 0:
-      raise InstallerException, "Failed to test beamb"      
+      raise InstallerException("Failed to test beamb")      
 
     cversion = self.package().version()  # This packages version
     cname = self.package().name()        # Just get the name we use for this package
@@ -89,7 +89,7 @@ class beambinstaller(installer):
     if iversion != cversion:
       ocode = subprocess.call("make clean_cache", shell=True)
       if ocode != 0:
-        print "Failed to clean beamb cache"
+        print("Failed to clean beamb cache")
       
     #version = self.package().version()
     #name = self.package().name()
@@ -97,10 +97,10 @@ class beambinstaller(installer):
     
     ocode = subprocess.call("make doc > /dev/null 2>&1", shell=True)
     if ocode != 0:
-      print "Failed to generate BEAMB documentation"
+      print("Failed to generate BEAMB documentation")
     else:
       self._install_doc(env)
 
     ocode = subprocess.call("make install", shell=True)
     if ocode != 0:
-      raise InstallerException, "Failed to install beamb"
+      raise InstallerException("Failed to install beamb")

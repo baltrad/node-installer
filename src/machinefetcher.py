@@ -52,9 +52,9 @@ class machinefetcher(fetcher):
   def dofetch(self, package, env=None):
     import platform
     m = platform.machine()
-    if self._fetchers.has_key(m):
+    if m in self._fetchers:
       return self._fetchers[m].fetch(package, env)
-    raise InstallerException, "Unsupported machine type %s"%m
+    raise InstallerException("Unsupported machine type %s"%m)
 
   ##
   # Cleans up the machine dependent fetcher

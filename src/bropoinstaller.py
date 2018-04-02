@@ -76,33 +76,37 @@ class bropoinstaller(installer):
     
     ocode = subprocess.call(newcmd, shell=True)
     if ocode != 0:
-      raise InstallerException, "Failed to configure bropo"
+      raise InstallerException("Failed to configure bropo")
 
     ocode = subprocess.call("make", shell=True)
     if ocode != 0:
-      raise InstallerException, "Failed to build bropo"
+      raise InstallerException("Failed to build bropo")
 
     ocode = subprocess.call("make test", shell=True)
     if ocode != 0:
-      raise InstallerException, "Failed to test bropo"      
+      raise InstallerException("Failed to test bropo")      
 
     ocode = subprocess.call("make doc > /dev/null 2>&1", shell=True)
     if ocode != 0:
-      print "Failed to generate BROPO documentation"
+      print("Failed to generate BROPO documentation")
     else:
       self._install_doc(env)
 
     ocode = subprocess.call("make install", shell=True)
     if ocode != 0:
-      raise InstallerException, "Failed to install bropo"
+      raise InstallerException("Failed to install bropo")
     
-    cmd = "python -c \"import sys;import os;print os.sep.join([sys.prefix, 'lib', 'python'+sys.version[:3],'site-packages'])\""
+    python_bin="python"
+    if env.hasArg("ENABLE_PY3") and env.getArg("ENABLE_PY3"):
+      python_bin="python3"
+
+    cmd = python_bin + " -c \"import sys;import os;print(os.sep.join([sys.prefix, 'lib', 'python'+sys.version[:3],'site-packages']))\""
     plc = subprocess.Popen(cmd, stdout=subprocess.PIPE, shell=True).communicate()[0]
-    foutname = "%s/bropo.pth"%string.strip(plc)
+    foutname = "%s/bropo.pth"%plc.decode('utf-8').strip()
 
     try:
       fp = open(foutname, "w")
       fp.write(env.expandArgs("$PREFIX/bropo/share/bropo/pyropo"))
       fp.close()
-    except Exception, e:
-      raise InstallerException, "Failed to generate bropo.pth in python site-packages, %s"%`e.__str__()`
+    except Exception as e:
+      raise InstallerException("Failed to generate bropo.pth in python site-packages, %s"%str(e.__str__()))

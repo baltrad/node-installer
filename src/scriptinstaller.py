@@ -45,7 +45,7 @@ class scriptinstaller(installer):
     if not os.path.exists(dir):
       os.mkdir(dir)
     elif not os.path.isdir(dir):
-      raise InstallerException, "%s exists but is not a directory"%dir
+      raise InstallerException("%s exists but is not a directory"%dir)
   
   ##
   # Performs the actual installation

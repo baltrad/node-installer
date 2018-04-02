@@ -65,7 +65,7 @@ class untar(fetcher):
 
     code = subprocess.call("tar %s %s"%(args,filename), shell=True)
     if code != 0:
-      raise InstallerException, "Failed to extract software %s"%self.name
+      raise InstallerException("Failed to extract software %s"%self.name)
     
     return self.dirname
   

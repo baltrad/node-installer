@@ -82,7 +82,7 @@ a.save("$PREFIX/rave/etc/rave_pgf_quality_registry.xml")
     try:    
       ocode = subprocess.call("python tmpreg.py", shell=True)
       if ocode != 0:
-        raise InstallerException, "Failed to register quality plugins in rave"
+        raise InstallerException("Failed to register quality plugins in rave")
     finally:
       if os.path.exists("tmpreg.py"):   
         os.unlink("tmpreg.py")

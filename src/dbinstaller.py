@@ -51,7 +51,7 @@ class dbinstaller(installer):
   #
   def doinstall(self, env):
     if env.hasArg("EXCLUDEDB") and env.getArg("EXCLUDEDB") == True:
-      print "Excluded: Database table installation"
+      print("Excluded: Database table installation")
       return
     dbargs = "-Ddb.user=$DBUSER -Ddb.pwd=$DBPWD -Ddb.host=$DBHOST -Ddb.port=$DBPORT -Ddb.name=$DBNAME"
     args = "%s -Dbaltrad.beast.path=$PREFIX/beast -Dbaltrad.dex.path=$PREFIX/BaltradDex" % dbargs
@@ -65,25 +65,25 @@ class dbinstaller(installer):
     if env.hasArg("REINSTALLDB") and env.getArg("REINSTALLDB") == True:
       ocode = subprocess.call(env.expandArgs("$TPREFIX/ant/bin/ant -f %s %s drop-db"%(buildfile,args)), shell=True)
       if ocode != 0:
-        raise InstallerException, "Failed to drop database tables"
+        raise InstallerException("Failed to drop database tables")
       
       ocode = subprocess.call([
         env.expandArgs("$PREFIX/baltrad-db/bin/baltrad-bdb-drop"),
         env.expandArgs("--conf=$PREFIX/etc/bltnode.properties")
       ])
       if ocode != 0:
-        raise InstallerException, "Faield to drop BDB"
+        raise InstallerException("Failed to drop BDB")
         
     ocode = subprocess.call(env.expandArgs("$TPREFIX/ant/bin/ant -f %s %s install-db"%(buildfile,args)), shell=True)
     if ocode != 0:
-      raise InstallerException, "Failed to install database tables"
+      raise InstallerException("Failed to install database tables")
 
     ocode = subprocess.call([
       env.expandArgs("$PREFIX/baltrad-db/bin/baltrad-bdb-create"),
       env.expandArgs("--conf=$PREFIX/etc/bltnode.properties")
     ])
     if ocode != 0:
-      raise InstallerException, "Faield to create BDB"
+      raise InstallerException("Failed to create BDB")
     
 
 ##
@@ -116,11 +116,11 @@ class dbupgrader(dbinstaller):
     buildfile = "%s/etc/install_db.xml"%env.getInstallerPath()
     ocode = subprocess.call(env.expandArgs("$TPREFIX/ant/bin/ant -f %s %s upgrade-db"%(buildfile,args)), shell=True)
     if ocode != 0:
-      raise InstallerException, "Failed to upgrade db"
+      raise InstallerException("Failed to upgrade db")
 
     ocode = subprocess.call([
       env.expandArgs("$PREFIX/baltrad-db/bin/baltrad-bdb-upgrade"),
       env.expandArgs("--conf=$PREFIX/etc/bltnode.properties")
     ])
     if ocode != 0:
-      raise InstallerException, "Failed to upgrade BDB"
+      raise InstallerException("Failed to upgrade BDB")

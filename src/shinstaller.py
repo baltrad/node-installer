@@ -55,5 +55,5 @@ class shinstaller(installer):
     cmdstr = env.expandArgs(self._cmd)
     code = subprocess.call("%s"%cmdstr, shell=True)
     if code != 0:
-      raise InstallerException, "Failed to execute command %s for %s (%s)"%(cmdstr, name,version)
+      raise InstallerException("Failed to execute command %s for %s (%s)"%(cmdstr, name,version))
     

@@ -58,12 +58,12 @@ class patcher(fetcher):
     dirname = self._fetcher.fetch(package, env)
     os.chdir(dirname)
     
-    print "PATCHING %s"%`self._patches`
+    print("PATCHING %s"%str(self._patches))
     for patch in self._patches:
       code = subprocess.call("patch -p0 < %s/patches/%s"%(env.getInstallerPath(),patch), shell=True)
       if code != 0:
         os.chdir(cdir)
-        raise InstallerException, "Failed to apply patch %s"%patch
+        raise InstallerException("Failed to apply patch %s"%patch)
     
     os.chdir(cdir)
     return dirname

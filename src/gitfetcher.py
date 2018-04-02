@@ -48,8 +48,8 @@ class gitfetcher(fetcher):
   #
   def __init__(self, url, tag=None, branch=None):
     super(fetcher, self).__init__()
-    n = url[string.rfind(url, "/")+1:]
-    self.project = n[:string.rfind(n,".git")]
+    n = url[url.rfind("/")+1:]
+    self.project = n[:n.rfind(".git")]
     self.url = url
     self.tag = tag
     self.branch = branch
@@ -62,37 +62,37 @@ class gitfetcher(fetcher):
     if not os.path.exists(self.project):
       code = subprocess.call("git clone %s"%url, shell=True)
       if code != 0:
-        raise InstallerException, "Failed to fetch %s from repository"%url
+        raise InstallerException("Failed to fetch %s from repository"%url)
     
     cdir = os.getcwd()
     os.chdir(self.project)
     
     code = subprocess.call("git pull %s HEAD:master"%url, shell=True)
     if code != 0:
-      raise InstallerException, "Failed to update %s from repository"%url
+      raise InstallerException("Failed to update %s from repository"%url)
     
     if self.branch != None:
       a=subprocess.Popen("git branch -l", shell=True, stdout=subprocess.PIPE)
       output=a.communicate()[0]
       if a.returncode != 0:
         os.chdir(cdir)
-        raise InstallerException, "Failed to list branches %s from repository"%url
+        raise InstallerException("Failed to list branches %s from repository"%url)
       
       if re.search("^\s*%s\s*$"%self.branch, output, flags=re.MULTILINE) == None:
         code = subprocess.call("git checkout -b %s remotes/origin/%s"%(self.branch,self.branch))
         if code != 0:
           os.chdir(cdir)
-          raise InstallerException, "Failed to fetch branch %s from repository"%self.branch       
+          raise InstallerException("Failed to fetch branch %s from repository"%self.branch)       
       code = subprocess.call("git checkout %s"%(self.branch))
       if code != 0:
         os.chdir(cdir)
-        raise InstallerException, "Failed to checkout branch %s"%self.branch
+        raise InstallerException("Failed to checkout branch %s"%self.branch)
     
     if self.tag != None:
       code = subprocess.call("git checkout %s"%(self.tag), shell=True)
       if code != 0:
         os.chdir(cdir)
-        raise InstallerException, "Failed to checkout tag %s from repository"%self.tag       
+        raise InstallerException("Failed to checkout tag %s from repository"%self.tag)       
 
     os.chdir(cdir)
     
@@ -108,7 +108,7 @@ class gitfetcher(fetcher):
     if env.hasArg("INSTALL_OFFLINE") and env.getArg("INSTALL_OFFLINE") == True:
       code = subprocess.call("tar -xvzf %s.tgz"%self.offlinename, shell=True)
       if code != 0:
-        raise InstallerException, "Could not unpack %s.tgz, but offline was specified"%self.offlinename
+        raise InstallerException("Could not unpack %s.tgz, but offline was specified"%self.offlinename)
       return self.offlinename
     
     return self._fetchgit(env)
@@ -145,7 +145,7 @@ class gitfetcher(fetcher):
     code = subprocess.call("git archive --format=tar --prefix=\"%s/\" HEAD | gzip > \"%s/%s.tgz\""%(self.offlinename,ipath,self.offlinename), shell=True)
     if code != 0:
       os.chdir(cdir)
-      raise InstallerException, "Failed to create archive from git repository %s"%self.project
+      raise InstallerException("Failed to create archive from git repository %s"%self.project)
     os.chdir(cdir)    
 
     if self.project not in [".", "..", "/", "../", "./"]:

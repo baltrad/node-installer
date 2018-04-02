@@ -69,7 +69,7 @@ class pipfetcher(fetcher):
     args.append("--ignore-installed")
     args.append("%s == %s" % (pypi_name, package.version()))
 
-    print " ".join(args)
+    print(" ".join(args))
     ocode = subprocess.call(args)
     if ocode != 0:
       raise InstallerException(

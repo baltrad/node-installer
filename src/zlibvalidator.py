@@ -83,7 +83,7 @@ int main(int argc, char** argv) {
     code = subprocess.call(cmd, shell=True)
     if code != 0:
       self._remove_files(["testzlib.c", "testzlib"])
-      raise ValidatorException, "Failed to compile zlib test program"
+      raise ValidatorException("Failed to compile zlib test program")
     
     cmd = "./testzlib"
     if zliblib != None and zliblib != "":
@@ -92,7 +92,7 @@ int main(int argc, char** argv) {
     code = subprocess.call(cmd, shell=True)
     if code != 0:
       self._remove_files(["testzlib.c", "testzlib"])
-      raise ValidatorException, "Failed to run zlib test program"
+      raise ValidatorException("Failed to run zlib test program")
 
     self._remove_files(["testzlib.c", "testzlib"])
     
@@ -107,5 +107,5 @@ int main(int argc, char** argv) {
       if env.hasArg("ZLIBLIB"):
         zliblib = env.getArg("ZLIBLIB")
       self._test_compile_testprog(env, zlibinc, zliblib)
-      print "External ZLIB tested ok"
+      print("External ZLIB tested ok")
 

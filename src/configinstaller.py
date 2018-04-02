@@ -30,6 +30,11 @@ import getpass, pwd, stat, sys
 from installer import installer
 from InstallerException import InstallerException
 
+try:
+  from urllib import quote_plus
+except:
+  from urllib.parse import quote_plus
+
 class configinstaller(installer):
   ##
   # Constructor
@@ -44,7 +49,7 @@ class configinstaller(installer):
     if not os.path.exists(dir):
       os.mkdir(dir)
     elif not os.path.isdir(dir):
-      raise InstallerException, "%s exists but is not a directory"%dir
+      raise InstallerException("%s exists but is not a directory"%dir)
   ##
   # Performs the actual installation
   # @param env: the build environment
@@ -59,7 +64,7 @@ class configinstaller(installer):
     if os.path.exists(dst):
         shutil.move(dst, backup)
     
-    env.addArg("BDB_ENCODED_DBPWD", urllib.quote_plus(env.getArg("DBPWD")))
+    env.addArg("BDB_ENCODED_DBPWD", quote_plus(env.getArg("DBPWD")))
     conf = ["#baltrad.bdb.server.type = werkzeug",
             "baltrad.bdb.server.type = cherrypy",
             "# Number of working threads for cherrypy",
@@ -93,7 +98,7 @@ class configinstaller(installer):
                      "baltrad.bdb.server.backend.sqla.storage.fs.layers = 3",
                      ])
       else:
-        raise InstallerException, "unrecognized BDB_STORAGE: %s" % storage
+        raise InstallerException("unrecognized BDB_STORAGE: %s" % storage)
 
     if "BDB" in subsystems or "RAVE" in subsystems or "DEX" in subsystems:
       auth = env.getArg("BDB_AUTH")
@@ -106,7 +111,7 @@ class configinstaller(installer):
       elif auth == "noauth":
         conf.append("baltrad.bdb.server.auth.providers = noauth")
       else:
-        raise InstallerException, "unrecognized BDB_AUTH: %s" % auth
+        raise InstallerException("unrecognized BDB_AUTH: %s" % auth)
 
     if "DEX" in subsystems:
       conf.append("# BEAST PGF Specific values")

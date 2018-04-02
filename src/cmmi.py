@@ -77,22 +77,22 @@ class cmmi(installer):
     argstr = env.expandArgs(args)
     code = subprocess.call("./configure %s"%argstr, shell=True)
     if code != 0:
-      raise InstallerException, "Failed to configure software %s (%s)"%(name,version)
+      raise InstallerException("Failed to configure software %s (%s)"%(name,version))
     
     code = subprocess.call("make", shell=True)
     if code != 0:
-      raise InstallerException, "Failed to compile software %s (%s)"%(name,version)
+      raise InstallerException("Failed to compile software %s (%s)"%(name,version))
 
     if self._test == True:
       if self._foptionaltest == None or self._foptionaltest(env) == True:
         code = subprocess.call("make test", shell=True)
         if code != 0:
-          raise InstallerException, "Failed to test software %s (%s)"%(name,version)
+          raise InstallerException("Failed to test software %s (%s)"%(name,version))
     
     if self._install == True:
       code = subprocess.call("make install", shell=True)
       if code != 0:
-        raise InstallerException, "Failed to install software %s (%s)"%(name,version)
+        raise InstallerException("Failed to install software %s (%s)"%(name,version))
 
     if self._fpostinstall != None:
       self._fpostinstall(env)

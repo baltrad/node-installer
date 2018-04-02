@@ -45,7 +45,7 @@ class tomcatinstaller(installer):
     dir = self.package().fetch(env)
 
     if self.isTomcatRunning(env):
-      raise InstallerException, "Tomcat process is running, please stop it first"
+      raise InstallerException("Tomcat process is running, please stop it first")
 
     self.patch_catalina_sh(dir, env)
 
@@ -69,7 +69,7 @@ class tomcatinstaller(installer):
   def isTomcatRunning(self, env):
     result = False
     ps = subprocess.Popen(['ps', '-edalf'], stdout=subprocess.PIPE).communicate()[0]
-    processes = ps.split('\n')
+    processes = ps.decode('utf-8').split('\n')
     for p in processes:
       if p.find("tomcat") >= 0:
         if p.find(env.expandArgs("$TPREFIX/tomcat")) >= 0:
@@ -180,7 +180,7 @@ class tomcatinstaller(installer):
       else:
         code = subprocess.call("patch -p0 < %s/patches/%s/catalina-sh_memory_opts.patch"%(env.getInstallerPath(), patchdir), shell=True)
       if code != 0:
-        raise InstallerException, "Failed to apply catalina patch %s/catalina-sh_memory_opts.patch"%patchdir
+        raise InstallerException("Failed to apply catalina patch %s/catalina-sh_memory_opts.patch"%patchdir)
     finally:
       os.chdir(cdir)
 

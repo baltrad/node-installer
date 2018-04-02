@@ -53,8 +53,10 @@ from keystoreinstaller import keystoreinstaller
 from docinstaller import docinstaller
 from nullinstaller import nullinstaller
 from netcdfinstaller import netcdfinstaller
+from pychoiceinstaller import pychoiceinstaller
 
 from node_package import node_package
+from rave_package import rave_package
 
 from extra_functions import *
 from node_installer import node_installer
@@ -95,65 +97,42 @@ MODULES=[prepareinstaller(package("PREPARE", "1.0", nodir(), remembered=False)),
          shinstaller(package("PYTHON", ".".join([str(x) for x in sys.version_info[:3]]), nodir()),
                      ":"),
 
-         experimental(
-           shinstaller(package("NUMPY", "1.3.0",
-                               patcher(untar(urlfetcher("numpy-1.3.0.tar.gz"), "numpy-1.3.0", True),
-                                       ["numpy-1.3.0/numpy-1.4.0-python-2.7.patch"]),
-                               depends=["PYTHON"]),
-                       "\"$TPREFIX/bin/python\" setup.py install",
-                       osenv({"PATH":"$TPREFIX/bin:$$PATH", "LD_LIBRARY_PATH":"$TPREFIX/lib"})),
-           shinstaller(package("NUMPY", "1.4.1",
-                               untar(urlfetcher("numpy-1.4.1.tar.gz"), "numpy-1.4.1", True),
-                               depends=["PYTHON"]),
-                       "\"$TPREFIX/bin/python\" setup.py install",
-                       osenv({"PATH":"$TPREFIX/bin:$$PATH", "LD_LIBRARY_PATH":"$TPREFIX/lib"}))
-         ),
-
-         pilinstaller(package("PIL", "1.1.7",
-                              untar(urlfetcher("Imaging-1.1.7.tar.gz"), "Imaging-1.1.7", True),
-                              depends=["PYTHON","ZLIB"])),
-        
-         experimental(
-           cmmi(package("CURL", "7.19.0",
-                        untar(urlfetcher("curl-7.19.0.tar.gz"), "curl-7.19.0", True)),
-                "--prefix=\"$TPREFIX\"", False, True),
-                      
-           cmmi(package("CURL", "7.22.0",
-                        untar(urlfetcher("curl-7.22.0.tar.gz"), "curl-7.22.0", True)),
-                "--prefix=\"$TPREFIX\"", False, True)
-         ),
-              
-         shinstaller(package("PYCURL", "7.19.5.3",
-                             untar(urlfetcher("pycurl-7.19.5.3.tar.gz"), "pycurl-7.19.5.3", True),
-                             depends=["PYTHON","CURL"]),
-                     "\"$TPREFIX/bin/python\" setup.py install",
-                     osenv({"LD_LIBRARY_PATH":"$TPREFIX/lib", "PATH":"$TPREFIX/bin:$$PATH"})),
-         
+         cmmi(package("CURL", "7.22.0",
+                      untar(urlfetcher("curl-7.22.0.tar.gz"), "curl-7.22.0", True)),
+              "--prefix=\"$TPREFIX\"", False, True),
 ]
 
+#MODULES.append(pipinstaller(package("PYCURL", "7.43.0.1", 
+#                                    fetcher=pipfetcher(),
+#                                    depends=["PYTHON","CURL"], 
+#                                    extra_attrs={"pypi_name":"pycurl"}),
+pipoenv=osenv({"LD_LIBRARY_PATH":"$TPREFIX/lib", "PATH":"$TPREFIX/bin:$$PATH"})
+                            
 _PIP_MODULES=[
-    ("PYCRYPTO", "2.4.1", "pycrypto", ["PYTHON"]),
-    ("PYASN1", "0.1.2", "pyasn1", ["PYTHON"]),
-    ("PYTHON-KEYCZAR", "0.7b", "python-keyczar", ["PYTHON", "PYASN1", "PYCRYPTO"]),
-    ("JPROPS", "0.1", "jprops", ["PYTHON"]),
-    ("LOCKFILE", "0.9.1", "lockfile", ["PYTHON"]),
-    ("PYTHON-DAEMON", "1.6", "python-daemon", ["PYTHON", "LOCKFILE"]),
-    ("PSYCOPG2", "2.2.1", "psycopg2", ["PYTHON"]),
-    ("DECORATOR", "3.3.2", "decorator", ["PYTHON"]),
-    ("TEMPITA", "0.5.1", "Tempita", ["PYTHON"]),
-    ("SQLALCHEMY", "1.0.13", "sqlalchemy", ["PYTHON"]),
-    ("SQLALCHEMY-MIGRATE", "0.10.0", "sqlalchemy-migrate", ["PYTHON", "SQLALCHEMY", "DECORATOR", "TEMPITA"]),
-    ("WERKZEUG", "0.8.2", "werkzeug", ["PYTHON"]),
-    ("PYTHON-MOCK", "0.7.2", "mock", ["PYTHON"]),
-    ("NOSE", "1.1.2", "nose", ["PYTHON"]),
-    ("PYINOTIFY", "0.9.3", "pyinotify", ["PYTHON"]),
-    ("PROGRESSBAR", "2.2", "progressbar", ["PYTHON"]),
-    ("CHERRYPY", "3.2.4", "cherrypy", ["PYTHON"]),
+    ("NUMPY", "1.14.2", "numpy", ["PYTHON"], pipoenv),
+    ("PILLOW", "5.0.0", "pillow", ["PYTHON"], pipoenv),
+    ("PYCRYPTO", "2.6.1", "pycrypto", ["PYTHON"], None),
+    ("PYASN1", "0.1.2", "pyasn1", ["PYTHON"], None),
+#    ("PYTHON-KEYCZAR", "0.7b", "python-keyczar", ["PYTHON", "PYASN1", "PYCRYPTO"], None),
+    ("JPROPS", "2.0.2", "jprops", ["PYTHON"], None),
+    ("LOCKFILE", "0.9.1", "lockfile", ["PYTHON"], None),
+    ("PYTHON-DAEMON", "2.1.2", "python-daemon", ["PYTHON", "LOCKFILE"], None),
+    ("PSYCOPG2", "2.7", "psycopg2", ["PYTHON"], None),
+    ("DECORATOR", "3.3.2", "decorator", ["PYTHON"], None),
+    ("TEMPITA", "0.5.1", "Tempita", ["PYTHON"], None),
+    ("SQLALCHEMY", "1.0.13", "sqlalchemy", ["PYTHON"], None),
+    ("SQLALCHEMY-MIGRATE", "0.10.0", "sqlalchemy-migrate", ["PYTHON", "SQLALCHEMY", "DECORATOR", "TEMPITA"], None),
+    ("WERKZEUG", "0.8.2", "werkzeug", ["PYTHON"], None),
+    ("PYTHON-MOCK", "2.0.0", "mock", ["PYTHON"], None),
+    ("NOSE", "1.3.7", "nose", ["PYTHON"], None),
+    ("PYINOTIFY", "0.9.3", "pyinotify", ["PYTHON"], None),
+#    ("PROGRESSBAR", "2.2", "progressbar", ["PYTHON"], None),
+    ("CHERRYPY", "3.2.4", "cherrypy", ["PYTHON"], None),
 ]
 
 _PIP_DEP=[]
 
-for (name, version, pypi_name, deps) in _PIP_MODULES:
+for (name, version, pypi_name, deps, poenv) in _PIP_MODULES:
   MODULES.append(
     pipinstaller(
       package(
@@ -163,10 +142,19 @@ for (name, version, pypi_name, deps) in _PIP_MODULES:
         extra_attrs={
           "pypi_name": pypi_name,
         }
-      )
+      ),
+      oenv=poenv
     )
   )
   _PIP_DEP.append(name)
+
+MODULES.append(pychoiceinstaller(
+                pipinstaller(package("PYTHON-KEYCZAR", "0.7b", fetcher=pipfetcher(), depends=["PYTHON", "PYASN1", "PYCRYPTO"], extra_attrs={"pypi_name": "python-keyczar"})),
+                pipinstaller(package("PYTHON3-KEYCZAR", "0.71rc0", fetcher=pipfetcher(), depends=["PYTHON", "PYASN1", "PYCRYPTO"], extra_attrs={"pypi_name": "python3_keyczar"}))))
+
+MODULES.append(pychoiceinstaller(
+                pipinstaller(package("PROGRESSBAR", "2.2", fetcher=pipfetcher(), depends=["PYTHON"], extra_attrs={"pypi_name": "progressbar"})),
+                pipinstaller(package("PROGRESSBAR33", "2.4", fetcher=pipfetcher(), depends=["PYTHON"], extra_attrs={"pypi_name": "progressbar33"}))))
 
 MODULES.append(experimental(pipinstaller(package("ARGPARSE", "1.2.1", fetcher=pipfetcher(), extra_attrs={"pypi_name": "argparse"})),
                             nullinstaller(package("ARGPARSE", "1.2.1", fetcher=pipfetcher(), extra_attrs={"pypi_name": "argparse"})))
@@ -202,7 +190,7 @@ MODULES.extend([
          
          dexinstaller(node_package("BALTRAD-DEX", depends=["HDFJAVA", "TOMCAT", "BALTRAD-DB", "BEAST"])),
          
-         raveinstaller(node_package("RAVE", depends=["EXPAT", "PROJ.4", "PYTHON", "NUMPY", "PYSETUPTOOLS", "PYCURL", "HLHDF", "NETCDF", "BBUFR", "BALTRAD-DB"])),
+         raveinstaller(rave_package(depends=["EXPAT", "PROJ.4", "PYTHON", "NUMPY", "PYSETUPTOOLS", "PYCURL", "HLHDF", "NETCDF", "BBUFR", "BALTRAD-DB"])),
          
          ravegmapinstaller(node_package("RAVE-GMAP", depends=["RAVE"])), #Just use rave as dependency, rest of dependencies will trigger rave rebuild
 
@@ -263,7 +251,7 @@ def print_modules(env, modules):
       installed = "INSTALLED"
     else:
       ver = module.package().version()
-    print "{0:20s} {1:35s} {2:14s}".format(module.package().name(),ver, installed)
+    print("{0:20s} {1:35s} {2:14s}".format(module.package().name(),ver, installed))
 
 ##
 # All valid subsystems.
@@ -344,7 +332,7 @@ def print_arguments(env):
     
 
   for a in arguments:
-    print "{0:25s} {1:35s}".format(a[0], a[1])
+    print("{0:25s} {1:35s}".format(a[0], a[1]))
 
 ##
 # Prints information about usage.
@@ -354,10 +342,10 @@ def print_arguments(env):
 def usage(brief, msg=None):
   if brief == True:
     if msg != None:
-      print msg
-    print "Usage: setup <options> command, use --help for information"
+      print(msg)
+    print("Usage: setup <options> command, use --help for information")
   else:
-    print """
+    print("""
 NODE INSTALLER
 Usage: setup <options> command, use --help for information
 
@@ -393,6 +381,13 @@ Valid commands are:
 Options:
 --help
     Shows this text
+
+--enable-py3
+    If you want the system to be built with python3.
+    
+--use-ravepy3-repo
+    Special variant if you want to use the rave-py3 repository even if you want to install the node with python 2.7.
+    This is only really relevant if --enable-py3 isn't specified.
 
 --recall-last-args
     If you want to use the previous arguments, then you can use
@@ -680,7 +675,7 @@ Options:
     Since RAVE is depending on the BALTRAD-DB python client API you are able to specify
     a specific RAVE module called STANDALONE_RAVE which installs RAVE without any
     BDB-dependencies.
-"""
+""")
 
 def parse_buildzlib_argument(arg):
   if arg.lower() == "no" or arg.lower() == "false":
@@ -694,22 +689,22 @@ def parse_buildzlib_argument(arg):
   elif len(tokens) == 1:
     return False, "%s/include"%tokens[0], "%s/lib"%tokens[0] 
   else:
-    raise InstallerException, "--zlib should either be (no, yes, <libroot> or <inc>,<lib> where <inc> and/or <lib> may be empty"
+    raise InstallerException("--zlib should either be (no, yes, <libroot> or <inc>,<lib> where <inc> and/or <lib> may be empty")
 
 def verify_buildfreetype_argument(arg):
   tokens = arg.split(",")
   if len(tokens) != 2:
-    raise InstallerException, "--with-freetype should be --with-freetype=<inc>,<lib>"
+    raise InstallerException("--with-freetype should be --with-freetype=<inc>,<lib>")
 
 def validate_fwdports(arg):
   tokens = arg.split(",")
   if len(tokens) != 2:
-    raise InstallerException, "--tomcatfwdports should be called like --tomcatfwdports=<httpport>,<httpsport> where httpport and httpsport is a number"
+    raise InstallerException("--tomcatfwdports should be called like --tomcatfwdports=<httpport>,<httpsport> where httpport and httpsport is a number")
   try:
     a1 = int(tokens[0])
     a2 = int(tokens[1])
   except:
-    raise InstallerException, "--tomcatfwdports should be called like --tomcatfwdports=<httpport>,<httpsport> where httpport and httpsport is a number"
+    raise InstallerException("--tomcatfwdports should be called like --tomcatfwdports=<httpport>,<httpsport> where httpport and httpsport is a number")
 
 def handle_tomcat_arguments(benv):
   if benv.hasArg("TOMCATPORT") and benv.hasArg("TOMCATURL"):
@@ -717,14 +712,14 @@ def handle_tomcat_arguments(benv):
     from urlparse import urlparse
     a = urlparse(benv.getArg("TOMCATURL"))
     if a.port == None or "%s"%a.port != benv.getArg("TOMCATPORT"):
-      raise InstallerException, "tomcatport and tomcaturl port differs"
+      raise InstallerException("tomcatport and tomcaturl port differs")
   elif benv.hasArg("TOMCATPORT"):
     benv.addArg("TOMCATURL", "http://localhost:%s"%benv.getArg("TOMCATPORT"))
   elif benv.hasArg("TOMCATURL"):
     from urlparse import urlparse
     a = urlparse(benv.getArg("TOMCATURL"))
     if a.port == None:
-      raise InstallerException, "You must specify port in tomcat url"
+      raise InstallerException("You must specify port in tomcat url")
     benv.addArg("TOMCATPORT", "%d"%a.port)
   else:
     benv.addArg("TOMCATPORT", "8080")
@@ -740,12 +735,12 @@ def parse_buildpsql_argument(arg):
     psqlinc = "%s/include"%tokens[0]
     psqllib = "%s/lib"%tokens[0]
   else:
-    raise InstallerException, "--with-psql should either be <inc>,<lib> or <root>"
+    raise InstallerException("--with-psql should either be <inc>,<lib> or <root>")
   
   if not os.path.isdir(psqlinc):
-    raise InstallerException, "Provided path (%s) does not seem to be be used as an include path."%psqlinc
+    raise InstallerException("Provided path (%s) does not seem to be be used as an include path."%psqlinc)
   if not os.path.isdir(psqllib):
-    raise InstallerException, "Provided path (%s) does not seem to be be used as an lib path."%psqllib
+    raise InstallerException("Provided path (%s) does not seem to be be used as an lib path."%psqllib)
   
   return psqlinc, psqllib
 
@@ -755,7 +750,7 @@ if __name__=="__main__":
   args = []
   try:
     optlist, args = getopt.getopt(sys.argv[1:], '', 
-                                  ['prefix=','tprefix=','jdkhome=','with-zlib=',
+                                  ['prefix=','tprefix=','enable-py3', 'use-ravepy3-repo', 'jdkhome=','with-zlib=',
                                    'with-psql=','with-bufr', 'with-rave','with-rave-gmap','with-bropo','with-beamb','with-bwrwp',
                                    'with-hdfjava=', 'with-freetype=','rebuild=',
                                    'with-blas=', 'with-cblas=', 'with-lapack=', 'with-lapacke=',
@@ -769,7 +764,7 @@ if __name__=="__main__":
                                    'experimental','no-autostart','subsystems=',
                                    'force','tomcatport=','tomcaturl=','tomcatpwd=',
                                    'tomcatsecureport=', 'keystoredn=', 'keystorepwd=', 'tomcatfwdports=', 'help'])
-  except getopt.GetoptError, e:
+  except getopt.GetoptError as e:
     usage(True, e.__str__())
     sys.exit(127)
   
@@ -804,6 +799,8 @@ if __name__=="__main__":
   reinstalldb=False
   rebuild = []
   experimental_build=False
+  py3_enabled=False
+  use_ravepy3_repo=False
   subsystems = []
   
   for o, a in optlist:
@@ -811,6 +808,11 @@ if __name__=="__main__":
       env.addArg("PREFIX", a)
     elif o == "--tprefix":
       env.addArg("TPREFIX", a)
+    elif o == "--enable-py3":
+      env.addArg("ENABLE_PY3", True)
+      py3_enabled=True
+    elif o == "--use-ravepy3-repo":
+      use_ravepy3_repo=True
     elif o == "--jdkhome":
       env.addArg("JDKHOME", a)
     elif o == "--dbuser":
@@ -835,7 +837,7 @@ if __name__=="__main__":
       env.addArg("PSQLARG", a)
     elif o == "--with-hdfjava":
       if not os.path.isdir(a):
-        print "--with-hdfjava must be provided with the root directory of the hdf-java installation"
+        print("--with-hdfjava must be provided with the root directory of the hdf-java installation")
         sys.exit(127)
       else:
         env.addArg("HDFJAVAHOME", a)
@@ -944,7 +946,7 @@ if __name__=="__main__":
       checkpwd = True
 
   if checkpwd and not env.hasArg("TOMCATPWD"):
-    print "--tomcatpwd not specified, please specify password."
+    print("--tomcatpwd not specified, please specify password.")
     pwd = None
     while pwd == None:
       pwd1 = raw_input("Enter password: ")
@@ -952,12 +954,12 @@ if __name__=="__main__":
       if pwd1 == pwd2:
         pwd = pwd1
       else:
-        print "Passwords not matching"
+        print("Passwords not matching")
     env.addArgInternal("TOMCATPWD", pwd)
 
   if checkpwd:
     if not env.hasArg("KEYSTORE_PWD"):
-      print "--keystorepwd not specified, using tomcatpwd."
+      print("--keystorepwd not specified, using tomcatpwd.")
       env.addArgInternal("KEYSTORE_PWD", env.getArg("TOMCATPWD"))
 
   #Verify FWD ports if defined
@@ -983,7 +985,7 @@ if __name__=="__main__":
   if not env.hasArg("NODENAME"):
     import socket
     nodename = socket.gethostname()
-    print "NODENAME WASN'T SPECIFIED, DEFAULTING TO: %s"%nodename
+    print("NODENAME WASN'T SPECIFIED, DEFAULTING TO: %s"%nodename)
     env.addArg("NODENAME", nodename)
   
   #
@@ -1010,10 +1012,13 @@ if __name__=="__main__":
   # If we are running in experimental mode, then mark all affected installers with
   # that information.
   #
-  if experimental_build:
-    for m in modules:
-      if isinstance(m, experimental):
-        m.setExperimentalMode(True)
+  for m in modules:
+    if experimental and isinstance(m, experimental):
+      m.setExperimentalMode(True)
+    if isinstance(m, pychoiceinstaller):
+      m.enablePython3(py3_enabled)
+    if isinstance(m.package(), rave_package):
+      m.package().enablePython3(py3_enabled or use_ravepy3_repo)
 
   #
   # We want to ensure that user understands that it is nessecary to specify
@@ -1022,7 +1027,7 @@ if __name__=="__main__":
   if len(subsystems) > 0 and args[0] != "clean":
     if ("RAVE" in subsystems or "DEX" in subsystems) and "BDB" not in subsystems:
       if not env.hasArg("BDB_URI"):
-        raise InstallerException, "Trying to install subsystem dependant on BDB without providing --bdb-uri"
+        raise InstallerException("Trying to install subsystem dependant on BDB without providing --bdb-uri")
    
   #
   # We might only want to install specific subsystems
@@ -1039,13 +1044,13 @@ if __name__=="__main__":
   #
   if doprintconfig or doprintmodules:
     if doprintconfig:
-      print "CONFIGURATION PARAMETERS"
+      print("CONFIGURATION PARAMETERS")
       print_arguments(env)
-      print ""
+      print("")
     if doprintmodules:
-      print "MODULES"
+      print("MODULES")
       print_modules(env, modules)
-      print ""
+      print("")
     
     if len(args) == 0:
       sys.exit(0)
@@ -1053,11 +1058,11 @@ if __name__=="__main__":
   env.remember() # Remember the previous arguments
 
   if len(args) != 1:
-    usage(True, "You can only specify one command %s"%`args`)
+    usage(True, "You can only specify one command %s"%str(args))
     sys.exit(127)
   
   if args[0] not in ["install", "check", "clean", "fetch", "dist"]:
-    usage(True, "Unknown command %s"%`args[0]`)
+    usage(True, "Unknown command %s"%str(args[0]))
     sys.exit(127)
 
   if env.getArg("ENABLE_NETCDF") == False:
@@ -1114,7 +1119,7 @@ if __name__=="__main__":
       validator.validate(env)
 
     if not env.hasArg("JDKHOME"):
-      print "You must specify --jdkhome=... when installing the node"
+      print("You must specify --jdkhome=... when installing the node")
       sys.exit(127)
 
   # bdb storage needs a data directory 

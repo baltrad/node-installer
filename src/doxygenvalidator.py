@@ -41,6 +41,6 @@ class doxygenvalidator:
   def validate(self, env):
     ocode = subprocess.call("which doxygen > /dev/null 2>&1", shell=True)
     if ocode != 0:
-      print "Doxygen: Not found"
+      print("Doxygen: Not found")
     else:
-      print "Doxygen: Found"
+      print("Doxygen: Found")

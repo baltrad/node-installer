@@ -63,7 +63,7 @@ class beastinstaller(installer):
         "install",
     ]])
     if ocode != 0:
-      raise InstallerException, "Failed to install beast"
+      raise InstallerException("Failed to install beast")
     
     # We use beasts document installer and just change prefix to the doc-root
     #
@@ -72,5 +72,5 @@ class beastinstaller(installer):
                                            " -Dbaltraddb.bin.path=$PREFIX/baltrad-db/bin"+
                                            " install-doc > /dev/null 2>&1"), shell=True)
     if ocode != 0:
-      print "Failed to generate BEAST documentation"
+      print("Failed to generate BEAST documentation")
 

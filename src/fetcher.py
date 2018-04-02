@@ -77,7 +77,7 @@ class fetcher(object):
   # @return the file or directory name of the fetched package
   #
   def dofetch(self, package, env=None):
-    raise InstallerException, "Fetcher does not implement dofetch"
+    raise InstallerException("Fetcher does not implement dofetch")
 
   ##
   # Fetches the offline content in some way
@@ -85,7 +85,7 @@ class fetcher(object):
   # @param env: the build environment
   #
   def dofetch_offline_content(self, package, env=None):
-    raise InstallerException, "Fetcher does not implement dofetch_offline_content"
+    raise InstallerException("Fetcher does not implement dofetch_offline_content")
 
   ##
   # Cleans the software in some way.
@@ -93,5 +93,5 @@ class fetcher(object):
   # @param env: The build environment
   #
   def doclean(self, package, env=None):
-    raise InstallerException, "Fetcher does not implement doclean"
+    raise InstallerException("Fetcher does not implement doclean")
   

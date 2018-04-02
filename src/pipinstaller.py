@@ -35,14 +35,13 @@ class pipinstaller(installer):
   # @param pip_path path to the pip executable
   # @param quiet if True, pass '--quiet' to pip
   #
-  def __init__(self, pkg,
-               pip_path="$TPREFIX/bin/pip", quiet=True):
-    super(pipinstaller, self).__init__(pkg)
+  def __init__(self, pkg, quiet=True, oenv=None):
+    super(pipinstaller, self).__init__(pkg, oenv)
     if not hasattr(pkg, "pypi_name"):
       self._pypi_name = pkg.name()
     else:
       self._pypi_name = pkg.pypi_name
-    self._pip_path = pip_path
+    self._pip_path = "$TPREFIX/bin/pip"
     self._quiet = quiet
     
   ##
@@ -51,7 +50,8 @@ class pipinstaller(installer):
   #
   def doinstall(self, env):
     pip = env.expandArgs(self._pip_path)
-
+    if env.hasArg("ENABLE_PY3"):
+      pip = env.expandArgs("$TPREFIX/bin/pip3")
     pkg_dir = os.path.join(
       env.getInstallerPath(),
       "packages",
@@ -66,7 +66,7 @@ class pipinstaller(installer):
       args.append("--quiet")
     args.append("%s == %s" % (self._pypi_name, self.package().version()))
 
-    print " ".join(args)
+    print(" ".join(args))
     ocode = subprocess.call(args)
     if ocode != 0:
       raise InstallerException(

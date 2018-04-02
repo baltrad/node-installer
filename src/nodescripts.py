@@ -23,6 +23,7 @@ Wrapper for all node scripts
 @author Anders Henja (Swedish Meteorological and Hydrological Institute, SMHI)
 @date 2011-02-14
 '''
+from __future__ import print_function
 import subprocess
 import tempfile
 import os, stat
@@ -96,7 +97,7 @@ class nodescripts(object):
     extras["ACTIVATE_NODE"] = "yes"
     extras["ACTIVATE_BDB"] = "yes"
     extras["ACTIVATE_RAVE"] = "yes"
-    
+
     if len(self._subsystems) > 0:
       if "RAVE" not in self._subsystems and "STANDALONE_RAVE" not in self._subsystems or not self._raveinstalled:
         extras["ACTIVATE_RAVE"] = "no"
@@ -520,7 +521,7 @@ fi
   #
   def _isNodeRunning(self):
     status = subprocess.Popen("%s status"%self._nodescript, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,shell=True).communicate()[0]
-    if status.find("Node: Running") >= 0:
+    if status.decode('utf-8').find("Node: Running") >= 0:
       return True
     return False
 
@@ -530,7 +531,7 @@ fi
   # 
   def _isRaveRunning(self):
     status = subprocess.Popen("%s --ravepgf status"%self._nodescript, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,shell=True).communicate()[0]
-    if status.find("Rave PGF: Running") >= 0:
+    if status.decode('utf-8').find("Rave PGF: Running") >= 0:
       return True
     return False 
 
@@ -545,17 +546,17 @@ fi
   def _waitForNodeStop(self, msg, sec):
     import time, sys
     
-    print msg
+    print(msg)
     
     for i in range(sec):
       if self._isNodeRunning():
-        print ".",
+        print(".",end='')
         sys.stdout.flush()
         time.sleep(1)
       else:
-        print ""
+        print("")
         return True
-    print ""
+    print("")
     return False
 
   ##
@@ -569,17 +570,17 @@ fi
   def _waitForRaveStop(self, msg, sec):
     import time, sys
     
-    print msg
+    print(msg)
     
     for i in range(sec):
       if self._isRaveRunning():
-        print ".",
+        print(".",end='')
         sys.stdout.flush()
         time.sleep(1)
       else:
-        print ""
+        print("")
         return True
-    print ""
+    print("")
     return False
 
   ##
@@ -593,13 +594,13 @@ fi
     if node and not self._isNodeRunning():
       ocode = subprocess.call("%s start"%(self._nodescript), shell=True)
       if ocode != 0:
-        raise Exception, "Failed to start node"
+        raise Exception("Failed to start node")
       time.sleep(2)    
 
     if rave and self._raveinstalled and not self._isRaveRunning():
       ocode = subprocess.call("%s --ravepgf start"%(self._nodescript), shell=True)
       if ocode != 0:
-        raise Exception, "Failed to start rave"
+        raise Exception("Failed to start rave")
 
   ##
   # Stops the requested functions.
@@ -610,18 +611,18 @@ fi
     if node and self._isNodeRunning():
       ocode = subprocess.call("%s stop"%(self._nodescript),shell=True)
       if ocode != 0:
-        raise Exception, "Failed to stop node"
+        raise Exception("Failed to stop node")
     
       if not self._waitForNodeStop("Waiting for node to stop", 10):
-        raise Exception, "Failed to stop node"
+        raise Exception("Failed to stop node")
   
     if rave and self._raveinstalled and self._isRaveRunning():
       ocode = subprocess.call("%s --ravepgf stop"%(self._nodescript),shell=True)
       if ocode != 0:
-        raise Exception, "Failed to stop rave"
+        raise Exception("Failed to stop rave")
     
       if not self._waitForRaveStop("Waiting for rave to stop", 10):
-        raise Exception, "Failed to stop rave"
+        raise Exception("Failed to stop rave")
 
   ##
   # Restarts the requested functions.

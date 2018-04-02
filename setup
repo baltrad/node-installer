@@ -34,11 +34,13 @@ URLREPO=http://git.baltrad.eu/blt_dependencies
 ZLIB_VERSION=1.2.11
 PYTHON_VERSION=2.7.14
 PYTHON_MM_VERSION=python2.7
+PYTHON3_VERSION=3.6.5
+PYTHON3_MM_VERSION=python3.6
 PIP_VERSION=7.1.2
 # PIP version used for python 2.7
-DISTRIBUTE_VERSION=0.6.9
 SETUPTOOLS_VERSION=38.5.0
 
+ENABLE_PY3=no
 ZLIB_REBUILT=no
 ZLIBINC=
 ZLIBLIB=
@@ -147,9 +149,9 @@ install_distribute() {
 install_setuptools() {
   PYBIN=$1
   cd "$SCRIPTPATH"
-  SV=`$PYBIN -c "import setuptools; print setuptools.__version__"`
+  SV=`$PYBIN -c "import setuptools; print(setuptools.__version__)"`
   if [ $? -ne 0 -o "$SV" != "$SETUPTOOLS_VERSION" ]; then
-    $PYBIN etc/ez_setup.py --version $SETUPTOOLS_VERSION
+    $PYBIN etc/ez_setup.py --version=$SETUPTOOLS_VERSION > /dev/null 2>&1
     if [ $? -ne 0 ]; then
       echo "Failed to install setuptools"
     fi
@@ -208,6 +210,13 @@ Options:
     If you want to use the previous arguments, then you can use
     this option. It will try to restore the configuration parameters
     used in the last run. 
+
+--enable-py3
+    If you want the system to be built with python3.
+
+--use-ravepy3-repo
+    Special variant if you want to use the rave-py3 repository even if you want to install the node with python 2.7.
+    This is only really relevant if --enable-py3 isn't specified.
 
 --nodename=<name>
     This attribute should really be specified but there is a default value which
@@ -539,6 +548,10 @@ for arg in $*; do
       EXPERIMENTAL=yes
       ;;
     --recall-last-args) ;;
+    --enable-py3)
+      ENABLE_PY3=yes
+      ;;
+    --use-ravepy3-repo) ;;
     --nodename=*) ;;
     --jdkhome=*) ;;
     --keystore==*) ;;
@@ -676,6 +689,11 @@ if [ -n "$ZLIBARG" ]; then
 fi
 
 PYTHON_EXECUTABLE=$TPREFIX/bin/python2.7
+if [ "$ENABLE_PY3" = "yes" ]; then
+  PYTHON_VERSION=$PYTHON3_VERSION
+  PYTHON_MM_VERSION=$PYTHON3_MM_VERSION
+  PYTHON_EXECUTABLE=$TPREFIX/bin/python3.6
+fi
 
 if [ "$PRINT_INFO_WANTED" = "yes" ]; then
   if [ ! -f "$PYTHON_EXECUTABLE" ]; then
@@ -702,11 +720,10 @@ fi
 
 if [ -f $PYTHON_EXECUTABLE -a "$ZLIB_REBUILT" = "no" ]; then
   pver=`LD_LIBRARY_PATH="$TPREFIX/lib:$LD_LIBRARY_PATH" "$PYTHON_EXECUTABLE" --version 2>&1 | cut -d' ' -f2`
-  #echo "$PYTHON_EXECUTABLE => $pver"
   if [ "$pver" != $PYTHON_VERSION ]; then
     bootstrap_python $TPREFIX $PYTHON_VERSION
   else
-    echo "PYTHON already installed at $TPREFIX/bin/python"
+    echo "PYTHON already installed at $PYTHON_EXECUTABLE"
   fi
 else
   bootstrap_python $TPREFIX $PYTHON_VERSION

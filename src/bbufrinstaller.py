@@ -91,15 +91,15 @@ class bbufrinstaller(installer):
     
     ocode = subprocess.call(newcmd, shell=True)
     if ocode != 0:
-      raise InstallerException, "Failed to configure bbufr"
+      raise InstallerException("Failed to configure bbufr")
 
     ocode = subprocess.call("make", shell=True)
     if ocode != 0:
-      raise InstallerException, "Failed to build bbufr"
+      raise InstallerException("Failed to build bbufr")
 
     ocode = subprocess.call("make install", shell=True)
     if ocode != 0:
-      raise InstallerException, "Failed to install bbufr"
+      raise InstallerException("Failed to install bbufr")
 
  
     

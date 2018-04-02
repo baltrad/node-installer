@@ -88,7 +88,10 @@ class hlhdfinstaller(installer):
     # so we wait with failing until next call is performed
     subprocess.call("make distclean", shell=True)
 
-    cmd = "./configure --prefix=\"$PREFIX/hlhdf\" --with-hdf5=$TPREFIX/include,$TPREFIX/lib"
+    cmd = "./configure --prefix=\"$PREFIX/hlhdf\""
+    if env.hasArg("ENABLE_PY3") and env.getArg("ENABLE_PY3"):
+      cmd = cmd + " --enable-py3support"
+    cmd = cmd + " --with-hdf5=$TPREFIX/include,$TPREFIX/lib"
     zarg = self.get_zlib_arg(env)
     if zarg != None:
       cmd = "%s %s"%(cmd,zarg)
@@ -97,28 +100,32 @@ class hlhdfinstaller(installer):
     
     ocode = subprocess.call(newcmd, shell=True)
     if ocode != 0:
-      raise InstallerException, "Failed to configure hlhdf"
+      raise InstallerException("Failed to configure hlhdf")
 
     ocode = subprocess.call("make", shell=True)
     if ocode != 0:
-      raise InstallerException, "Failed to build hlhdf"
+      raise InstallerException("Failed to build hlhdf")
 
     if platform.machine() == 'x86_64':
       ocode = subprocess.call("make test", shell=True)
       if ocode != 0:
-        raise InstallerException, "Failed to test hlhdf"      
+        raise InstallerException("Failed to test hlhdf")      
 
     ocode = subprocess.call("make doc > /dev/null 2>&1", shell=True)
     if ocode != 0:
-      print "Failed to generate HLHDF documentation"
+      print("Failed to generate HLHDF documentation")
     else:
       self._install_doc(env)
 
     ocode = subprocess.call("make install", shell=True)
     if ocode != 0:
-      raise InstallerException, "Failed to install hlhdf"
+      raise InstallerException("Failed to install hlhdf")
+
+    python_bin="python"
+    if env.hasArg("ENABLE_PY3") and env.getArg("ENABLE_PY3"):
+      python_bin="python3"
 
     # Use the installed pythons site-packages location
-    cmd = "python -c \"import sys;import os;print os.sep.join([sys.prefix, 'lib', 'python'+sys.version[:3],'site-packages'])\""
+    cmd = python_bin + " -c \"import sys;import os;print(os.sep.join([sys.prefix, 'lib', 'python'+sys.version[:3],'site-packages']))\""
     plc = subprocess.Popen(cmd, stdout=subprocess.PIPE, shell=True).communicate()[0]
-    shutil.copy(env.expandArgs("$PREFIX/hlhdf/hlhdf.pth"), "%s/"%string.strip(plc))
+    shutil.copy(env.expandArgs("$PREFIX/hlhdf/hlhdf.pth"), "%s/"%plc.decode('utf-8').strip())

@@ -93,20 +93,20 @@ class dexinstaller(installer):
     
     ocode = subprocess.call(env.expandArgs("$TPREFIX/ant/bin/ant -Dinstall.prefix=$PREFIX -Dbaltrad.db.path=$PREFIX/baltrad-db -Dbeast.path=$PREFIX/beast -Djavahdf.path=$HDFJAVAHOME install"), shell=True)
     if ocode != 0:
-      raise InstallerException, "Failed to install dex"
+      raise InstallerException("Failed to install dex")
 
     ocode = subprocess.call(env.expandArgs("$TPREFIX/ant/bin/ant -Dinstall.prefix=$PREFIX -Dbaltrad.db.path=$PREFIX/baltrad-db -Dbeast.path=$PREFIX/beast -Djavahdf.path=$HDFJAVAHOME javadoc-doc > /dev/null 2>&1"), shell=True)
     if ocode != 0:
-      print "Failed to generate javadoc for DEX"
+      print("Failed to generate javadoc for DEX")
     else:
-      print "Installing javadoc"
+      print("Installing javadoc")
       self._install_javadoc(env)
     
     ocode = subprocess.call(env.expandArgs("$TPREFIX/ant/bin/ant -Dinstall.prefix=$PREFIX -Dbaltrad.db.path=$PREFIX/baltrad-db -Dbeast.path=$PREFIX/beast -Djavahdf.path=$HDFJAVAHOME doxygen-doc > /dev/null 2>&1"), shell=True)
     if ocode != 0:
-      print "Failed to generate DEX documentation"
+      print("Failed to generate DEX documentation")
     else:
-      print "Installing doxygen documentation"
+      print("Installing doxygen documentation")
       self._install_doxygendoc(env)
 
 

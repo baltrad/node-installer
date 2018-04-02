@@ -87,8 +87,8 @@ class baltrad_database(object):
       dbcursor = connection.cursor()
       dbcursor.execute("UPDATE dex_users SET PASSWORD=MD5('"+password+"') WHERE name='admin'")
       connection.commit()
-    except psycopg2.DatabaseError, e:
-      raise Exception, "Failed to run baltrad %s db scheme, e: %s"%(id, e.__str__())
+    except psycopg2.DatabaseError as e:
+      raise Exception("Failed to run baltrad %s db scheme, e: %s"%(id, e.__str__()))
     finally:
       if dbcursor:
         dbcursor.close()
@@ -103,7 +103,7 @@ class baltrad_database(object):
     conf = "--conf=%s"%self._propertyfile
     ocode = subprocess.call([cmd, conf])
     if ocode != 0:
-      raise Exception, "Failed to create baltrad bdb"
+      raise Exception("Failed to create baltrad bdb")
   
   ##
   # Upgrades the bdb tables
@@ -112,7 +112,7 @@ class baltrad_database(object):
     conf = "--conf=%s"%self._propertyfile
     ocode = subprocess.call([cmd, conf])
     if ocode != 0:
-      raise Exception, "Failed to create baltrad bdb"
+      raise Exception("Failed to create baltrad bdb")
   
   ##
   # Creates the beast tables
@@ -152,8 +152,8 @@ class baltrad_database(object):
       dbcursor = connection.cursor()
       dbcursor.execute(sql)
       connection.commit()
-    except psycopg2.DatabaseError, e:
-      raise Exception, "Failed to run baltrad %s db scheme, e: %s"%(id, e.__str__())
+    except psycopg2.DatabaseError as e:
+      raise Exception("Failed to run baltrad %s db scheme, e: %s"%(id, e.__str__()))
     finally:
       if dbcursor:
         dbcursor.close()
@@ -183,7 +183,7 @@ class baltrad_post_config(object):
   # @return the properties
   #
   def _load_properties(self, cfile):
-    with open(cfile) as fp:
+    with open(cfile, "r") as fp:
       return jprops.load_properties(fp)
 
   ##
@@ -194,7 +194,7 @@ class baltrad_post_config(object):
   # @param propname: the name of the property
   # @param default: default value 
   def _write_property_to_file(self, fp, properties, propname, default):
-    if properties.has_key(propname):
+    if propname in properties:
       fp.write("%s = %s\n"%(propname, properties[propname]))
     else:
       fp.write("%s = %s\n"%(propname, default))
@@ -202,7 +202,7 @@ class baltrad_post_config(object):
   def parse_int(self, str, errormsg):
     try:
       return int(str)
-    except ValueError,e:
+    except ValueError as e:
       raise ValueError(errormsg)
   ##
   # Converts a bltnode.properties file into a post configuration file.
@@ -212,7 +212,7 @@ class baltrad_post_config(object):
     properties = self._load_properties(nodeprops)
     dburimatcher = PGSQL_PATTERN.match(properties["baltrad.bdb.server.backend.sqla.uri"])
     if not dburimatcher:
-      raise Exception, "Can not parse the database information from baltrad.bdb.server.backend.sqla.uri"
+      raise Exception("Can not parse the database information from baltrad.bdb.server.backend.sqla.uri")
     
     with open(self._config, "w") as fp:
       fp.write("\n#General configuration settings\n")
@@ -272,7 +272,7 @@ class baltrad_post_config(object):
     self._configure_dex_properties(properties)
     self._configure_dex_db_properties(properties)
     self._configure_dex_fc_properties(properties)
-    if properties.has_key("baltrad.with.rave") and properties["baltrad.with.rave"].lower() == "true":
+    if "baltrad.with.rave" in properties and properties["baltrad.with.rave"].lower() == "true":
       self._configure_rave(properties)
   
     if self._installdb:
@@ -285,11 +285,11 @@ class baltrad_post_config(object):
   
   def _run_plugins(self, properties):
     index = 1
-    while properties.has_key("baltrad.post.config.script.%d"%index):
+    while "baltrad.post.config.script.%d"%index in properties:
       script = properties["baltrad.post.config.script.%d"%index]
       code = subprocess.call(["python", script, self._config])
       if code != 0:
-        print "Failed to run post script: %s"%script
+        print("Failed to run post script: %s"%script)
       index = index + 1
     
   ##
@@ -466,7 +466,7 @@ class baltrad_post_config(object):
     nodename=properties["baltrad.node.name"]
     
     fs_path_prop_name = "baltrad.bdb.server.backend.sqla.storage.fs.path"
-    if properties.has_key(fs_path_prop_name):
+    if fs_path_prop_name in properties:
       storagefolder = properties[fs_path_prop_name]
     else:
       storagefolder = "%s/bdb_storage"%iroot
@@ -592,7 +592,7 @@ one for generating the post configuration.
   runner = baltrad_post_config(options.config, options.install_db_flag, options.upgrade_db_flag, options.password)
   if "export" in args:
     if not options.nodeproperties:
-      print "You must specify --nodeprops=... when exporting the configuration"
+      print("You must specify --nodeprops=... when exporting the configuration")
       sys.exit(127)
     runner.export(options.nodeproperties, options.prepareThreshold)
   elif "setup" in args:

@@ -23,12 +23,12 @@ example:
 """ 
 
 def usage():
-  print _USAGE % {"prog": sys.argv[0]}
+  print(_USAGE % {"prog": sys.argv[0]})
 
 def node_versions_from_rev(rev):
   code = gitutil.git_show(rev + ":src/node_versions.py")
   d = {}
-  exec code in d
+  exec(code,d)
   return d["versions"]
 
 def package_path(pkg):
@@ -44,8 +44,8 @@ def fetch_package(pkg, env):
   gitfetcher(NODE_REPOSITORY[pkg].geturi()).fetch(None, env)
 
 def find_tickets(log):
-  tickets = re.findall(r"^\s+Ticket \d+.*$", log, re.M)
-  return [ticket.strip("\n\r ") for ticket in tickets]
+  tickets = re.findall(br"^\s+Ticket \d+.*$", log, re.M)
+  return [ticket.strip(b"\n\r ") for ticket in tickets]
 
 def print_changes(repo_path, since_rev, until_rev):
   os.chdir(repo_path)
@@ -53,23 +53,23 @@ def print_changes(repo_path, since_rev, until_rev):
     log = gitutil.git_log(since_rev, until_rev)
     tickets = find_tickets(log)
     if not tickets:
-      print "   Changed but no tickets resolved"
+      print("   Changed but no tickets resolved")
     else:
       for ticket in tickets:
-        print "  ", ticket
+        print("  %s"%ticket.decode('utf-8'))
   else:
-    print "   No changes"
+    print("   No changes")
 
 def main():
   if len(sys.argv) >= 2:
     since_rev = sys.argv[1]
   else:
-    since_rev = gitutil.git_describe(abbrev=0)
+    since_rev = gitutil.git_describe(abbrev=0).decode('utf-8')
 
   if len(sys.argv) >= 3:
-    until_rev = gitutil.git_describe(sys.argv[2])
+    until_rev = gitutil.git_describe(sys.argv[2]).decode('utf-8')
   else:
-    until_rev = gitutil.git_describe()
+    until_rev = gitutil.git_describe().decode('utf-8')
   
   env = buildenv()
   env.addUniqueArg("GITREPO", "git://git.baltrad.eu")
@@ -77,23 +77,23 @@ def main():
   for pkg in PACKAGES:
     fetch_package(pkg, env)
 
-  print "Changes from", since_rev, "to", until_rev, "\n"
+  print("Changes from %s to %s"%(since_rev, until_rev))
   
-  print "node-installer:"
+  print("node-installer:")
   print_changes(FILE_DIR, since_rev, until_rev);
-  print ""
+  print("")
 
   since_node_revs = node_versions_from_rev(since_rev)
   until_node_revs = node_versions_from_rev(until_rev)
 
   for pkg in PACKAGES:
-    print pkg + ":"
+    print(pkg + ":")
     print_changes(
       package_path(pkg),
       since_node_revs.get(pkg),
       until_node_revs.get(pkg)
     )
-    print ""
+    print("")
 
 if __name__ == "__main__":
   main()

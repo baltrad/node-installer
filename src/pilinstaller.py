@@ -34,7 +34,7 @@ from InstallerException import InstallerException
 def pil_optional_environment(benv, envdic):
   result = {}
   if benv.hasArg("ZLIBLIB") and benv.getArg("ZLIBLIB") != None and benv.getArg("ZLIBLIB") != "":
-    if envdic.has_key("LD_LIBRARY_PATH"):
+    if "LD_LIBRARY_PATH" in envdic:
       result["LD_LIBRARY_PATH"] = "$ZLIBLIB:%s"%envdic.get("LD_LIBRARY_PATH")
   return result
 
@@ -68,7 +68,7 @@ class pilinstaller(installer):
     elif os.path.isfile("%s/freetype/fterrors.h"%inc):
       return False
     else:
-      raise InstallerException, "Can not locate fterrors.h for freetype compilation"
+      raise InstallerException("Can not locate fterrors.h for freetype compilation")
 
   ##
   # Patches the _imagingft.c file.
@@ -77,7 +77,7 @@ class pilinstaller(installer):
   def patch_imagingft(self, env):
     code = subprocess.call("patch -p0 < %s/patches/Imaging-1.1.7/imaging_1_1_7_freetype.patch"%(env.getInstallerPath()), shell=True)
     if code != 0:
-      raise InstallerException, "Failed to apply imaging_1_1_7_freetype.patch"
+      raise InstallerException("Failed to apply imaging_1_1_7_freetype.patch")
 
   
   ##
@@ -147,4 +147,4 @@ class pilinstaller(installer):
     cmdstr = env.expandArgs("\"$TPREFIX/bin/python\" %s install" % setupscript)
     code = subprocess.call(cmdstr, shell=True)
     if code != 0:
-      raise InstallerException, "Failed to execute command %s for %s (%s)"%(cmdstr, name,version)
+      raise InstallerException("Failed to execute command %s for %s (%s)"%(cmdstr, name,version))

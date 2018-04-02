@@ -70,7 +70,7 @@ class keystoreinstaller(installer):
     if not os.path.exists(dir):
       os.mkdir(dir)
     elif not os.path.isdir(dir):
-      raise InstallerException, "%s exists but is not a directory"%dir
+      raise InstallerException("%s exists but is not a directory"%dir)
   
   ##
   # Sets permissions on the private key so that it only is
@@ -82,35 +82,38 @@ class keystoreinstaller(installer):
     import getpass, pwd, sys
     runas = env.getArg("RUNASUSER")
     if runas == "root":
-      raise InstallerException, "You should not atempt to run system as root"
+      raise InstallerException("You should not atempt to run system as root")
 
     obj = pwd.getpwnam(runas)
 
     if runas == getpass.getuser() or "root" == getpass.getuser():
       if "root" == getpass.getuser():
-        os.path.walk(dir, _walk_chown, [obj.pw_uid,obj.pw_gid])
-      os.path.walk(dir, _walk_chmod, stat.S_IRUSR|stat.S_IWUSR)
+        os.walk(dir, _walk_chown, [obj.pw_uid,obj.pw_gid])
+      os.walk(dir, _walk_chmod, stat.S_IRUSR|stat.S_IWUSR)
     else:
-      print "Can not set proper permissions on private key"
-      print env.expandArgs(""" Please modify permissions accordingly before continuing...
+      print("Can not set proper permissions on private key")
+      print(env.expandArgs(""" Please modify permissions accordingly before continuing...
 chown -R $RUNASUSER:$RUNASUSER %s
 chmod -R 600 %s
-"""%(dir,dir))
-      print "Press return when finished or write 'quit' to exit:",
+"""%(dir,dir)))
+      print("Press return when finished or write 'quit' to exit:")
       sys.stdout.flush()
       a=sys.stdin.readline().strip()
       if a == "quit":
-        raise InstallerException, "Manually terminated script"
+        raise InstallerException("Manually terminated script")
 
   ##
   # Runs the keytool
   #   
-  def _keytool(self, python, *module_args):
-    args = [python, "-m", "keyczar.keyczart"]
+  def _keytool(self, python, use_py3_keytool, *module_args):
+    keytool = "keyczar.keyczart"
+    if use_py3_keytool:
+      keytool = "keyczar.tool.keyczart"
+    args = [python, "-m", keytool]
     args.extend(module_args)
     ocode = subprocess.call(args)
     if ocode != 0:
-        raise InstallerException, "keytool command failed"
+        raise InstallerException("keytool command failed")
   
   #self._create_keystore(env, keystore_pth)
   def _create_keystore(self, env, keystore_pth):
@@ -120,7 +123,7 @@ chmod -R 600 %s
     kpwd = env.getArg("KEYSTORE_PWD")
     
     if not os.path.exists(keytool):
-      raise InstallerException, "Could not locate keytool command"
+      raise InstallerException("Could not locate keytool command")
     args = [keytool, "-genkey", "-alias", "tomcat", "-keyalg", "RSA", "-validity", "3650", "-keypass", kpwd, "-storepass", kpwd, "-keystore", keystore_pth]
     if env.hasArg("KEYSTORE_DN"):
       dn = env.getArg("KEYSTORE_DN")
@@ -133,7 +136,7 @@ chmod -R 600 %s
 
     ocode = subprocess.call(args)
     if ocode != 0:
-      raise InstallerException, "keytool command failed for keystore creation"
+      raise InstallerException("keytool command failed for keystore creation")
     
     #/usr/bin/keytool -genkey -noprompt -alias tomcat -keyalg RSA -validity 3650 -keypass smurfen -storepass smurfen -dname "CN=Unknown, OU=Unknown, O=Unknown, L=Unknown, ST=Unknown, C=Unknown" -keystore /tmp/slask.jks
     
@@ -148,18 +151,22 @@ chmod -R 600 %s
       self._createdir(keystore)
 
     python = env.expandArgs("${TPREFIX}/bin/python")
+    use_py3_keytool = False
+    if env.hasArg("ENABLE_PY3") and env.getArg("ENABLE_PY3")==True:
+      python = env.expandArgs("${TPREFIX}/bin/python3")
+      use_py3_keytool = True
 
     nodekey_priv = env.expandArgs("$KEYSTORE/$NODENAME.priv")
     if not os.path.exists(nodekey_priv):
-      print "creating private key in", nodekey_priv
+      print("creating private key in", nodekey_priv)
       self._createdir(nodekey_priv)
-      self._keytool(python, "create",
+      self._keytool(python, use_py3_keytool, "create",
         "--location=%s" % nodekey_priv,
         "--purpose=sign",
         "--name=%s" % env.expandArgs("$NODENAME"),
         "--asymmetric=dsa"
       )
-      self._keytool(python, "addkey",
+      self._keytool(python, use_py3_keytool, "addkey",
         "--location=%s" % nodekey_priv,
         "--status=primary"
       )
@@ -167,9 +174,9 @@ chmod -R 600 %s
 
     nodekey_pub = env.expandArgs("$KEYSTORE/$NODENAME.pub")
     if not os.path.exists(nodekey_pub):
-      print "exporting public key to", nodekey_pub
+      print("exporting public key to", nodekey_pub)
       self._createdir(nodekey_pub)
-      self._keytool(python, "pubkey",
+      self._keytool(python, use_py3_keytool, "pubkey",
         "--location=%s" % nodekey_priv,
         "--destination=%s" % nodekey_pub
       )
@@ -177,7 +184,7 @@ chmod -R 600 %s
     if env.hasArg("KEYSTORE_PWD"): # We only create the keystore if we have keystorepwd
       keystore_pth = env.expandArgs("$KEYSTORE/keystore.jks")
       if not os.path.exists(keystore_pth):
-        print "creating keystore file", keystore_pth
+        print("creating keystore file", keystore_pth)
         self._create_keystore(env, keystore_pth)
       
     # Here we maybe should modify permissions of the private key file but for now let it be.

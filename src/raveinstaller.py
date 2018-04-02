@@ -49,6 +49,7 @@ class raveinstaller(installer):
                     "DEX_SPOE":"$RAVE_DEX_SPOE",
                     "BUFRARG":"",
                     "NETCDFARG":"",
+                    "ENABLEPY3SUPPORT":"",
                     "DEX_PRIVATEKEY":"$PREFIX/etc/bltnode-keys/$NODENAME.priv",
                     "BDB_CONFIG_FILE":"$PREFIX/etc/bltnode.properties",
                     "DEX_NODENAME":"$NODENAME",
@@ -83,30 +84,33 @@ class raveinstaller(installer):
       netcdflib = env.expandArgs("$TPREFIX/lib")
       self.osenvironment().setEnvironmentVariable(env, "NETCDFARG", "%s,%s"%(netcdfinc,netcdflib))
     
+    if env.hasArg("ENABLE_PY3") and env.getArg("ENABLE_PY3") == True:
+      self.osenvironment().setEnvironmentVariable(env, "ENABLEPY3SUPPORT", "yes")
+    
     self.osenvironment().setEnvironmentVariable(env, "LD_LIBRARY_PATH", "%s:%s"%(env.getLdLibraryPath(),self.osenvironment().getSnapshotVariable("LD_LIBRARY_PATH")))
     self.osenvironment().setEnvironmentVariable(env, "PATH", "%s:%s"%(env.getPath(),self.osenvironment().getSnapshotVariable("PATH")))
 
     ocode = subprocess.call("make distclean", shell=True)
     if ocode != 0:
-      raise InstallerException, "Failed to perform distclean"
+      raise InstallerException("Failed to perform distclean")
 
     ocode = subprocess.call("make", shell=True)
     if ocode != 0:
-      raise InstallerException, "Failed to build"
+      raise InstallerException("Failed to build")
 
     ocode = subprocess.call("make test", shell=True)
     if ocode != 0:
-      raise InstallerException, "Failed to test"
+      raise InstallerException("Failed to test")
 
     ocode = subprocess.call("make doc > /dev/null 2>&1", shell=True)
     if ocode != 0:
-      print "Failed to generate RAVE documentation"
+      print("Failed to generate RAVE documentation")
     else:
       self._install_doc(env)
 
     ocode = subprocess.call("make install", shell=True)
     if ocode != 0:
-      raise InstallerException, "Failed to install"
+      raise InstallerException("Failed to install")
     
     self._update_pgf_registry(env)
     self._update_pgf_quality_registry(env)
@@ -135,7 +139,7 @@ a.register('eu.baltrad.beast.applyqc', 'rave_pgf_apply_qc_plugin', 'generate', '
     try:    
       ocode = subprocess.call("python tmpreg.py", shell=True)
       if ocode != 0:
-        raise InstallerException, "Failed to register google maps plugin in rave"
+        raise InstallerException("Failed to register google maps plugin in rave")
     finally:
       if os.path.exists("tmpreg.py"):   
         os.unlink("tmpreg.py")    
@@ -162,7 +166,7 @@ if not a.has_plugin("scansun"):
     try:    
       ocode = subprocess.call("python tmpreg.py", shell=True)
       if ocode != 0:
-        raise InstallerException, "Failed to register quality plugins in rave"
+        raise InstallerException("Failed to register quality plugins in rave")
     finally:
       if os.path.exists("tmpreg.py"):   
         os.unlink("tmpreg.py")

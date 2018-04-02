@@ -45,6 +45,6 @@ class prepareinstaller(installer):
       try:
         subprocess.call("%s --all stop"%pth, shell=True)
       except:
-        print "Could not stop running node"
+        print("Could not stop running node")
       time.sleep(1)
       

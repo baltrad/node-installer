@@ -27,22 +27,29 @@ import urllib
 import os
 from fetcher import fetcher
 
+try:
+  from urllib import FancyURLopener
+  from urllib import urlretrieve
+except:
+  from urllib.request import FancyURLopener
+  from urllib.request import urlretrieve
+
 ##
 # Handle missing files that causes 404 errors
 #
-class FileURLopener(urllib.FancyURLopener):
+class FileURLopener(FancyURLopener):
   ##
   # Constructor
   # @param args: See FancyURLopener.__init__
   #
   def __init__(self, *args):
-    urllib.FancyURLopener.__init__(self, *args)
+    FancyURLopener.__init__(self, *args)
    
   ##
   # Handles http error code 404                                
   def http_error_default(self, url, fp, errcode, errmsg, headers):
     if errcode == 404:
-      raise IOError, "Could not retrieve resource %s"%url
+      raise IOError("Could not retrieve resource %s"%url)
 
 ##
 # Make sure our opener is used
@@ -72,10 +79,10 @@ class urlfetcher(fetcher):
   #
   def dofetch(self, package, env=None):
     if not os.path.exists(self.fname):
-      print "Fetching: %s/%s"%(env.getArg("URLREPO"),self.url)
-      urllib.urlretrieve("%s/%s"%(env.getArg("URLREPO"),self.url), self.fname)
+      print("Fetching: %s/%s"%(env.getArg("URLREPO"),self.url))
+      urlretrieve("%s/%s"%(env.getArg("URLREPO"),self.url), self.fname)
     else:
-      print "%s already fetched"%self.fname
+      print("%s already fetched"%self.fname)
     return self.fname
 
   ##
@@ -85,7 +92,7 @@ class urlfetcher(fetcher):
   #  
   def dofetch_offline_content(self, package, env=None):
     if not os.path.exists(self.fname):
-      print "URLURL: %s/%s"%(env.getArg("URLREPO"),self.url)
+      print("URLURL: %s/%s"%(env.getArg("URLREPO"),self.url))
       urllib.urlretrieve("%s/%s"%(env.getArg("URLREPO"),self.url), self.fname)
   
   ##

@@ -26,5 +26,5 @@ def get_node_version():
         try:
           return git_describe()
         except:
-          return "SNAPSHOT"
+          return("SNAPSHOT")
 

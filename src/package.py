@@ -28,12 +28,6 @@ Defines a package that should be installed.
 # The package/module class
 #
 class package(object):
-  _name = None
-  _version = None
-  _fetcher = None
-  _dependencies = []
-  _remembered = True
-  
   ##
   # Constructor
   # @param name: the name of the package, e.g. ZLIB
@@ -48,10 +42,11 @@ class package(object):
     self._name = name
     self._version = version
     self._fetcher = fetcher
+    self._dependencies = []
     if depends != None:
       self._dependencies = depends
     self._remembered = remembered
-    for k, v in extra_attrs.iteritems():
+    for k, v in extra_attrs.items():
         setattr(self, k, v)
     
   ##

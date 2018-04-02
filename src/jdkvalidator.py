@@ -46,10 +46,10 @@ class jdkvalidator:
     whichjavac = subprocess.Popen(['which', 'javac'], stdout=subprocess.PIPE).communicate()[0]
     
     if whichjava == "" or whichjavac == "":
-      raise ValidatorException, "Could not find java or javac"
+      raise ValidatorException("Could not find java or javac")
     
     if os.path.dirname(whichjava) != os.path.dirname(whichjavac):
-      raise ValidatorException, "java and javac are found at different places"
+      raise ValidatorException("java and javac are found at different places")
     
     
     jdkhome = os.path.dirname(whichjava)
@@ -68,28 +68,28 @@ class jdkvalidator:
     javacmd = env.expandArgs("$JDKHOME/bin/java")
     result = subprocess.Popen([javacmd, '-version'], stdout=subprocess.PIPE, stderr=subprocess.STDOUT).communicate()[0]
 
-    lines = result.split("\n")
+    lines = result.decode('utf-8').split("\n")
     verstr = None
     for l in lines:
       if l.startswith("java version") or l.startswith("openjdk version"):
         verstr = l
         break
     if verstr == None:
-      raise ValidatorException, "Could not identify any type of version for java"
+      raise ValidatorException("Could not identify any type of version for java")
       
     g = re.search("(java version \")([0-9._\-]+)(\")", verstr)
     if g == None:
       g = re.search("(openjdk version \")([0-9._\-a-z]+)(\")", verstr)
 
     if g == None:
-      raise ValidatorException, "Could not determine version for java"
+      raise ValidatorException("Could not determine version for java")
     
     ver = g.group(2)
 
     values = ver.split(".")
     
     if int(values[0]) <= 1 and int(values[1]) < 6:
-      raise ValidatorException, "Java must be SUN or OpenJDK with version >= 1.6"
+      raise ValidatorException("Java must be SUN or OpenJDK with version >= 1.6")
     
     env.addArg("JAVA_VERSION", ver)
   
@@ -130,7 +130,7 @@ public class TestJava {
     code = subprocess.call("%s TestJava.java"%javaccmd, shell=True)
     if code != 0:
       self._remove_files(["TestJava.java","TestJava.class"])
-      raise ValidatorException, "Failed to compile java test program"
+      raise ValidatorException("Failed to compile java test program")
     
     datamodel32 = False
     datamodel64 = False
@@ -151,7 +151,7 @@ public class TestJava {
     elif arch_bits == "32bit" and datamodel32 == True:
       return "32"
     else:
-      raise ValidatorException, "Incompatible jvm and platform, arch and jvm differs between 32 and 64 bit models"
+      raise ValidatorException("Incompatible jvm and platform, arch and jvm differs between 32 and 64 bit models")
     
   ##
   # Performs the actual validation of a jdk
@@ -169,4 +169,4 @@ public class TestJava {
 
     dmodel = self._test_java_datamodel_type(env)
     
-    print "Java: %s supports %s-bit data models"%(version,dmodel)
+    print("Java: %s supports %s-bit data models"%(version,dmodel))

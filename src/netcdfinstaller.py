@@ -73,15 +73,15 @@ class netcdfinstaller(installer):
     # so we wait with failing until next call is performed
     subprocess.call("make distclean", shell=True)
 
-    cmd = env.expandArgs("CFLAGS=%s LDFLAGS=%s ./configure --prefix=\"$TPREFIX\""%(self.get_cflags(env), self.get_ldflags(env)))
+    cmd = env.expandArgs("CFLAGS=%s LDFLAGS=%s ./configure --prefix=\"$TPREFIX\" --disable-dap"%(self.get_cflags(env), self.get_ldflags(env)))
     ocode = subprocess.call(cmd, shell=True)
     if ocode != 0:
-      raise InstallerException, "Failed to configure netcdf"
+      raise InstallerException("Failed to configure netcdf")
 
     ocode = subprocess.call("make", shell=True)
     if ocode != 0:
-      raise InstallerException, "Failed to build netcdf"
+      raise InstallerException("Failed to build netcdf")
 
     ocode = subprocess.call("make install", shell=True)
     if ocode != 0:
-      raise InstallerException, "Failed to install netcdf"
+      raise InstallerException("Failed to install netcdf")

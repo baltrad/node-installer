@@ -128,6 +128,9 @@ class bdbinstaller(installer):
     # create a virtual python environment
     python = env.expandArgs("$TPREFIX/bin/python")
     bdbpython = env.expandArgs("${PREFIX}/baltrad-db/bin/python")
+    if env.hasArg("ENABLE_PY3") and env.getArg("ENABLE_PY3"):
+      python = env.expandArgs("$TPREFIX/bin/python3")
+      bdbpython = env.expandArgs("${PREFIX}/baltrad-db/bin/python3")
 
     self._remove_bdbclient_and_common(python)
     self._remove_bdbclient_and_common(bdbpython)
@@ -175,7 +178,7 @@ class bdbinstaller(installer):
       lncmd=env.expandArgs("ln -s ${TPREFIX}/bin/baltrad-bdb-client ${PREFIX}/baltrad-db/bin/baltrad-bdb-client")
       ocode = subprocess.call(lncmd, shell=True)
       if ocode != 0:
-        raise InstallerException, "Failed to create symbolic link for baltrad-bdb-client"
+        raise InstallerException("Failed to create symbolic link for baltrad-bdb-client")
 
     ant = env.expandArgs("${TPREFIX}/ant/bin/ant")
 
@@ -190,17 +193,17 @@ class bdbinstaller(installer):
 
     ocode = subprocess.call([python, "setup.py", "install", "--force"])
     if ocode != 0:
-        raise InstallerException, "Failed to install %s" % name
+        raise InstallerException("Failed to install %s" % name)
     
     ocode = subprocess.call(" ".join([
         python, "setup.py", "nosetests", "--first-package-wins", "-w test",
     ]), shell=True)
     if ocode != 0:
-        raise InstallerException, "%s tests failed" % name
+        raise InstallerException("%s tests failed" % name)
     
   def _install_java_client(self, path, prefix, ant):
     os.chdir(path)
 
     ocode = subprocess.call([ant, "-Dprefix=%s" % prefix, "test", "install"])
     if ocode != 0:
-        raise InstallerException, "Failed to install BDB java client"
+        raise InstallerException("Failed to install BDB java client")

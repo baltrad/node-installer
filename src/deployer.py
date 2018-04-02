@@ -109,7 +109,7 @@ class deployer(installer):
     try:
       ocode = subprocess.call(env.expandArgs("$JDKHOME/bin/jar -xvf %s  > /dev/null 2>&1"%warFile), shell=True)
       if ocode != 0:
-        raise InstallerException, "Could not extract war"
+        raise InstallerException("Could not extract war")
       self._write_dex_fc_properties(env)
       self._write_db_properties(env)
       self._copy_dex_properties(env)
@@ -119,7 +119,7 @@ class deployer(installer):
       os.chdir("..")
       ocode = subprocess.call(env.expandArgs("$JDKHOME/bin/jar cf %s -C %s/ ."%(tmpwar,foldername)), shell=True)
       if ocode != 0:
-        raise InstallerException, "Could not pack war"
+        raise InstallerException("Could not pack war")
       self._deploywar(env, tmpwarpath)
       self._modify_db_properties_permission(env)
     finally:
@@ -134,31 +134,31 @@ class deployer(installer):
   def _setup_permissions(self, env):
     runas = env.getArg("RUNASUSER")
     if runas == "root":
-      raise InstallerException, "You should not atempt to run system as root"
+      raise InstallerException("You should not atempt to run system as root")
 
     obj = pwd.getpwnam(runas)
 
     if runas == getpass.getuser() or "root" == getpass.getuser():
       if "root" == getpass.getuser():
-        os.path.walk(env.expandArgs("$TPREFIX/tomcat"), _walk_chown, [obj.pw_uid,obj.pw_gid])
-      os.path.walk(env.expandArgs("$TPREFIX/tomcat/bin"), _walk_chmod, stat.S_IRWXU|stat.S_IRGRP|stat.S_IXGRP|stat.S_IROTH|stat.S_IXOTH)
-      os.path.walk(env.expandArgs("$TPREFIX/tomcat/webapps"), _walk_chmod, stat.S_IRWXU|stat.S_IRGRP|stat.S_IXGRP|stat.S_IROTH|stat.S_IXOTH)
-      os.path.walk(env.expandArgs("$TPREFIX/tomcat/logs"), _walk_chmod, stat.S_IRWXU|stat.S_IRGRP|stat.S_IXGRP|stat.S_IROTH|stat.S_IXOTH)
-      os.path.walk(env.expandArgs("$TPREFIX/tomcat/conf"), _walk_chmod, stat.S_IRWXU|stat.S_IRGRP|stat.S_IXGRP|stat.S_IROTH|stat.S_IXOTH)
+        os.walk(env.expandArgs("$TPREFIX/tomcat"), _walk_chown, [obj.pw_uid,obj.pw_gid])
+      os.walk(env.expandArgs("$TPREFIX/tomcat/bin"), _walk_chmod, stat.S_IRWXU|stat.S_IRGRP|stat.S_IXGRP|stat.S_IROTH|stat.S_IXOTH)
+      os.walk(env.expandArgs("$TPREFIX/tomcat/webapps"), _walk_chmod, stat.S_IRWXU|stat.S_IRGRP|stat.S_IXGRP|stat.S_IROTH|stat.S_IXOTH)
+      os.walk(env.expandArgs("$TPREFIX/tomcat/logs"), _walk_chmod, stat.S_IRWXU|stat.S_IRGRP|stat.S_IXGRP|stat.S_IROTH|stat.S_IXOTH)
+      os.walk(env.expandArgs("$TPREFIX/tomcat/conf"), _walk_chmod, stat.S_IRWXU|stat.S_IRGRP|stat.S_IXGRP|stat.S_IROTH|stat.S_IXOTH)
     else:
-      print "You must manually modify the tomcat permissions before continuing...."
-      print env.expandArgs("""
+      print("You must manually modify the tomcat permissions before continuing....")
+      print(env.expandArgs("""
 chown -R $RUNASUSER:$RUNASUSER $TPREFIX/tomcat
 chmod -R 555 $TPREFIX/tomcat/bin
 chmod -R 755 $TPREFIX/tomcat/webapps
 chmod -R 755 $TPREFIX/tomcat/logs
 chmod -R 755 $TPREFIX/tomcat/conf
-""")
-      print "Press return when finished or write 'quit' to exit:",
+"""))
+      print("Press return when finished or write 'quit' to exit:")
       sys.stdout.flush()
       a=sys.stdin.readline().strip()
       if a == "quit":
-        raise InstallerException, "Manually terminated script"
+        raise InstallerException("Manually terminated script")
 
 
   ##
@@ -319,7 +319,7 @@ software.version=%s
         '  <bean id="bdb_auth" class="eu.baltrad.bdb.db.rest.NullAuthenticator"/>',
       ])
     else:
-      raise InstallerException, "unrecognized BDB_AUTH: %s" % auth
+      raise InstallerException("unrecognized BDB_AUTH: %s" % auth)
 
     conf.extend([
       '  <bean id="bdb_db" class="eu.baltrad.bdb.db.rest.RestfulDatabase" >',
@@ -348,7 +348,7 @@ software.version=%s
         '  </bean>',
       ])
     else:
-      raise InstallerException, "unrecognized BDB_AUTH: %s" % auth
+      raise InstallerException("unrecognized BDB_AUTH: %s" % auth)
 
     conf.extend([
       '  <bean id="bdb_file_catalog" class="eu.baltrad.bdb.BasicFileCatalog">',
@@ -463,7 +463,7 @@ software.version=%s
     #print env.expandArgs("Calling: $TPREFIX/ant/bin/ant -f %s %s deploy"%(buildfile, args))
     ocode = subprocess.call(env.expandArgs("$TPREFIX/ant/bin/ant -f %s %s deploy"%(buildfile, args)), shell=True)
     if ocode != 0:
-      raise InstallerException, "Failed to deploy system"   
+      raise InstallerException("Failed to deploy system")   
 
   ##
   # 
@@ -471,6 +471,6 @@ software.version=%s
     deployed_confdir = env.expandArgs("$TPREFIX/tomcat/webapps/BaltradDex/WEB-INF/conf/")
     keystore_dst = os.path.join(deployed_confdir, ".dex_keystore.jks")
     if os.path.exists(keystore_dst):
-        print "unlinking", keystore_dst
+        print("unlinking", keystore_dst)
         os.unlink(keystore_dst)
   
