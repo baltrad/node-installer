@@ -75,6 +75,10 @@ class bwrwpinstaller(installer):
     os.chdir(dir)
     self.osenvironment().setEnvironmentVariable(env, "LD_LIBRARY_PATH", "%s:%s"%(env.getLdLibraryPath(),self.osenvironment().getSnapshotVariable("LD_LIBRARY_PATH")))
     self.osenvironment().setEnvironmentVariable(env, "PATH", "%s:%s"%(env.getPath(),self.osenvironment().getSnapshotVariable("PATH")))
+
+    python_bin="python"
+    if env.hasArg("ENABLE_PY3") and env.getArg("ENABLE_PY3"):
+      python_bin="python3"
     
     #  $ ./configure --with-rave=/opt/baltrad/rave --with-blas=/projects/baltrad/SMHI_WRWP/BLAS -
     #     -with-cblas=/projects/baltrad/SMHI_WRWP/CBLAS --with-lapack=/projects/baltrad/SMHI_WRWP/lapa
@@ -121,7 +125,7 @@ class bwrwpinstaller(installer):
     if ocode != 0:
       raise InstallerException("Failed to install baltrad-wrwp")
     
-    cmd = "python -c \"import sys;import os;print(os.sep.join([sys.prefix, 'lib', 'python'+sys.version[:3],'site-packages']))\""
+    cmd = python_bin + " -c \"import sys;import os;print(os.sep.join([sys.prefix, 'lib', 'python'+sys.version[:3],'site-packages']))\""
     plc = subprocess.Popen(cmd, stdout=subprocess.PIPE, shell=True).communicate()[0]
     foutname = "%s/baltrad-wrwp.pth"%plc.decode('utf-8').strip()
 
@@ -136,6 +140,9 @@ class bwrwpinstaller(installer):
   
   def _configure_rave_plugin(self, env):
     env.getNodeScript().stop(rave=True)
+    python_bin="python"
+    if env.hasArg("ENABLE_PY3") and env.getArg("ENABLE_PY3"):
+      python_bin="python3"
     
     if os.path.exists("tmpreg.py"):
       os.unlink("tmpreg.py")
@@ -151,7 +158,7 @@ a.register('se.smhi.baltrad-wrwp.generatewrwp', 'baltrad_wrwp_pgf_plugin', 'gene
     fp.close()
 
     try:    
-      ocode = subprocess.call("python tmpreg.py", shell=True)
+      ocode = subprocess.call("%s tmpreg.py"%python_bin, shell=True)
       if ocode != 0:
         raise InstallerException("Failed to register google maps plugin in rave")
     finally:

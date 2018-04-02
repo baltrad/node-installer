@@ -56,7 +56,11 @@ class ravegmapinstaller(installer):
     self.osenvironment().setEnvironmentVariable(env, "LD_LIBRARY_PATH", "%s:%s"%(env.getLdLibraryPath(),os.environ["LD_LIBRARY_PATH"]))
     self.osenvironment().setEnvironmentVariable(env, "PATH", "%s:%s"%(env.getPath(),os.environ["PATH"]))
 
-    ocode = subprocess.call(env.expandArgs("python setup.py install --prefix=\"$PREFIX\""), shell=True)
+    python_bin="python"
+    if env.hasArg("ENABLE_PY3") and env.getArg("ENABLE_PY3"):
+      python_bin="python3"
+
+    ocode = subprocess.call(env.expandArgs("%s setup.py install --prefix=\"$PREFIX\""%python_bin), shell=True)
     if ocode != 0:
       raise InstallerException("Failed to install")
     
@@ -76,7 +80,7 @@ a.register('eu.baltrad.beast.creategmap', 'googlemap_pgf_plugin', 'generate', 'G
     fp.close()
 
     try:    
-      ocode = subprocess.call("python tmpreg.py", shell=True)
+      ocode = subprocess.call("%s tmpreg.py"%python_bin, shell=True)
       if ocode != 0:
         raise InstallerException("Failed to register google maps plugin in rave")
     finally:

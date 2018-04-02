@@ -24,7 +24,7 @@ Actual versions for the different software modules that should be installed
 @date 2011-02-09
 '''
 versions = {
-  "HLHDF": "v0.8.7",
+  "HLHDF": "v0.8.8",
   "BALTRAD-DB": "jenkins-baltrad-db-415",
   "BEAST": "jenkins-Beast-376",
   "BALTRAD-DEX": "jenkins-BaltradDex-587",

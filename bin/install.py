@@ -180,11 +180,11 @@ MODULES.extend([
          # Time to install baltrad node software
          keystoreinstaller(package("KEYSTORE", "1.1", nodir())),
          
-         hlhdfinstaller(node_package("HLHDF", depends=["ZLIB", "HDF5"])),
+         hlhdfinstaller(node_package("HLHDF", depends=["ZLIB", "HDF5", "PYTHON"])),
 
          bbufrinstaller(node_package("BBUFR", depends=["ZLIB"])),
 
-         bdbinstaller(node_package("BALTRAD-DB", depends=["ZLIB", "HDF5", "HLHDF"])),
+         bdbinstaller(node_package("BALTRAD-DB", depends=["ZLIB", "HDF5", "HLHDF", "PYTHON"])),
          
          beastinstaller(node_package("BEAST", depends=["BALTRAD-DB"])),
          

@@ -60,6 +60,10 @@ class raveconfiginstaller(installer):
         
     env.getNodeScript().stop(rave=True)
     
+    python_bin="python"
+    if env.hasArg("ENABLE_PY3") and env.getArg("ENABLE_PY3"):
+      python_bin="python3"
+          
     fp = open("tmpreg.py", "w")
     fp.write(env.expandArgs("""
 from rave_pgf_quality_registry_mgr import rave_pgf_quality_registry_mgr
@@ -80,7 +84,7 @@ a.save("$PREFIX/rave/etc/rave_pgf_quality_registry.xml")
 """))
     fp.close()
     try:    
-      ocode = subprocess.call("python tmpreg.py", shell=True)
+      ocode = subprocess.call("%s tmpreg.py"%python_bin, shell=True)
       if ocode != 0:
         raise InstallerException("Failed to register quality plugins in rave")
     finally:
