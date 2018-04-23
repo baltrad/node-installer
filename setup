@@ -36,7 +36,7 @@ PYTHON_VERSION=2.7.14
 PYTHON_MM_VERSION=python2.7
 PYTHON3_VERSION=3.6.5
 PYTHON3_MM_VERSION=python3.6
-PIP_VERSION=7.1.2
+PIP_VERSION=10.0.1
 # PIP version used for python 2.7
 SETUPTOOLS_VERSION=38.5.0
 
@@ -520,15 +520,14 @@ _EOF_
 }
 
 install_pip() {
-  python=$1
-  pip_src=pip-$2.tar.gz
-  fetch_sources $pip_src $URLREPO $PACKAGEPATH
-
-  cd $PACKAGEPATH || exit 127
-  tar -xvpzf $pip_src
-  cd `basename $pip_src .tar.gz` || exit 127
-
-  $PYTHON_EXECUTABLE setup.py install || exit 127
+  $PYTHON_EXECUTABLE bin/get-pip.py
+  #python=$1
+  #pip_src=pip-$2.tar.gz
+  #fetch_sources $pip_src $URLREPO $PACKAGEPATH
+  #cd $PACKAGEPATH || exit 127
+  #tar -xvpzf $pip_src
+  #cd `basename $pip_src .tar.gz` || exit 127
+  #$PYTHON_EXECUTABLE setup.py install || exit 127
 }
 
 clean_pip() {
