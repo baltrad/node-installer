@@ -74,6 +74,9 @@ class bbufrinstaller(installer):
     # so we wait with failing until next call is performed
     subprocess.call("make distclean", shell=True)
 
+    # If autoreconf fails, it will cause make to fail if there is problems with aclocal so ignore any failure here.
+    subprocess.call("autoreconf -f -i", shell=True)
+
     cmd = "./configure --prefix=\"$PREFIX/bbufr\""
     cflags = "-I$TPREFIX/include"
     ldflags = "-L$TPREFIX/lib"

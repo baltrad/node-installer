@@ -90,19 +90,23 @@ class dexinstaller(installer):
     os.chdir(cdir)
 
     self.osenvironment().setEnvironmentVariable(env, "LD_LIBRARY_PATH", env.getLdLibraryPath())
+
+    hdfjavalibdir=env.expandArgs("$HDFJAVAHOME/lib")
+    if os.path.exists(env.expandArgs("$HDFJAVAHOME/jhdf5.jar")):
+      hdfjavalibdir=env.expandArgs("$HDFJAVAHOME")
     
-    ocode = subprocess.call(env.expandArgs("$TPREFIX/ant/bin/ant -Dinstall.prefix=$PREFIX -Dbaltrad.db.path=$PREFIX/baltrad-db -Dbeast.path=$PREFIX/beast -Djavahdf.path=$HDFJAVAHOME install"), shell=True)
+    ocode = subprocess.call(env.expandArgs("$TPREFIX/ant/bin/ant -Dinstall.prefix=$PREFIX -Dbaltrad.db.path=$PREFIX/baltrad-db -Dbeast.path=$PREFIX/beast -Djavahdf.path=%s install"%hdfjavalibdir), shell=True)
     if ocode != 0:
       raise InstallerException("Failed to install dex")
 
-    ocode = subprocess.call(env.expandArgs("$TPREFIX/ant/bin/ant -Dinstall.prefix=$PREFIX -Dbaltrad.db.path=$PREFIX/baltrad-db -Dbeast.path=$PREFIX/beast -Djavahdf.path=$HDFJAVAHOME javadoc-doc > /dev/null 2>&1"), shell=True)
+    ocode = subprocess.call(env.expandArgs("$TPREFIX/ant/bin/ant -Dinstall.prefix=$PREFIX -Dbaltrad.db.path=$PREFIX/baltrad-db -Dbeast.path=$PREFIX/beast -Djavahdf.path=%s javadoc-doc > /dev/null 2>&1"%hdfjavalibdir), shell=True)
     if ocode != 0:
       print("Failed to generate javadoc for DEX")
     else:
       print("Installing javadoc")
       self._install_javadoc(env)
     
-    ocode = subprocess.call(env.expandArgs("$TPREFIX/ant/bin/ant -Dinstall.prefix=$PREFIX -Dbaltrad.db.path=$PREFIX/baltrad-db -Dbeast.path=$PREFIX/beast -Djavahdf.path=$HDFJAVAHOME doxygen-doc > /dev/null 2>&1"), shell=True)
+    ocode = subprocess.call(env.expandArgs("$TPREFIX/ant/bin/ant -Dinstall.prefix=$PREFIX -Dbaltrad.db.path=$PREFIX/baltrad-db -Dbeast.path=$PREFIX/beast -Djavahdf.path=%s doxygen-doc > /dev/null 2>&1"%hdfjavalibdir), shell=True)
     if ocode != 0:
       print("Failed to generate DEX documentation")
     else:
