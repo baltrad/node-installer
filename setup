@@ -768,7 +768,7 @@ fi
 
 install_setuptools "$PYTHON_EXECUTABLE"
 
-HAS_PILLOW=`ls -1 "$TPREFIX/lib/$PYTHON_MM_VERSION/site-packages/" | grep Pillow | grep egg-info`
+HAS_PILLOW=`ls -1 "$TPREFIX/lib/$PYTHON_MM_VERSION/site-packages/" | grep Pillow | grep "egg-info\|dist-info"`
 if [ "$HAS_PILLOW" = "" ]; then
   if [ -d "$TPREFIX/lib/$PYTHON_MM_VERSION/site-packages/PIL" ]; then #Force removal of OLD Imaging (PIL)
     \rm -fr "$TPREFIX/lib/$PYTHON_MM_VERSION/site-packages/PIL"
