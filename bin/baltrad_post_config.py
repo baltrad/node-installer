@@ -509,6 +509,12 @@ class baltrad_post_config(object):
     logid = None
     if "rave.logid" in properties:
       logid=properties["rave.logid"]
+      
+    scansun_out_row = None
+    scansun_out_written = False
+    if "rave.scansunout" in properties:
+      scansun_out=properties["rave.scansunout"]
+      scansun_out_row = "RAVESCANSUN_OUT = \"%s\"\n"%scansun_out
 
     fd = open("%s/rave/Lib/rave_defines.py"%iroot)
     rows = fd.readlines()
@@ -531,12 +537,18 @@ class baltrad_post_config(object):
         row = "LOGLEVEL = \"%s\"\n"%loglevel
       elif row.startswith("LOGID") and logid:
         row = "LOGID = 'PGF[%s]'\n"%logid
+      elif row.startswith("RAVESCANSUN_OUT") and scansun_out_row:
+        row = scansun_out_row
+        scansun_out_written = True
       nrows.append(row)
+      
+    if scansun_out_row and not scansun_out_written:
+      nrows.append(scansun_out_row)
+      
     fp = open("%s/rave/Lib/rave_defines.py"%iroot, "w")
     for row in nrows:
       fp.write(row)
     fp.close()
-
 
 ##
 # MAIN
