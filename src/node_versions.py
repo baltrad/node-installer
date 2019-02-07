@@ -29,7 +29,7 @@ versions = {
   "BEAST": "jenkins-Beast-382",
   "BALTRAD-DEX": "jenkins-BaltradDex-594",
   "RAVE": "jenkins-Rave-645",
-  "RAVE-PY3": "jenkins-RavePy3-48",
+  "RAVE-PY3": "jenkins-RavePy3-54",
   "RAVE-GMAP": "jenkins-GoogleMapsPlugin-43",
   "BROPO": "jenkins-bRopo-56",
   "BBUFR": "jenkins-bbufr-13",
