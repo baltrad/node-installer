@@ -117,7 +117,7 @@ _PIP_MODULES=[
     ("JPROPS", "2.0.2", "jprops", ["PYTHON"], None),
     ("LOCKFILE", "0.9.1", "lockfile", ["PYTHON"], None),
     ("PYTHON-DAEMON", "2.1.2", "python-daemon", ["PYTHON", "LOCKFILE"], None),
-    ("PSYCOPG2", "2.7", "psycopg2", ["PYTHON"], None),
+    ("PSYCOPG2", "2.7.3.2", "psycopg2", ["PYTHON"], None),
     ("DECORATOR", "3.3.2", "decorator", ["PYTHON"], None),
     ("TEMPITA", "0.5.1", "Tempita", ["PYTHON"], None),
     ("SQLALCHEMY", "1.0.13", "sqlalchemy", ["PYTHON"], None),
