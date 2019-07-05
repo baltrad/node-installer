@@ -28,7 +28,7 @@ versions = {
   "BALTRAD-DB": "jenkins-baltrad-db-427",
   "BEAST": "jenkins-Beast-382",
   "BALTRAD-DEX": "jenkins-BaltradDex-596",
-  "RAVE": "jenkins-Rave-650",
+  "RAVE": "jenkins-Rave-651",
   "RAVE-PY3": "jenkins-RavePy3-66",
   "RAVE-GMAP": "jenkins-GoogleMapsPlugin-43",
   "BROPO": "jenkins-bRopo-61",
