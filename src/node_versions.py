@@ -33,6 +33,6 @@ versions = {
   "RAVE-GMAP": "jenkins-GoogleMapsPlugin-43",
   "BROPO": "jenkins-bRopo-68",
   "BBUFR": "jenkins-bbufr-13",
-  "BEAMB": "jenkins-beamb-66",
+  "BEAMB": "jenkins-beamb-69",
   "BWRWP": "jenkins-wrwp-43",
 }
