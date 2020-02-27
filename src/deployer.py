@@ -111,6 +111,7 @@ class deployer(installer):
       if ocode != 0:
         raise InstallerException("Could not extract war")
       self._write_dex_fc_properties(env)
+      self._write_dex_beast_properties(env)
       self._write_db_properties(env)
       self._copy_dex_properties(env)
       self._write_bdb_bean_config(env)
@@ -190,6 +191,31 @@ database.keyczar.key=$KEYSTORE/$NODENAME.priv
 database.keyczar.name=$NODENAME
 """))
     fp.close()    
+
+  ##
+  # Writes the dex.beast.properties file
+  def _write_dex_beast_properties(self, env):
+    filename = "./WEB-INF/classes/resources/dex.beast.properties"
+    fp = open(filename, "w")
+    fp.write(env.expandArgs("""
+# BEAST specifics
+beast.admin.mailer.encoding=UTF-8
+beast.admin.mailer.host=localhost
+beast.admin.mailer.port=25
+beast.admin.mailer.username=
+beast.admin.mailer.password=
+beast.admin.mailer.from=
+beast.admin.mailer.transport.protocol=smtp
+beast.admin.mailer.smtp.auth=false
+beast.admin.mailer.smtp.starttls.enable=false
+
+beast.admin.security.keyzcar.path=$KEYSTORE
+
+beast.pooled.publisher.pool.core.size=1
+beast.pooled.publisher.pool.max.size=5
+beast.pooled.publisher.queue.size=100
+"""))
+    fp.close()
 
   ##
   # Creates the db properties property file

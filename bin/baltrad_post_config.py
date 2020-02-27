@@ -272,6 +272,8 @@ class baltrad_post_config(object):
     self._configure_dex_properties(properties)
     self._configure_dex_db_properties(properties)
     self._configure_dex_fc_properties(properties)
+    self._configure_dex_beast_properties(properties)
+
     if "baltrad.with.rave" in properties and properties["baltrad.with.rave"].lower() == "true":
       self._configure_rave(properties)
   
@@ -481,6 +483,44 @@ class baltrad_post_config(object):
       fp.write("# Name of the node\n")
       fp.write("database.keyczar.name=%s\n"%nodename)
       
+    fp.close()
+
+  ##
+  # Updates the dex.fc.properties file in the BaltradDex tomcat directory (baltrad.install.3p_root/....)
+  # @param properties: the properties to be used
+  #
+  def _configure_dex_beast_properties(self, properties):
+    tproot = properties["baltrad.install.3p_root"]
+    iroot = properties["baltrad.install.root"]
+    bdburi = properties["baltrad.bdb.server.uri"]
+    keyczar_root=properties["baltrad.keyczar.root"]
+    nodename=properties["baltrad.node.name"]
+    
+    fs_path_prop_name = "baltrad.bdb.server.backend.sqla.storage.fs.path"
+    if fs_path_prop_name in properties:
+      storagefolder = properties[fs_path_prop_name]
+    else:
+      storagefolder = "%s/bdb_storage"%iroot
+    
+    with open("%s/tomcat/webapps/BaltradDex/WEB-INF/classes/resources/dex.beast.properties"%tproot, "w") as fp:
+      fp.write("""#BEAST specifics
+beast.admin.mailer.encoding=UTF-8
+beast.admin.mailer.host=localhost
+beast.admin.mailer.port=25
+beast.admin.mailer.username=
+beast.admin.mailer.password=
+beast.admin.mailer.from=
+beast.admin.mailer.transport.protocol=smtp
+beast.admin.mailer.smtp.auth=false
+beast.admin.mailer.smtp.starttls.enable=false
+
+""")
+      fp.write("beast.admin.security.keyzcar.path=%s\n"%keyczar_root)
+      fp.write("""
+beast.pooled.publisher.pool.core.size=1
+beast.pooled.publisher.pool.max.size=5
+beast.pooled.publisher.queue.size=100
+""")
     fp.close()
   
   ##
