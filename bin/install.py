@@ -161,8 +161,8 @@ MODULES.append(experimental(pipinstaller(package("ARGPARSE", "1.2.1", fetcher=pi
                )
 
 MODULES.extend([
-         tomcatinstaller(package("TOMCAT", "7.0.64-1",
-                                 untar(urlfetcher("apache-tomcat-7.0.64.tar.gz"), "apache-tomcat-7.0.64", True))),
+         tomcatinstaller(package("TOMCAT", "7.0.104",
+                                 untar(urlfetcher("apache-tomcat-7.0.104.tar.gz"), "apache-tomcat-7.0.104", True))),
          
          hdfjavainstaller(package("HDFJAVA", "2.6.1",
                                   machinefetcher({
