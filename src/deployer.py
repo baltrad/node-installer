@@ -81,7 +81,6 @@ class deployer(installer):
     
     #if not os.path.exists(env.expandArgs("$TPREFIX/ant/lib/catalina-ant.jar")):
     shutil.copyfile(env.expandArgs("$TPREFIX/tomcat/lib/catalina-ant.jar"), env.expandArgs("$TPREFIX/ant/lib/catalina-ant.jar"))
-    shutil.copyfile(env.expandArgs("$TPREFIX/tomcat/lib/catalina.jar"), env.expandArgs("$TPREFIX/ant/lib/catalina.jar"))
     # New files to copy
     shutil.copyfile(env.expandArgs("$TPREFIX/tomcat/lib/tomcat-coyote.jar"), env.expandArgs("$TPREFIX/ant/lib/tomcat-coyote.jar"))
     shutil.copyfile(env.expandArgs("$TPREFIX/tomcat/lib/tomcat-util.jar"), env.expandArgs("$TPREFIX/ant/lib/tomcat-util.jar"))
