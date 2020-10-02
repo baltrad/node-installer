@@ -380,6 +380,7 @@ class baltrad_post_config(object):
       
       fp.write("\n# RAVE PGF Specific values\n")
       fp.write("rave.db.uri=postgresql://%s:%s@%s/%s\n"%(dbusername,dbpassword,dbhostname,dbname))
+      fp.write("rave.io.version=2.3\n")
 
     fp.close()
 
@@ -533,6 +534,8 @@ beast.pooled.publisher.queue.size=100
     keyczar_root=properties["baltrad.keyczar.root"]
     dex_post_uri=properties["baltrad.dex.uri"]
     dex_uri=dex_post_uri.replace("/post_file.htm","")
+    odim_io_version = properties["rave.io.version"]
+    default_odim_io_version="2"
     
     ct_path = None
     if "rave.ctpath" in properties:
@@ -549,12 +552,19 @@ beast.pooled.publisher.queue.size=100
     logid = None
     if "rave.logid" in properties:
       logid=properties["rave.logid"]
-      
+    
     scansun_out_row = None
     scansun_out_written = False
     if "rave.scansunout" in properties:
       scansun_out=properties["rave.scansunout"]
       scansun_out_row = "RAVESCANSUN_OUT = \"%s\"\n"%scansun_out
+
+
+    if "rave.io.version" in properties:
+      if properties["rave.io.version"] == "2.3":
+        default_version = "3"
+      else:
+        default_version = "2"
 
     fd = open("%s/rave/Lib/rave_defines.py"%iroot)
     rows = fd.readlines()
@@ -580,6 +590,9 @@ beast.pooled.publisher.queue.size=100
       elif row.startswith("RAVESCANSUN_OUT") and scansun_out_row:
         row = scansun_out_row
         scansun_out_written = True
+      elif row.startswith("RAVE_IO_DEFAULT_VERSION") and default_version:
+        row = "RAVE_IO_DEFAULT_VERSION = %s\n"%default_version
+        
       nrows.append(row)
       
     if scansun_out_row and not scansun_out_written:
