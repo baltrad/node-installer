@@ -541,7 +541,7 @@ beast.pooled.publisher.queue.size=100
         default_odim_io_version="3"
       else:
         default_odim_io_version="2"
-      
+
     
     ct_path = None
     if "rave.ctpath" in properties:
@@ -564,13 +564,6 @@ beast.pooled.publisher.queue.size=100
     if "rave.scansunout" in properties:
       scansun_out=properties["rave.scansunout"]
       scansun_out_row = "RAVESCANSUN_OUT = \"%s\"\n"%scansun_out
-
-
-    if "rave.io.version" in properties:
-      if properties["rave.io.version"] == "2.3":
-        default_version = "3"
-      else:
-        default_version = "2"
 
     fd = open("%s/rave/Lib/rave_defines.py"%iroot)
     rows = fd.readlines()
