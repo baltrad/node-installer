@@ -534,8 +534,14 @@ beast.pooled.publisher.queue.size=100
     keyczar_root=properties["baltrad.keyczar.root"]
     dex_post_uri=properties["baltrad.dex.uri"]
     dex_uri=dex_post_uri.replace("/post_file.htm","")
-    odim_io_version = properties["rave.io.version"]
-    default_odim_io_version="2"
+    default_odim_io_version = "2"
+    if "rave.io.version" in properties:
+      odim_io_version = properties["rave.io.version"]
+      if odim_io_version=="2.3":
+        default_odim_io_version="3"
+      else:
+        default_odim_io_version="2"
+      
     
     ct_path = None
     if "rave.ctpath" in properties:
@@ -590,8 +596,8 @@ beast.pooled.publisher.queue.size=100
       elif row.startswith("RAVESCANSUN_OUT") and scansun_out_row:
         row = scansun_out_row
         scansun_out_written = True
-      elif row.startswith("RAVE_IO_DEFAULT_VERSION") and default_version:
-        row = "RAVE_IO_DEFAULT_VERSION = %s\n"%default_version
+      elif row.startswith("RAVE_IO_DEFAULT_VERSION") and default_odim_io_version:
+        row = "RAVE_IO_DEFAULT_VERSION = %s\n"%default_odim_io_version
         
       nrows.append(row)
       
