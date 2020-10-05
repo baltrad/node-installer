@@ -34,5 +34,5 @@ versions = {
   "BROPO": "jenkins-bRopo-91",
   "BBUFR": "jenkins-bbufr-14",
   "BEAMB": "jenkins-beamb-90",
-  "BWRWP": "jenkins-wrwp-76",
+  "BWRWP": "jenkins-wrwp-77",
 }
