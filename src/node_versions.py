@@ -27,7 +27,7 @@ versions = {
   "HLHDF": "v0.9.0",
   "BALTRAD-DB": "jenkins-baltrad-db-440",
   "BEAST": "jenkins-Beast-400",
-  "BALTRAD-DEX": "jenkins-BaltradDex-628",
+  "BALTRAD-DEX": "jenkins-BaltradDex-629",
   "RAVE": "jenkins-Rave-653",
   "RAVE-PY3": "jenkins-RavePy3-147",
   "RAVE-GMAP": "jenkins-GoogleMapsPlugin-43",
