@@ -18,7 +18,7 @@ You should have received a copy of the GNU Lesser General Public License
 along with the baltrad-node.  If not, see http://www.gnu.org/licenses.
 -->
 <project name="baltrad-node-db" basedir=".">
-  <property name="db.jar" value="libs/postgresql/postgresql-42.1.4.jre6.jar" />
+  <property name="db.jar" value="libs/postgresql/postgresql-42.2.18.jar" />
   <property name="db.driver" value="org.postgresql.Driver" />
   <property name="db.url" value="jdbc:postgresql://${db.host}:${db.port}/${db.name}" />
 
