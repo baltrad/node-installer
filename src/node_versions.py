@@ -25,14 +25,14 @@ Actual versions for the different software modules that should be installed
 '''
 versions = {
   "HLHDF": "v0.9.0",
-  "BALTRAD-DB": "jenkins-baltrad-db-440",
-  "BEAST": "jenkins-Beast-400",
-  "BALTRAD-DEX": "jenkins-BaltradDex-630",
+  "BALTRAD-DB": "jenkins-baltrad-db-442",
+  "BEAST": "jenkins-Beast-402",
+  "BALTRAD-DEX": "jenkins-BaltradDex-633",
   "RAVE": "jenkins-Rave-653",
-  "RAVE-PY3": "jenkins-RavePy3-147",
+  "RAVE-PY3": "jenkins-RavePy3-148",
   "RAVE-GMAP": "jenkins-GoogleMapsPlugin-43",
-  "BROPO": "jenkins-bRopo-91",
+  "BROPO": "jenkins-bRopo-93",
   "BBUFR": "jenkins-bbufr-14",
-  "BEAMB": "jenkins-beamb-90",
-  "BWRWP": "jenkins-wrwp-77",
+  "BEAMB": "jenkins-beamb-91",
+  "BWRWP": "jenkins-wrwp-78",
 }
