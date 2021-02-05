@@ -214,6 +214,8 @@ beast.admin.security.keyzcar.path=$KEYSTORE
 beast.pooled.publisher.pool.core.size=1
 beast.pooled.publisher.pool.max.size=5
 beast.pooled.publisher.queue.size=100
+
+beast.manager.number.executors=10
 """))
     fp.close()
 
@@ -231,6 +233,7 @@ db.driver=org.postgresql.Driver
 db.url=jdbc:postgresql://$DBHOST/$DBNAME
 db.user=$DBUSER
 db.pwd=$DBPWD
+db.pool.size=10
 """))
     fp.close()
     

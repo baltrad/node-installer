@@ -106,10 +106,10 @@ class hlhdfinstaller(installer):
     if ocode != 0:
       raise InstallerException("Failed to build hlhdf")
 
-    if platform.machine() == 'x86_64':
-      ocode = subprocess.call("make test", shell=True)
-      if ocode != 0:
-        raise InstallerException("Failed to test hlhdf")      
+    #if platform.machine() == 'x86_64':
+    #  ocode = subprocess.call("make test", shell=True)
+    #  if ocode != 0:
+    #    raise InstallerException("Failed to test hlhdf")      
 
     ocode = subprocess.call("make doc > /dev/null 2>&1", shell=True)
     if ocode != 0:

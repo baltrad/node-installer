@@ -148,13 +148,9 @@ for (name, version, pypi_name, deps, poenv) in _PIP_MODULES:
   )
   _PIP_DEP.append(name)
 
-MODULES.append(pychoiceinstaller(
-                pipinstaller(package("PYTHON-KEYCZAR", "0.7b", fetcher=pipfetcher(), depends=["PYTHON", "PYASN1", "PYCRYPTO"], extra_attrs={"pypi_name": "python-keyczar"})),
-                pipinstaller(package("PYTHON3-KEYCZAR", "0.71rc0", fetcher=pipfetcher(), depends=["PYTHON", "PYASN1", "PYCRYPTO"], extra_attrs={"pypi_name": "python3_keyczar"}))))
+MODULES.append(pipinstaller(package("PYTHON3-KEYCZAR", "0.71rc0", fetcher=pipfetcher(), depends=["PYTHON", "PYASN1", "PYCRYPTO"], extra_attrs={"pypi_name": "python3_keyczar"})))
 
-MODULES.append(pychoiceinstaller(
-                pipinstaller(package("PROGRESSBAR", "2.2", fetcher=pipfetcher(), depends=["PYTHON"], extra_attrs={"pypi_name": "progressbar"})),
-                pipinstaller(package("PROGRESSBAR33", "2.4", fetcher=pipfetcher(), depends=["PYTHON"], extra_attrs={"pypi_name": "progressbar33"}))))
+MODULES.append(pipinstaller(package("PROGRESSBAR33", "2.4", fetcher=pipfetcher(), depends=["PYTHON"], extra_attrs={"pypi_name": "progressbar33"})))
 
 MODULES.append(experimental(pipinstaller(package("ARGPARSE", "1.2.1", fetcher=pipfetcher(), extra_attrs={"pypi_name": "argparse"})),
                             nullinstaller(package("ARGPARSE", "1.2.1", fetcher=pipfetcher(), extra_attrs={"pypi_name": "argparse"})))
@@ -750,7 +746,7 @@ if __name__=="__main__":
   args = []
   try:
     optlist, args = getopt.getopt(sys.argv[1:], '', 
-                                  ['prefix=','tprefix=','enable-py3', 'use-ravepy3-repo', 'jdkhome=','with-zlib=',
+                                  ['prefix=','tprefix=', 'jdkhome=','with-zlib=',
                                    'with-psql=','with-bufr', 'with-rave','with-rave-gmap','with-bropo','with-beamb','with-bwrwp',
                                    'with-hdfjava=', 'with-freetype=','rebuild=',
                                    'with-blas=', 'with-cblas=', 'with-lapack=', 'with-lapacke=',
@@ -799,8 +795,8 @@ if __name__=="__main__":
   reinstalldb=False
   rebuild = []
   experimental_build=False
-  py3_enabled=False
-  use_ravepy3_repo=False
+  py3_enabled=True
+  use_ravepy3_repo=True
   subsystems = []
   
   for o, a in optlist:
@@ -808,11 +804,6 @@ if __name__=="__main__":
       env.addArg("PREFIX", a)
     elif o == "--tprefix":
       env.addArg("TPREFIX", a)
-    elif o == "--enable-py3":
-      env.addArg("ENABLE_PY3", True)
-      py3_enabled=True
-    elif o == "--use-ravepy3-repo":
-      use_ravepy3_repo=True
     elif o == "--jdkhome":
       env.addArg("JDKHOME", a)
     elif o == "--dbuser":
@@ -982,6 +973,8 @@ if __name__=="__main__":
   env.addUniqueArg("KEYSTORE_DN", "yes")
   env.addUniqueArg("ENABLE_NETCDF", False)
 
+  env.addArg("ENABLE_PY3", True)
+
   if not env.hasArg("NODENAME"):
     import socket
     nodename = socket.gethostname()
@@ -1016,10 +1009,11 @@ if __name__=="__main__":
     if experimental and isinstance(m, experimental):
       m.setExperimentalMode(True)
     if isinstance(m, pychoiceinstaller):
-      m.enablePython3(py3_enabled)
+      m.enablePython3(True) # We don't allow anything but python3 any longer.
     if isinstance(m.package(), rave_package):
-      m.package().enablePython3(py3_enabled or use_ravepy3_repo)
+      m.package().enablePython3(True) # We don't allow anything but python3 any longer.
 
+  #sys.exit(0)
   #
   # We want to ensure that user understands that it is nessecary to specify
   # --bdb-uri when installing subsystem depending on BDB

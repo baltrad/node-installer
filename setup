@@ -40,7 +40,7 @@ PIP_VERSION=10.0.1
 # PIP version used for python 2.7
 SETUPTOOLS_VERSION=38.5.0
 
-ENABLE_PY3=no
+ENABLE_PY3=yes
 ZLIB_REBUILT=no
 ZLIBINC=
 ZLIBLIB=
@@ -85,9 +85,10 @@ bootstrap_zlib() {
   if [ "$arch" = "x86_64" ]; then
     cmd="$cmd --64"
   fi
-  $cmd > /dev/null || exit 127
-  make > /dev/null  || exit 127
-  make install > /dev/null  || exit 127
+
+  $cmd || exit 127 #> /dev/null || exit 127
+  make || exit 127 #> /dev/null  || exit 127
+  make install || exit 127 #> /dev/null  || exit 127
 }
 
 clean_zlib() {
@@ -210,13 +211,6 @@ Options:
     If you want to use the previous arguments, then you can use
     this option. It will try to restore the configuration parameters
     used in the last run. 
-
---enable-py3
-    If you want the system to be built with python3.
-
---use-ravepy3-repo
-    Special variant if you want to use the rave-py3 repository even if you want to install the node with python 2.7.
-    This is only really relevant if --enable-py3 isn't specified.
 
 --nodename=<name>
     This attribute should really be specified but there is a default value which
@@ -547,10 +541,6 @@ for arg in $*; do
       EXPERIMENTAL=yes
       ;;
     --recall-last-args) ;;
-    --enable-py3)
-      ENABLE_PY3=yes
-      ;;
-    --use-ravepy3-repo) ;;
     --nodename=*) ;;
     --jdkhome=*) ;;
     --keystore==*) ;;
