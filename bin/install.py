@@ -122,7 +122,7 @@ _PIP_MODULES=[
     ("TEMPITA", "0.5.1", "Tempita", ["PYTHON"], None),
     ("SQLALCHEMY", "1.0.13", "sqlalchemy", ["PYTHON"], None),
     ("SQLALCHEMY-MIGRATE", "0.10.0", "sqlalchemy-migrate", ["PYTHON", "SQLALCHEMY", "DECORATOR", "TEMPITA"], None),
-    ("WERKZEUG", "0.14", "werkzeug", ["PYTHON"], None),
+    ("WERKZEUG", "1.0.1", "werkzeug", ["PYTHON"], None),
     ("PYTHON-MOCK", "2.0.0", "mock", ["PYTHON"], None),
     ("NOSE", "1.3.7", "nose", ["PYTHON"], None),
     ("PYINOTIFY", "0.9.3", "pyinotify", ["PYTHON"], None),
