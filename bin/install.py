@@ -961,7 +961,7 @@ if __name__=="__main__":
   env.addUniqueArg("PREFIX", "/opt/baltrad")
   env.addUniqueArg("TPREFIX", env.expandArgs("${PREFIX}/third_party"))
   env.addUniqueArg("URLREPO", "http://git.baltrad.eu/blt_dependencies")
-  env.addUniqueArg("GITREPO", "git://git.baltrad.eu")
+  env.addUniqueArg("GITREPO", "https://github.com/baltrad")
   env.addUniqueArg("HDFJAVAHOME", env.expandArgs("${TPREFIX}/hdf-java"))
   env.addUniqueArg("DBUSER", "baltrad")
   env.addUniqueArgInternal("DBPWD", "baltrad")

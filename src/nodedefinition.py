@@ -49,7 +49,6 @@ _REPOS = {
   "BEAST": "$GITREPO/beast.git",
   "BALTRAD-DEX": "$GITREPO/BaltradDex.git",
   "RAVE": "$GITREPO/rave.git",
-  "RAVE-PY3": "$GITREPO/rave-py3.git",
   "RAVE-GMAP": "$GITREPO/GoogleMapsPlugin.git",
   "BROPO": "$GITREPO/bropo.git",
   "BBUFR": "$GITREPO/bbufr.git",
@@ -58,7 +57,7 @@ _REPOS = {
 }
 
 PACKAGES = [
-  "HLHDF", "BALTRAD-DB", "BEAST", "BALTRAD-DEX", "RAVE", "RAVE-PY3", "RAVE-GMAP", "BROPO", "BBUFR", "BEAMB", "BWRWP"
+  "HLHDF", "BALTRAD-DB", "BEAST", "BALTRAD-DEX", "RAVE", "RAVE-GMAP", "BROPO", "BBUFR", "BEAMB", "BWRWP"
 ]
 
 NODE_REPOSITORY={}

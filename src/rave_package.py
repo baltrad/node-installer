@@ -42,17 +42,12 @@ class rave_package(package):
   # @param depends: if this package depends on any other packages
   #
   def __init__(self, depends=[]):
-    rave27ver = NODE_REPOSITORY["RAVE"].getversion()
-    rave27uri = NODE_REPOSITORY["RAVE"].geturi()
-    rave27branch = NODE_REPOSITORY["RAVE"].getbranch()
-    rave27fetcher = gitfetcher(rave27uri, rave27ver, rave27branch)
-    rave3ver = NODE_REPOSITORY["RAVE-PY3"].getversion()
-    rave3uri = NODE_REPOSITORY["RAVE-PY3"].geturi()
-    rave3branch = NODE_REPOSITORY["RAVE-PY3"].getbranch()
+    rave3ver = NODE_REPOSITORY["RAVE"].getversion()
+    rave3uri = NODE_REPOSITORY["RAVE"].geturi()
+    rave3branch = NODE_REPOSITORY["RAVE"].getbranch()
     rave3fetcher = gitfetcher(rave3uri, rave3ver, rave3branch)
-    self._rave27package=package("RAVE", rave27ver, rave27fetcher, depends)
     self._rave3package=package("RAVE", rave3ver, rave3fetcher, depends)
-    self._currentpackage=self._rave27package
+    self._currentpackage=self._rave3package
     super(rave_package, self).__init__("RAVE", "UNDEFINED")
   
   ##
