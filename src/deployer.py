@@ -199,6 +199,7 @@ database.keyczar.name=$NODENAME
     fp = open(filename, "w")
     fp.write(env.expandArgs("""
 # BEAST specifics
+beast.admin.mailer.enabled=false
 beast.admin.mailer.encoding=UTF-8
 beast.admin.mailer.host=localhost
 beast.admin.mailer.port=25
@@ -208,6 +209,8 @@ beast.admin.mailer.from=
 beast.admin.mailer.transport.protocol=smtp
 beast.admin.mailer.smtp.auth=false
 beast.admin.mailer.smtp.starttls.enable=false
+
+beast.cli.administration.enabled=true
 
 beast.admin.security.keyzcar.path=$KEYSTORE
 
