@@ -31,6 +31,18 @@ Before you start, you will have to ensure that you have a number of
 software packages installed that are not allowed or are impractical to be
 distributed as part of this package.
 
+=========== NOTICE!!! ===============
+Currently the node-installer uses Python 3.6 which reach EOL in December 2021 and is not updated.
+On more recent operating systems where gcc >= 9, there will be problems building the system. If you
+experience odd problems related to installation of for example Python or odd link problems. You can
+probably force the build to use gcc = 8.5 by using a different compiler version. On Ubuntu 21.10 you
+can do the following:
+%> sudo apt install gcc-8 g++-8
+%> update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-8 100 --slave /usr/bin/g++ g++ /usr/bin/g++-8 --slave /usr/bin/gcov gcov /usr/bin/gcov-8
+
+If you already have different gcc-versions installed you can change the default version by:
+%> update-alternatives --config gcc
+
 =========== PREREQUISITES ===========
 *) A postgres database server must be installed (8.3.9 or higher, preferably 
 8.4+). It does not need to be installed on the same server as this software,

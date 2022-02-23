@@ -24,14 +24,14 @@ Actual versions for the different software modules that should be installed
 @date 2011-02-09
 '''
 versions = {
-  "HLHDF": "hlhdf-build-4",
-  "BALTRAD-DB": "baltrad-db-build-4",
-  "BEAST": "beast-build-6",
-  "BALTRAD-DEX": "baltrad-dex-build-1",
-  "RAVE": "rave-build-10",
+  "HLHDF": "hlhdf-build-11",
+  "BALTRAD-DB": "baltrad-db-build-13",
+  "BEAST": "beast-build-18",
+  "BALTRAD-DEX": "baltrad-dex-build-11",
+  "RAVE": "rave-build-28",
   "RAVE-GMAP": "baltrad-viewer-build-1",
-  "BROPO": "bropo-build-2",
+  "BROPO": "bropo-build-21",
   "BBUFR": "bbufr-build-6",
-  "BEAMB": "beamb-build-1",
-  "BWRWP": "baltrad-wrwp-build-2",
+  "BEAMB": "beamb-build-14",
+  "BWRWP": "baltrad-wrwp-build-15",
 }

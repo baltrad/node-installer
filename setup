@@ -29,7 +29,7 @@ PACKAGEPATH=$SCRIPTPATH/packages
 PREFIX=/opt/baltrad
 EXPERIMENTAL=yes
 ZLIBARG=
-URLREPO=http://git.baltrad.eu/blt_dependencies
+URLREPO=http://ni.baltrad.eu
 
 ZLIB_VERSION=1.2.11
 PYTHON_VERSION=2.7.15
@@ -316,12 +316,12 @@ Options:
 
 --urlrepo=<url>
     The URL from where the dependency packages can be fetched.
-    [Default http://git.baltrad.eu/blt_dependencies]
+    [Default http://ni.baltrad.eu]
     
 --gitrepo=<url>
     The URL from which the BALTRAD node Git packages can be fetched.
-    For example --gitrepo=http://git.baltrad.eu
-    [Default git://git.baltrad.eu]
+    For example --gitrepo=https://github.com/baltrad
+    [Default https://github.com/baltrad]
 
 --with-rave
     Install the RAVE PGF

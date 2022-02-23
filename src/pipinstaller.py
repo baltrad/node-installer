@@ -59,7 +59,7 @@ class pipinstaller(installer):
     )
 
     args = [pip, "install"]
-    args.append("--build=%s" % pkg_dir)
+    # args.append("--build=%s" % pkg_dir)  #Removed from PIP
     if _is_offline_install(env):
       args.append("--no-download")
     if self._quiet:

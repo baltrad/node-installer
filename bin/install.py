@@ -492,12 +492,12 @@ Options:
 
 --urlrepo=<url>
     The url from where the url packages can be fetched.
-    [Default http://git.baltrad.eu/blt_dependencies]
+    [Default http://ni.baltrad.eu]
     
 --gitrepo=<url>
     The url from where the baltrad node git packages can be fetched.
-    For example "--gitrepo=http://git.baltrad.eu"  
-    [Default git://git.baltrad.eu]
+    For example "--gitrepo=https://github.com/baltrad"  
+    [Default https://github.com/baltrad]
 
 --with-rave
     Install the rave pgf
@@ -960,7 +960,7 @@ if __name__=="__main__":
   # set defaults for whatever arguments we didn't get from the user
   env.addUniqueArg("PREFIX", "/opt/baltrad")
   env.addUniqueArg("TPREFIX", env.expandArgs("${PREFIX}/third_party"))
-  env.addUniqueArg("URLREPO", "http://git.baltrad.eu/blt_dependencies")
+  env.addUniqueArg("URLREPO", "http://ni.baltrad.eu")
   env.addUniqueArg("GITREPO", "https://github.com/baltrad")
   env.addUniqueArg("HDFJAVAHOME", env.expandArgs("${TPREFIX}/hdf-java"))
   env.addUniqueArg("DBUSER", "baltrad")
